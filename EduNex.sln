@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34607.119
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EduNexAPI", "EduNexAPI\EduNexAPI.csproj", "{B6930D00-8245-4EDF-96E2-6D8696954DFE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EduNexDB", "EDuNexDB\EduNexDB.csproj", "{AB1FE6EF-9106-4F01-AD69-7AD1BE143DAE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EduNexBL", "EduNexBL\EduNexBL.csproj", "{64C512CF-DCB5-478A-8D0C-DB8E074D5305}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B6930D00-8245-4EDF-96E2-6D8696954DFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6930D00-8245-4EDF-96E2-6D8696954DFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6930D00-8245-4EDF-96E2-6D8696954DFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6930D00-8245-4EDF-96E2-6D8696954DFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB1FE6EF-9106-4F01-AD69-7AD1BE143DAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB1FE6EF-9106-4F01-AD69-7AD1BE143DAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB1FE6EF-9106-4F01-AD69-7AD1BE143DAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB1FE6EF-9106-4F01-AD69-7AD1BE143DAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64C512CF-DCB5-478A-8D0C-DB8E074D5305}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64C512CF-DCB5-478A-8D0C-DB8E074D5305}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64C512CF-DCB5-478A-8D0C-DB8E074D5305}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64C512CF-DCB5-478A-8D0C-DB8E074D5305}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D27BA781-D6D2-4487-A170-7C0F0058E64B}
+	EndGlobalSection
+EndGlobal

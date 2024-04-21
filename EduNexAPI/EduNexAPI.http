@@ -1,0 +1,6 @@
+@EduNexAPI_HostAddress = http://localhost:5293
+
+GET {{EduNexAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
