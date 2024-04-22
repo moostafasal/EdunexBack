@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace EduNexDB.Entites
 {
+
     public enum Gender
     {
         Male, Female
@@ -37,7 +38,7 @@ namespace EduNexDB.Entites
         [Required]
         public string NationalId { get; set; }
         [ForeignKey("city")]
-        public int CityId { get; set; }
+        public int? CityId { get; set; }
         public City? city { get; set; }
      
 

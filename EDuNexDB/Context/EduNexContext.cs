@@ -59,15 +59,20 @@ namespace EduNexDB.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            
-         
+            modelBuilder.Entity<IdentityRole>().HasData(
+              new IdentityRole { Id = "1", Name = "Admin", NormalizedName = "ADMIN" },
+              new IdentityRole { Id = "2", Name = "Student", NormalizedName = "STUDENT" },
+              new IdentityRole { Id = "3", Name = "Teacher", NormalizedName = "TEACHER" }
+          );
 
-           
-            
-            
 
-           
+
+
+
+
+
             //configure identity
+
             modelBuilder.Entity<ApplicationUser>().ToTable("Users");
             modelBuilder.Entity<IdentityRole>().ToTable("Roles");
             modelBuilder.Entity<IdentityUserRole<string>>().ToTable("UserRoles").HasKey(p => new { p.UserId, p.RoleId });
@@ -77,6 +82,7 @@ namespace EduNexDB.Context
             modelBuilder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
             modelBuilder.Entity<Teacher>().ToTable("Teachers");
             modelBuilder.Entity<Student>().ToTable("Students");
+
 
             modelBuilder.Entity<Lecture>()
                 .Property(l => l.Price)

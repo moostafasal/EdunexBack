@@ -38,11 +38,11 @@ namespace EduNexBL.DTOs.AuthDtos
         public DateTime DateOfBirth { get; set; }
 
 
-        [Required]
+        //[Required]
 
 
 
-        public int CityId { get; set; }
+        //public int CityId { get; set; }
         [Required]
 
         public string Address { get; set; }
@@ -84,6 +84,6 @@ namespace EduNexBL.DTOs.AuthDtos
 
 
 
-        public int LevelId { get; set; }
+        //public int LevelId { get; set; }
     }
 }

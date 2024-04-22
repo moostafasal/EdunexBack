@@ -1,4 +1,3 @@
-
 using AuthenticationMechanism.Services;
 using AuthenticationMechanism.tokenservice;
 using CloudinaryDotNet;
@@ -10,114 +9,138 @@ using EduNexBL.UnitOfWork;
 using EduNexDB.Context;
 using EduNexDB.Entites;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace EduNexAPI
 {
+    // Omitting imports for brevity
+
+    // Omitting imports for brevity
+
     public class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
 
             builder.Services.AddControllers();
             builder.Services.AddDbContext<EduNexContext>(
-            options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"))
+                options => options.UseSqlServer(configuration.GetConnectionString("SqlServer"))
             );
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IExam, ExamRepo>();
             builder.Services.AddScoped<IStudent, StudentRepo>();
             builder.Services.AddScoped<IStudentExam, StudentExamRepo>();
 
-           
-
-            //configure identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-
             {
-
                 options.Password.RequiredLength = 8;
-
                 options.Password.RequireDigit = true;
-
                 options.Password.RequireLowercase = true;
-
             })
+            .AddEntityFrameworkStores<EduNexContext>()
+            .AddDefaultTokenProviders();
 
-                .AddEntityFrameworkStores<EduNexContext>()
-
-                .AddDefaultTokenProviders();
-
-            //inject the token service 
             builder.Services.AddScoped<TokenService>();
-            //inject cloudinary service 
-            // Add the Cloudinary service to the DI container
-           // builder.Services.AddScoped<CloudinaryService>();
             builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
-
-            // Configure the Cloudinary service
-
-            builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
-
-
-            // Register the Cloudinary service
-
+            builder.Services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary"));
             builder.Services.AddSingleton(x =>
-
             {
-
                 var settings = x.GetRequiredService<IOptions<CloudinarySettings>>().Value;
-
                 var account = new Account(settings.CloudName, settings.ApiKey, settings.ApiSecret);
-
                 return new Cloudinary(account);
-
             });
 
-            //configure jwt
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = "https://localhost:7156", // Specify the issuer of the token
-                    ValidAudience = "https://localhost:7156", // Specify the audience for the token
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("D6AE1F1B3F45D32D2E18B5E9F1D301298C1C87223578F8D063DAC8E2E255971B")) // Specify the secret key used to sign the token
-                };
-            });
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = "http://localhost:5293/",
+                        ValidAudience = "http://localhost:5293/",
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+                    };
+                });
+
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "EduNex", Version = "v1" });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] { }
+                }
+            });
+            });
+
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            app.UseHttpsRedirection();
+
+            app.UseRouting(); // Add UseRouting here
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1"));
             }
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
 
             app.Run();
         }
     }
+
+
 }

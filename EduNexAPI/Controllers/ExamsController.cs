@@ -9,6 +9,8 @@ using EduNexBL.Repository;
 using EduNexBL.UnitOfWork;
 using EduNexBL.DTOs.ExamintionDtos;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EduNexAPI.Controllers
 {
@@ -26,7 +28,10 @@ namespace EduNexAPI.Controllers
         }
 
         // GET: api/<ExamsController>
+
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Student")]
+
         public async Task<ActionResult<IEnumerable<ExamDto>>> Get()
         {
             var exams = await _unitOfWork.ExamRepo.GetAllExamsWithQuestions();

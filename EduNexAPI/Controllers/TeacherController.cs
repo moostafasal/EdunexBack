@@ -92,12 +92,10 @@ namespace EduNexAPI.Controllers
             var result = await _userManager.CreateAsync(newUser, model.Password);
             if (result.Succeeded)
             {
-                // Add the user to the "Teacher" role
                 await _userManager.AddToRoleAsync(newUser, "Teacher");
 
                
 
-                // Generate a token for the new user
                 var token = _tokenService.GenerateAccessToken(newUser.Id);
 
                 // Return the created user and the token as a response
@@ -107,7 +105,6 @@ namespace EduNexAPI.Controllers
             // If the user creation failed, return a bad request response with the errors
             return BadRequest(result.Errors);
         }
-
         //private async Task<ImageUploadResult> UploadPhotoToCloudinary(IFormFile file)
         //{
         //    using (var stream = file.OpenReadStream())
@@ -124,9 +121,7 @@ namespace EduNexAPI.Controllers
         //    }
         //}
         [HttpPost]
-
         [Route("login")]
-
         public async Task<ActionResult<LoginUserDto>> TeacherLogin(LoginUserDto model)
 
         {
@@ -187,12 +182,10 @@ namespace EduNexAPI.Controllers
             }
 
 
-            // Generate a token for the user
 
             var token = _tokenService.GenerateAccessToken(user.Id);
 
 
-            // Return the token as a response
 
             return Ok( token);
 

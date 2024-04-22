@@ -85,7 +85,7 @@ namespace EduNexAPI.Controllers
 
                 ParentPhoneNumber = model.ParentPhoneNumber,
 
-                CityId=model.CityId,
+                //CityId=model.CityId,
 
                 Religion = model.Religion,
 
@@ -99,33 +99,32 @@ namespace EduNexAPI.Controllers
 
                 UserName = model.Email,
 
-                LevelId = model.LevelId
+                //LevelId = model.LevelId
 
             };
 
 
             var result = await _userManager.CreateAsync(newUser, model.Password);
-
             if (result.Succeeded)
-
             {
                 // Add the user to the "Student" role
-
                 await _userManager.AddToRoleAsync(newUser, "Student");
 
                 // Generate a token for the new user
-
-                var token = _tokenService.GenerateAccessToken(newUser.Id);
-
+                var token = await _tokenService.GenerateAccessToken(newUser.Id); // Ensure to await token generation
 
                 // Return the created user and the token as a response
-
-                return Ok(token);
-
+                return Ok(new
+                {
+                    User = newUser, // Optionally return user information
+                    Token = token
+                });
             }
-          // If the user creation failed, return a bad request response with the errors
-
-            return BadRequest(result.Errors);
+            else
+            {
+                // If the user creation failed, return a bad request response with the errors
+                return BadRequest(result.Errors);
+            }
 
         }
 
