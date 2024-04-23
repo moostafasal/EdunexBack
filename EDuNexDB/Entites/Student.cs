@@ -9,6 +9,7 @@ namespace EduNexDB.Entites
         public string ParentPhoneNumber { get; set; }
         [Required]
         public string Religion { get; set; }
+
         [ForeignKey("Level")]
         public int? LevelId { get; set; }
         public virtual Level? Level { get; set; }

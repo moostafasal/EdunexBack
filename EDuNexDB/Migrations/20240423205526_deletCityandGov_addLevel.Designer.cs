@@ -4,6 +4,7 @@ using EduNexDB.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduNexDB.Migrations
 {
     [DbContext(typeof(EduNexContext))]
-    partial class EduNexContextModelSnapshot : ModelSnapshot
+    [Migration("20240423205526_deletCityandGov_addLevel")]
+    partial class deletCityandGov_addLevel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,6 +71,7 @@ namespace EduNexDB.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("City")
@@ -95,6 +99,9 @@ namespace EduNexDB.Migrations
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("LevelId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -138,6 +145,8 @@ namespace EduNexDB.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LevelId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -740,9 +749,6 @@ namespace EduNexDB.Migrations
                 {
                     b.HasBaseType("EduNexDB.Entites.ApplicationUser");
 
-                    b.Property<int?>("LevelId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ParentPhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -750,8 +756,6 @@ namespace EduNexDB.Migrations
                     b.Property<string>("Religion")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.HasIndex("LevelId");
 
                     b.ToTable("Students", (string)null);
                 });
@@ -784,6 +788,15 @@ namespace EduNexDB.Migrations
                         .IsRequired();
 
                     b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("EduNexDB.Entites.ApplicationUser", b =>
+                {
+                    b.HasOne("EduNexDB.Entites.Level", "Level")
+                        .WithMany("Students")
+                        .HasForeignKey("LevelId");
+
+                    b.Navigation("Level");
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.Course", b =>
@@ -982,12 +995,6 @@ namespace EduNexDB.Migrations
                         .HasForeignKey("EduNexDB.Entites.Student", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("EduNexDB.Entites.Level", "Level")
-                        .WithMany("Students")
-                        .HasForeignKey("LevelId");
-
-                    b.Navigation("Level");
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.Teacher", b =>

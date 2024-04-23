@@ -82,10 +82,20 @@ namespace EduNexAPI
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = "http://localhost:5293/",
-                        ValidAudience = "http://localhost:5293/",
+                        ValidAudience = "http://localhost:4200/",
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
                     };
                 });
+            // Add CORS policy
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200") 
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+            });
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -123,6 +133,8 @@ namespace EduNexAPI
             app.UseHttpsRedirection();
 
             app.UseRouting(); // Add UseRouting here
+
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();

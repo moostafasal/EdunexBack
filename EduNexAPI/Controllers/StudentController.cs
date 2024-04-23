@@ -21,7 +21,7 @@ namespace EduNexAPI.Controllers
     public class StudentController : ControllerBase
     {
 
-       
+
         private readonly UserManager<ApplicationUser> _userManager;
 
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -30,7 +30,7 @@ namespace EduNexAPI.Controllers
 
         private readonly TokenService _tokenService;
 
-        
+
         public StudentController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, TokenService tokenService, EduNexContext context)
 
         {
@@ -39,10 +39,10 @@ namespace EduNexAPI.Controllers
 
             _signInManager = signInManager;
 
-        _tokenService = tokenService;
+            _tokenService = tokenService;
             _context = context;
 
-    }
+        }
 
         [HttpPost("register/student")]
 
@@ -56,13 +56,14 @@ namespace EduNexAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-                   // Check if the email is already taken
+            // Check if the email is already taken
 
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user != null)
 
-            {    ModelState.AddModelError("Email", "Email is already taken.");
+            {
+                ModelState.AddModelError("Email", "Email is already taken.");
 
                 return BadRequest(ModelState);
 
@@ -91,7 +92,7 @@ namespace EduNexAPI.Controllers
 
                 DateOfBirth = model.DateOfBirth,
 
-                Address = model.Address,
+                City = model.City,
 
                 NationalId = model.NationalId,
 
@@ -99,7 +100,9 @@ namespace EduNexAPI.Controllers
 
                 UserName = model.Email,
 
-                //LevelId = model.LevelId
+                LevelId = model.LevelId,
+                Address=model.City
+                
 
             };
 
@@ -126,7 +129,9 @@ namespace EduNexAPI.Controllers
                 return BadRequest(result.Errors);
             }
 
+
         }
+
 
 
 
@@ -206,5 +211,38 @@ namespace EduNexAPI.Controllers
             });
 
         }
+
+        [HttpGet("Get-Student/{id}")]
+        public async Task<ActionResult<StudentDto1>> GetStudentById(string id)
+        {
+            var student = await _context.Students
+                .Include(s => s.Level) // Include related Level entity if needed
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (student == null)
+            {
+                return NotFound(); // Return 404 if student not found
+            }
+
+            // Map Student to StudentDto
+            var studentDto = new StudentDto
+            {
+                Id = student.Id,
+                FirstName = student.FirstName,
+                LastName = student.LastName,
+                Email = student.Email,
+                ParentPhoneNumber = student.ParentPhoneNumber, // Access ParentPhoneNumber directly from Student entity
+                Religion = student.Religion,
+                LevelId = student.LevelId,
+                LevelName = student.Level != null ? student.Level.LevelName : null, // Access LevelName from related Level entity
+                                                                               // Map other properties as needed
+            };
+
+            return Ok(studentDto); // Return DTO
+        }
+
+
+
+
     }
 }
