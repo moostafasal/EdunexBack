@@ -28,12 +28,12 @@ namespace EduNexAPI.Controllers
     public class TeacherController : ControllerBase
     {
         private readonly TokenService _tokenService;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly EduNexContext _context;
         private readonly ICloudinaryService _cloudinaryService;
         private readonly IMapper _mapper;
-        public TeacherController(ICloudinaryService cloudinaryService, TokenService tokenService, UserManager<IdentityUser> userManager, IMapper mapper, SignInManager<IdentityUser> signInManager, EduNexContext context)
+        public TeacherController(ICloudinaryService cloudinaryService, TokenService tokenService, UserManager<ApplicationUser> userManager, IMapper mapper, SignInManager<ApplicationUser> signInManager, EduNexContext context)
         {
             _tokenService = tokenService;
             _userManager = userManager;
@@ -174,7 +174,7 @@ namespace EduNexAPI.Controllers
 
             // Check if the user is a student
 
-            if (!await _userManager.IsInRoleAsync(user, "Student"))
+            if (!await _userManager.IsInRoleAsync(user, "Teacher"))
 
             {
 
