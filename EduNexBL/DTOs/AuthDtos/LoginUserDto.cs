@@ -17,6 +17,6 @@ namespace EduNexBL.DTOs.AuthDtos
 
         [Display(Name = "Remember me?")]
 
-        public bool RememberMe { get; set; }
+        public bool RememberMe { get; set; }=false;
     }
 }

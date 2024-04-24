@@ -28,9 +28,9 @@ namespace EduNexDB.Context
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
 
-        public DbSet<City> cities { get; set; }
+        //public DbSet<City> cities { get; set; }
 
-        public DbSet<Governorate> governorates { get; set; }
+        //public DbSet<Governorate> governorates { get; set; }
         public EduNexContext(DbContextOptions<EduNexContext> options) : base(options)
         {
 
@@ -63,7 +63,16 @@ namespace EduNexDB.Context
               new IdentityRole { Id = "1", Name = "Admin", NormalizedName = "ADMIN" },
               new IdentityRole { Id = "2", Name = "Student", NormalizedName = "STUDENT" },
               new IdentityRole { Id = "3", Name = "Teacher", NormalizedName = "TEACHER" }
+
+
           );
+            modelBuilder.Entity<Level>().HasData(
+                   new Level { Id = 1, LevelName = "Level one" },
+                   new Level { Id = 2, LevelName = "Level two" },
+                    new Level { Id = 3, LevelName = "Level three" }
+
+               );
+
 
 
 
@@ -142,6 +151,9 @@ namespace EduNexDB.Context
                 .HasForeignKey(s => s.AnswerId)
                 .OnDelete(DeleteBehavior.Restrict); // Disable cascade delete for Exam relationship
 
+            modelBuilder.Entity<ApplicationUser>()
+                .Property(e => e.gender)
+                .HasConversion<string>();
 
             base.OnModelCreating(modelBuilder);
 

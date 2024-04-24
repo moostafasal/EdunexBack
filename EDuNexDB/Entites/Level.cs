@@ -11,7 +11,7 @@ namespace EduNexDB.Entites
     {
         [Required]
         public string LevelName { get; set; }
-        public ICollection<ApplicationUser> Students { get; set; }
+        public ICollection<Student> Students { get; set; }
     }
 
 }

@@ -32,19 +32,16 @@ namespace EduNexDB.Entites
 
         [Required]
         public Gender gender { get; set; }
-        [Required]
-        public string Address { get; set; }
 
-        [Required]
-        public string NationalId { get; set; }
-        [ForeignKey("city")]
-        public int? CityId { get; set; }
-        public City? city { get; set; }
-     
+        public string ?Address { get; set; }
 
-        [ForeignKey("Level")]
-        public int? LevelId { get; set; }
-        public Level? Level { get; set; }
+        public string? NationalId { get; set; }
+        //[ForeignKey("city")]
+        //public int? CityId { get; set; }
+        //public City? city { get; set; }
+
+        public string? City { get; set; }
+        
        
     }
 }
