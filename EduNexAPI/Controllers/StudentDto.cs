@@ -1,4 +1,6 @@
-﻿namespace EduNexAPI.Controllers
+﻿using EduNexDB.Entites;
+
+namespace EduNexAPI.Controllers
 {
     internal class StudentDto
     {
@@ -10,5 +12,7 @@
         public string Religion { get; set; }
         public int? LevelId { get; set; }
         public string LevelName { get; set; }
+        public Gender Gender { get; set; } 
+
     }
 }

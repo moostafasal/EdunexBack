@@ -6,6 +6,8 @@ namespace EduNexBL.DTOs.AuthDtos
     public class StudentRegisterDto
     {
         [Required]
+        public string Address { get; set; }
+        [Required]
         public string City { get; set; }
 
         [DataType(DataType.Password)]
@@ -42,9 +44,9 @@ namespace EduNexBL.DTOs.AuthDtos
         [Display(Name = "LastName")]
         public string LastName { get; set; }
 
-        [Required]
+        //[Required]
 
-        public string NationalId { get; set; }
+        //public string NationalId { get; set; }
 
         [Required]
 
@@ -75,22 +77,6 @@ namespace EduNexBL.DTOs.AuthDtos
 
 
         //public int CityId { get; set; }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         public int LevelId { get; set; }
     }
 }

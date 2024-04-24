@@ -86,7 +86,6 @@ namespace EduNexAPI.Controllers
 
                 ParentPhoneNumber = model.ParentPhoneNumber,
 
-                //CityId=model.CityId,
 
                 Religion = model.Religion,
 
@@ -94,15 +93,15 @@ namespace EduNexAPI.Controllers
 
                 City = model.City,
 
-                NationalId = model.NationalId,
+                //NationalId = model.NationalId,
+                
 
                 Email = model.Email,
 
                 UserName = model.Email,
 
                 LevelId = model.LevelId,
-                Address=model.City
-                
+                Address=model.Address
 
             };
 
@@ -213,32 +212,34 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpGet("Get-Student/{id}")]
+        [HttpGet("Get-Student/{id}")]
         public async Task<ActionResult<StudentDto1>> GetStudentById(string id)
         {
             var student = await _context.Students
-                .Include(s => s.Level) // Include related Level entity if needed
+                .Include(s => s.Level)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             if (student == null)
             {
-                return NotFound(); // Return 404 if student not found
+                return NotFound();
             }
 
-            // Map Student to StudentDto
-            var studentDto = new StudentDto
+            var studentDto = new StudentDto1
             {
                 Id = student.Id,
                 FirstName = student.FirstName,
                 LastName = student.LastName,
                 Email = student.Email,
-                ParentPhoneNumber = student.ParentPhoneNumber, // Access ParentPhoneNumber directly from Student entity
+                ParentPhoneNumber = student.ParentPhoneNumber,
                 Religion = student.Religion,
                 LevelId = student.LevelId,
-                LevelName = student.Level != null ? student.Level.LevelName : null, // Access LevelName from related Level entity
-                                                                               // Map other properties as needed
+                LevelName = student.Level != null ? student.Level.LevelName : null,
+                //miss gender need small configraion 
+
+
             };
 
-            return Ok(studentDto); // Return DTO
+            return Ok(studentDto);
         }
 
 

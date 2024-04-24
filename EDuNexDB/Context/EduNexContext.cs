@@ -150,7 +150,11 @@ namespace EduNexDB.Context
                 .WithMany()
                 .HasForeignKey(s => s.AnswerId)
                 .OnDelete(DeleteBehavior.Restrict); // Disable cascade delete for Exam relationship
-         
+
+            modelBuilder.Entity<ApplicationUser>()
+                .Property(e => e.gender)
+                .HasConversion<string>();
+
             base.OnModelCreating(modelBuilder);
 
 
