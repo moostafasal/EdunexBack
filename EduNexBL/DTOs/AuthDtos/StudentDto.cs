@@ -6,7 +6,7 @@
     public string Email { get; set; }
     public string ParentPhoneNumber { get; set; }
     public string Religion { get; set; }
-    public EduNexDB.Entites.Gender Gender { get; set; } // Correct type
+    public string Gender { get; set; }
     public int? LevelId { get; set; }
     public string LevelName { get; set; }
 }

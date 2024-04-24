@@ -212,7 +212,6 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpGet("Get-Student/{id}")]
-        [HttpGet("Get-Student/{id}")]
         public async Task<ActionResult<StudentDto1>> GetStudentById(string id)
         {
             var student = await _context.Students
@@ -231,11 +230,10 @@ namespace EduNexAPI.Controllers
                 LastName = student.LastName,
                 Email = student.Email,
                 ParentPhoneNumber = student.ParentPhoneNumber,
+                Gender = student.gender.ToString(),
                 Religion = student.Religion,
                 LevelId = student.LevelId,
                 LevelName = student.Level != null ? student.Level.LevelName : null,
-                //miss gender need small configraion 
-
 
             };
 
