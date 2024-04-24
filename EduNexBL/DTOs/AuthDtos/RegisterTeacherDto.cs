@@ -20,9 +20,9 @@ namespace EduNexBL.DTOs.AuthDtos
 
 
 
-        [Display(Name = "Profile Photo")]
+       // [Display(Name = "Profile Photo")]
 
-        public IFormFile ProfilePhoto { get; set; }
+      //  public IFormFile ProfilePhoto { get; set; }
 
 
         [Required]
@@ -39,11 +39,11 @@ namespace EduNexBL.DTOs.AuthDtos
         public string FacebookAccount { get; set; }
 
 
-        [Required]
+        //[Required]
 
-        [Display(Name = "Religion")]
+        //[Display(Name = "Religion")]
 
-        public string Religion { get; set; }
+        //public string Religion { get; set; }
 
 
         [Required]
@@ -53,9 +53,9 @@ namespace EduNexBL.DTOs.AuthDtos
         public DateTime DateOfBirth { get; set; }
 
 
-        [Required]
+        //[Required]
 
-        public int CityId { get; set; }
+        //public int CityId { get; set; }
 
         [Required]
         public string gender { get; set; }
