@@ -45,7 +45,6 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("register/student")]
-
         public async Task<ActionResult> StudentRegister(StudentRegisterDto model)
 
         {
@@ -130,11 +129,6 @@ namespace EduNexAPI.Controllers
 
 
         }
-
-
-
-
-
 
         [HttpGet("Get-Student/{id}")]
         public async Task<ActionResult<StudentDto1>> GetStudentById(string id)

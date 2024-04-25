@@ -82,7 +82,6 @@ namespace EduNexAPI.Controllers
 
                 gender = (Gender)Enum.Parse(typeof(Gender), model.gender),
 
-                //CityId=model.CityId,
 
                 DateOfBirth = model.DateOfBirth,
 
@@ -93,6 +92,8 @@ namespace EduNexAPI.Controllers
                 Email = model.Email,
 
                 UserName = model.Email,
+
+                Status = TeacherStatus.Pending
 
                 //LevelId = model.LevelId
 
@@ -122,7 +123,6 @@ namespace EduNexAPI.Controllers
             }
 
         }
-
 
 
         [HttpPost("login/teacher")]
@@ -278,5 +278,6 @@ namespace EduNexAPI.Controllers
         //        return uploadResult;
         //    }
         //}
+
     }
 }
