@@ -82,5 +82,88 @@ namespace EduNexAPI.Controllers
         }
 
 
+
+        [HttpPost("Admin")]
+        public async Task<ActionResult> AdminRegister(RegisterTeacherDto model)
+
+        {
+            // Validate the model
+
+            if (!ModelState.IsValid)
+
+            {
+                return BadRequest(ModelState);
+            }
+            // Check if the email is already taken
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user != null)
+
+            {
+                ModelState.AddModelError("Email", "Email is already taken.");
+
+                return BadRequest(ModelState);
+
+            }
+
+
+            // Create a new user with Identity Framework
+
+            var newUser = new ApplicationUser
+
+            {
+
+                FirstName = model.FirstName,
+
+                LastName = model.LastName,
+
+                PhoneNumber = model.PhoneNumber,
+
+                gender = (Gender)Enum.Parse(typeof(Gender), model.gender),
+
+
+                DateOfBirth = model.DateOfBirth,
+
+                Address = model.Address,
+
+                NationalId = model.NationalId,
+
+                Email = model.Email,
+
+                UserName = model.Email,
+
+
+                //LevelId = model.LevelId
+
+            };
+
+
+            var result = await _userManager.CreateAsync(newUser, model.Password);
+            if (result.Succeeded)
+            {
+                // Add the user to the "Student" role
+                await _userManager.AddToRoleAsync(newUser, "Admin");
+
+                // Generate a token for the new user
+                var token = await _tokenService.GenerateAccessToken(newUser.Id); // Ensure to await token generation
+
+                // Return the created user and the token as a response
+                return Ok(new
+                {
+                    User = newUser, // Optionally return user information
+                    Token = token
+                });
+            }
+            else
+            {
+                // If the user creation failed, return a bad request response with the errors
+                return BadRequest(result.Errors);
+            }
+
+        }
+
+
+
     }
 }

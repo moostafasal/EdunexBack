@@ -51,6 +51,8 @@ namespace EduNexAPI
             builder.Services.AddScoped<IExam, ExamRepo>();
             builder.Services.AddScoped<IStudent, StudentRepo>();
             builder.Services.AddScoped<IStudentExam, StudentExamRepo>();
+            builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
