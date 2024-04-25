@@ -45,7 +45,6 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("register/student")]
-
         public async Task<ActionResult> StudentRegister(StudentRegisterDto model)
 
         {
@@ -94,14 +93,14 @@ namespace EduNexAPI.Controllers
                 City = model.City,
 
                 //NationalId = model.NationalId,
-                
+
 
                 Email = model.Email,
 
                 UserName = model.Email,
 
                 LevelId = model.LevelId,
-                Address=model.Address
+                Address = model.Address
 
             };
 
@@ -130,11 +129,6 @@ namespace EduNexAPI.Controllers
 
 
         }
-
-
-
-
-
 
         [HttpGet("Get-Student/{id}")]
         public async Task<ActionResult<StudentDto1>> GetStudentById(string id)
@@ -165,6 +159,37 @@ namespace EduNexAPI.Controllers
             return Ok(studentDto);
         }
 
+
+
+        //get studnt by eamil :
+        [HttpGet("Get-Student/{mail}")]
+        public async Task<ActionResult<StudentDto1>> GetStudentByemail(string Email)
+        {
+            var student = await _context.Students
+                .Include(s => s.Level)
+                .FirstOrDefaultAsync(s => s.Email == Email);
+
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            var studentDto = new StudentDto1
+            {
+                Id = student.Id,
+                FirstName = student.FirstName,
+                LastName = student.LastName,
+                Email = student.Email,
+                ParentPhoneNumber = student.ParentPhoneNumber,
+                Gender = student.gender.ToString(),
+                Religion = student.Religion,
+                LevelId = student.LevelId,
+                LevelName = student.Level != null ? student.Level.LevelName : null,
+
+            };
+
+            return Ok(studentDto);
+        }
 
 
 

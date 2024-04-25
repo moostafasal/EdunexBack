@@ -1,5 +1,6 @@
 ﻿using AuthenticationMechanism.tokenservice;
 using EduNexBL.DTOs.AuthDtos;
+using EduNexDB.Entites;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,10 @@ namespace EduNexAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly TokenService _tokenService;
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AuthController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, TokenService tokenService)
+        public AuthController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, TokenService tokenService)
         {
             _tokenService = tokenService;
             _signInManager = signInManager;
@@ -28,9 +29,8 @@ namespace EduNexAPI.Controllers
             await _signInManager.SignOutAsync();
             return Ok(new { message = "User logged out successfully." });
         }
-
         [HttpPost("login")]
-        public async Task<ActionResult<LoginUserDto>> Login(LoginUserDto model)
+        public async Task<ActionResult> Login(LoginUserDto model)
         {
             // Validate the model
             if (!ModelState.IsValid)
@@ -54,8 +54,25 @@ namespace EduNexAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Check if the user is a teacher
+            if (await _userManager.IsInRoleAsync(user, "Teacher"))
+            {
+                // Check the status of the teacher
+                var teacher = (Teacher)user;
+                if (teacher.Status == TeacherStatus.Pending)
+                {
+                    ModelState.AddModelError("", "Your account is pending approval. Please wait for admin approval.");
+                    return BadRequest(ModelState);
+                }
+                else if (teacher.Status == TeacherStatus.Rejected)
+                {
+                    ModelState.AddModelError("", "Your account has been rejected by the admin.");
+                    return BadRequest(ModelState);
+                }
+            }
+
             // Generate a token for the user
-            var token = _tokenService.GenerateAccessToken(user.Id);
+            var token = await _tokenService.GenerateAccessToken(user.Id);
 
             // Return the token as a response
             return Ok(new
@@ -63,5 +80,7 @@ namespace EduNexAPI.Controllers
                 Token = token
             });
         }
+
+
     }
 }
