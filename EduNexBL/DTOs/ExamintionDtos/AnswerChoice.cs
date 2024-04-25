@@ -1,4 +1,4 @@
-﻿namespace EduNexBL.Repository
+﻿namespace EduNexBL.DTOs.ExamintionDtos
 {
     internal class AnswerChoice
     {
