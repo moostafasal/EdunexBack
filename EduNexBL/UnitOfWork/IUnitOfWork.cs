@@ -12,7 +12,7 @@ namespace EduNexBL.UnitOfWork
         public IExam ExamRepo { get; }
         public IStudent StudentRepo { get; }
         public IStudentExam StudentExamRepo { get; } 
-        
+        public ICourse CourseRepo { get; }
         void Commit();
     }
 }
