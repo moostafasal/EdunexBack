@@ -10,13 +10,13 @@ namespace EduNexDB.Entites
 {
     public class Video:BaseEntity
     {
-      
+
 
         [Required]
-        public string VideoTitle { get; set; }
+        public string VideoTitle { get; set; } = null!; 
 
         [Required]
-        public string VideoPath { get; set; }
+        public string VideoPath { get; set; } = null!;
 
         [ForeignKey("Lecture")]
         public int LectureId { get; set; }

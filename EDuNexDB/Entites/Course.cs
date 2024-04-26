@@ -14,27 +14,33 @@ namespace EduNexDB.Entites
         Literature,
         [Display(Name = "Scientific")]
         Scientific,
-        [Display(Name = "Revision")]
-        Revision
+        [Display(Name = "General")]
+        General
     }
-    public class Course:BaseEntity
+    public class Course : BaseEntity
     {
 
         [Required]
-        public string CourseName { get; set; }
+        public string CourseName { get; set; } = null!;
+
+        [Required]
+        public string Thumbnail { get; set; } = null!;
 
         [Required]
         public CourseType CourseType { get; set; }
 
         [Required]
-        public int NumberOfLectures { get; set; }
+        public decimal Price { get; set; }
 
         [ForeignKey("Subject")]
         public int SubjectId { get; set; }
         public Subject? Subject { get; set; }
 
         [ForeignKey("Teacher")]
-        public string TeacherId { get; set; }
-        public ApplicationUser? Teacher { get; set; }
+        public string TeacherId { get; set; } = null!;
+        public Teacher? Teacher { get; set; }
+
+        public ICollection<Lecture> Lectures { get; set; } = new List<Lecture>();
+
     }
 }

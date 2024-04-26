@@ -13,6 +13,7 @@ using EduNexDB.Entites;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.CodeModifier.CodeChange;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -31,9 +32,9 @@ namespace EduNexAPI.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly EduNexContext _context;
-        private readonly ICloudinaryService _cloudinaryService;
+        private readonly IFiles _cloudinaryService;
         private readonly IMapper _mapper;
-        public TeacherController(ICloudinaryService cloudinaryService, TokenService tokenService, UserManager<ApplicationUser> userManager, IMapper mapper, SignInManager<ApplicationUser> signInManager, EduNexContext context)
+        public TeacherController(IFiles cloudinaryService, TokenService tokenService, UserManager<ApplicationUser> userManager, IMapper mapper, SignInManager<ApplicationUser> signInManager, EduNexContext context)
         {
             _tokenService = tokenService;
             _userManager = userManager;
@@ -202,82 +203,79 @@ namespace EduNexAPI.Controllers
 
         }
         [HttpPost("registerwithimage/teacher")]
-        public async Task<ActionResult<RegisterTeacherDto>> TeacherWithImage(RegisterTeacherDto model, IFormFile file)
+        public async Task<ActionResult> TeacherWithImage(RegisterTeacherDto model)
         {
-            // Validate the model
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            // Check if the email is already taken
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user != null)
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    ModelState.AddModelError("Email", "Email is already taken.");
+                    return BadRequest(ModelState);
+                }
+
+                if (model.file == null || model.file.Length == 0)
+                {
+                    ModelState.AddModelError("File", "Please upload a valid file.");
+                    return BadRequest(ModelState);
+                }
+
+                var uploadResult = await _cloudinaryService.UploadImageAsync(model.file);
+                if (uploadResult == null)
+                {
+                    ModelState.AddModelError("File", "Error uploading image to Cloudinary.");
+                    return BadRequest(ModelState);
+                }
+
+                var newUser = _mapper.Map<Teacher>(model);
+                newUser.UserName = model.Email;
+                newUser.ProfilePhoto = uploadResult;
+
+                var result = await _userManager.CreateAsync(newUser, model.Password);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(newUser, "Teacher");
+                    var token = _tokenService.GenerateAccessToken(newUser.Id);
+                    return Ok(token);
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return BadRequest(ModelState);
+                }
+            }
+            catch (Exception ex)
             {
-                ModelState.AddModelError("Email", "Email is already taken.");
-                return BadRequest(ModelState);
+                ModelState.AddModelError(string.Empty, "An error occurred while processing your request.");
+                return StatusCode(500, ModelState);
             }
-
-            // Upload profile photo to Cloudinary
-
-            var uploadResult = await _cloudinaryService.UploadAsync(file);
-
-            // Create a new user with Identity Framework
-            var newUser = _mapper.Map<Teacher>(model);
-            //var newUser = new Teacher
-            //{
-            //    FirstName = model.FirstName,
-            //    LastName = model.LastName,
-            //    PhoneNumber = model.PhoneNumber,
-            //    gender = (Gender)Enum.Parse(typeof(Gender), model.gender),
-
-            //    DateOfBirth = model.DateOfBirth,
-            //    Address = model.Address,
-            //    NationalId = model.NationalId,
-            //    Email = model.Email,
-            //    UserName = model.Email,
-
-            //    FacebookAccount = model.FacebookAccount,
-            //    CityId= model.CityId
-            //};
-
-
-            // Set profile photo URL from Cloudinary upload result
-
-            newUser.ProfilePhoto = uploadResult.SecureUri.ToString();
-
-
-            var result = await _userManager.CreateAsync(newUser, model.Password);
-            if (result.Succeeded)
-            {
-                await _userManager.AddToRoleAsync(newUser, "Teacher");
-
-
-
-                var token = _tokenService.GenerateAccessToken(newUser.Id);
-
-                // Return the created user and the token as a response
-                return Ok(token);
-            }
-
-            // If the user creation failed, return a bad request response with the errors
-            return BadRequest(result.Errors);
         }
-        //private async Task<ImageUploadResult> UploadPhotoToCloudinary(IFormFile file)
-        //{
-        //    using (var stream = file.OpenReadStream())
-        //    {
-        //        var uploadParams = new ImageUploadParams
-        //        {
-        //            File = new FileDescription(file.FileName, stream),
-        //            Transformation = new Transformation().Width(150).Height(150).Crop("thumb")
-        //        };
-
-        //        var uploadResult = await _cloudinaryService.UploadAsync(uploadParams);
-
-        //        return uploadResult;
-        //    }
-        //}
 
     }
+
+
+    //private async Task<ImageUploadResult> UploadPhotoToCloudinary(IFormFile file)
+    //{
+    //    using (var stream = file.OpenReadStream())
+    //    {
+    //        var uploadParams = new ImageUploadParams
+    //        {
+    //            File = new FileDescription(file.FileName, stream),
+    //            Transformation = new Transformation().Width(150).Height(150).Crop("thumb")
+    //        };
+
+    //        var uploadResult = await _cloudinaryService.UploadAsync(uploadParams);
+
+    //        return uploadResult;
+    //    }
+    //}
+
 }

@@ -11,7 +11,7 @@ namespace EduNexDB.Entites
     public class Lecture:BaseEntity
     {
         [Required]
-        public string LectureTitle { get; set; }
+        public string LectureTitle { get; set; } = null!; 
 
         [Required]
         public decimal Price { get; set; }
@@ -19,6 +19,9 @@ namespace EduNexDB.Entites
         [ForeignKey("Course")]
         public int CourseId { get; set; }
         public Course? Course { get; set; }
+
+        public ICollection<Video> Videos { get; } = new List<Video>();
+        public ICollection<Exam> Exams { get; } = new List<Exam>(); 
     }
 
 }

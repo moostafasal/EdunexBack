@@ -119,21 +119,15 @@ namespace EduNexAPI.Controllers
             if (exam == null || student == null) { return NotFound(); }
 
             // Call the service method to start the exam
-            var result = await _unitOfWork.ExamRepo.StartExam(request.StudentId,id);
+            var result = await _unitOfWork.ExamRepo.StartExam(request.StudentId, id);
             ////////////attention  
-            
+
             switch (result)
             {
                 case ExamStartResult.Success:
                     return Ok("Exam started successfully.");
-                case ExamStartResult.NotAvailable:
-                    // Return a bad request with an appropriate message
-                    return BadRequest("The exam is not available.");
-                case ExamStartResult.AlreadyStarted:
-                    return BadRequest("The exam is already started.");
                 default:
-                    // Return a bad request with a generic error message
-                    return BadRequest("Failed to start the exam.");
+                    return BadRequest(result);
             }
         }
 
@@ -150,7 +144,26 @@ namespace EduNexAPI.Controllers
             if (response.SubmitResult == ExamSubmitResult.Success)
                 return Ok(response);
             else
-                return BadRequest();
+                return BadRequest(response.SubmitResult);
+
+        }
+
+        [HttpGet("{id}/result")]
+        public async Task<IActionResult> GetExamResult(int id, [FromBody] string studentId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var response = await _unitOfWork.ExamRepo.GetExamSubmitResultWithDetails(id, studentId);
+
+
+            return Ok(response); 
+            //if (response.SubmitResult == ExamSubmitResult.Success)
+            //    return Ok(response);
+            //else
+            //    return BadRequest(response.SubmitResult);
 
         }
     }

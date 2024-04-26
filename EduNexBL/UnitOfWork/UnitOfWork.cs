@@ -1,4 +1,5 @@
-﻿using EduNexBL.IRepository;
+﻿using AutoMapper;
+using EduNexBL.IRepository;
 using EduNexBL.Repository;
 using EduNexDB.Context;
 using Microsoft.EntityFrameworkCore;
@@ -14,22 +15,27 @@ namespace EduNexBL.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly EduNexContext _context;
+        private readonly IMapper _mapper;
         private Lazy<IExam> _examRepo;
         private Lazy<IStudent> _studentRepo;
         private Lazy<IStudentExam> _studentExamRepo;
+        private Lazy<ICourse> _courseRepo;
 
         public IExam ExamRepo => _examRepo.Value;
         public IStudent StudentRepo => _studentRepo.Value;
         public IStudentExam StudentExamRepo => _studentExamRepo.Value;
+        public ICourse CourseRepo => _courseRepo.Value;
 
-        public UnitOfWork(EduNexContext context)
+        public UnitOfWork(EduNexContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
+
             _examRepo = new Lazy<IExam>(() => new ExamRepo(_context));
             _studentRepo = new Lazy<IStudent>(() => new StudentRepo(_context));
             _studentExamRepo = new Lazy<IStudentExam>(() => new StudentExamRepo(_context));
+            _courseRepo = new Lazy<ICourse>(() => new CourseRepo(_context, _mapper));
 
-            
         }
 
         public void Commit()
