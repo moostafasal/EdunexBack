@@ -13,6 +13,7 @@
         Success,
         NotFound,
         NotAvailable,
-        NotStarted
+        NotStarted,
+        ExamNotEnded
     }
 }

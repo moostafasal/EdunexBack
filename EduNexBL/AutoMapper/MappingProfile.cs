@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EduNexBL.DTOs;
 using EduNexBL.DTOs.AuthDtos;
+using EduNexBL.DTOs.CourseDTOs;
 using EduNexBL.DTOs.ExamintionDtos;
 using EduNexDB.Entites;
 using System;
@@ -23,6 +24,7 @@ namespace EduNexBL.AutoMapper
             CreateMap<AnswerDto, Answer>();
             CreateMap<Answer, AnswerDto>();
             CreateMap<RegisterTeacherDto, Teacher>();
+<<<<<<< HEAD
             CreateMap<Teacher, TeacherDto>()
              .ForMember(dest => dest.gender, opt => opt.MapFrom(src => src.gender.ToString()))
              .ForMember(dest => dest.Age, opt => opt.MapFrom(src => CalculateAge(src.DateOfBirth)));
@@ -34,6 +36,15 @@ namespace EduNexBL.AutoMapper
             if (dateOfBirth.Date > today.AddYears(-age))
                 age--;
             return age;
+=======
+
+            CreateMap<Course, CourseMainData>()
+               .ForMember(dest => dest.CourseType, opt => opt.MapFrom(src => src.CourseType.ToString()))
+               .ForMember(dest => dest.LevelName, opt => opt.MapFrom(src => src.Subject.Level.LevelName))
+               .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Subject.SubjectName))
+               .ForMember(dest => dest.ProfilePhoto, opt => opt.MapFrom(src => src.Teacher.ProfilePhoto))
+               .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => src.Teacher.FirstName+' '+ src.Teacher.LastName));
+>>>>>>> edu/Amin
         }
     }
 }

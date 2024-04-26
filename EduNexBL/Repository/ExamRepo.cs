@@ -22,19 +22,15 @@ namespace EduNexBL.Repository
             _context = context;
         }
 
+        // Public Methods
         public async Task<IEnumerable<Exam>> GetAllExamsWithQuestions()
         {
-            return await _context.Exams
-                .Include(exam => exam.Questions)
-                    .ThenInclude(question => question.Answers)
-                .ToListAsync();
+            return await IncludeExamQuestionsAndAnswers().ToListAsync();
         }
 
         public async Task<Exam> GetExamByIdWithQuestionsAndAnswers(int examId)
         {
-            return await _context.Exams
-                .Include(exam => exam.Questions)
-                    .ThenInclude(question => question.Answers)
+            return await IncludeExamQuestionsAndAnswers()
                 .FirstOrDefaultAsync(exam => exam.Id == examId);
         }
 
@@ -60,10 +56,10 @@ namespace EduNexBL.Repository
             return ExamStartResult.Success;
         }
 
-        public async Task<ExamSubmitResultWithDetails> SubmitExam(int examId,ExamSubmissionDto examSubmissionDto)
+        public async Task<ExamSubmitResultWithDetails> SubmitExam(int examId, ExamSubmissionDto examSubmissionDto)
         {
             var result = new ExamSubmitResultWithDetails();
-            result.SubmitResult = ValidateExamSubmission(examId,examSubmissionDto);
+            result.SubmitResult = ValidateExamSubmission(examId, examSubmissionDto);
 
             if (result.SubmitResult != ExamSubmitResult.Success)
                 return result;
@@ -71,33 +67,92 @@ namespace EduNexBL.Repository
             await SaveSubmissionToDB(examId, examSubmissionDto);
             EndExam(examSubmissionDto.StudentId, examId);
 
-            var exam = await GetExamByIdWithQuestionsAndAnswers(examId);
-            if (exam == null)
+            result = await GetExamSubmitResultWithDetails(examId, examSubmissionDto.StudentId);
+
+            return result;
+        }
+
+        public async Task<ExamSubmitResultWithDetails> GetStudentSubmission(string studentId, int examId)
+        {
+            var isExamEnded = IsExamEnded(studentId, examId);
+
+            if (isExamEnded)
+            {
+                return await GetExamSubmitResultWithDetails(examId, studentId);
+            }
+            else
+            {
+                return new ExamSubmitResultWithDetails
+                {
+                    SubmitResult = ExamSubmitResult.ExamNotEnded
+                };
+            }
+        }
+
+
+        // Private Methods
+        private IQueryable<Exam> IncludeExamQuestionsAndAnswers()
+        {
+            return _context.Exams
+                .Include(exam => exam.Questions)
+                .ThenInclude(question => question.Answers);
+        }
+
+        public async Task<ExamSubmitResultWithDetails> GetExamSubmitResultWithDetails(int examId, string studentId)
+        {
+            var result = new ExamSubmitResultWithDetails();
+            var examSubmissionDto = await GetStudentSubmissionDto(studentId, examId);
+
+            if (examSubmissionDto == null)
             {
                 result.SubmitResult = ExamSubmitResult.NotFound;
                 return result;
             }
 
+            var exam = await GetExamByIdWithQuestionsAndAnswers(examId);
             result.ExamName = exam.Title;
             result.ExamType = exam.Type;
             result.ExamGrade = await CalcTotalExamGrade(examId);
             result.StudentGrade = CalculateStudentGrade(examSubmissionDto);
-
             result.StudentAnswersWithCorrectAnswers = GetStudentAnswersWithCorrectAnswers(examSubmissionDto);
 
-            await UpdateStudentExamScore(examSubmissionDto.StudentId, examId, result.StudentGrade);
-
+            result.SubmitResult = ExamSubmitResult.Success;
             return result;
         }
 
-        private async Task SaveSubmissionToDB(int examId,ExamSubmissionDto examSubmissionDto)
+        private async Task<ExamSubmissionDto> GetStudentSubmissionDto(string studentId, int examId)
         {
-            var submissions = MapExamSubmissionToEntities(examId,examSubmissionDto);
+
+            var studentAnswers = await _context.StudentsAnswersSubmissions
+                .Where(s => s.StudentId == studentId && s.ExamId == examId)
+                .ToListAsync();
+
+            var studentSubmission = studentAnswers.Select(answer => new SubmittedQuestionDto
+            {
+                QuestionId = answer.QuestionId,
+                SelectedAnswersIds = new List<int?> { answer.AnswerId }
+            }).ToList();
+
+            if (studentSubmission.Any())
+            {
+                return new ExamSubmissionDto
+                {
+                    StudentId = studentId,
+                    Answers = studentSubmission
+                };
+            }
+
+            return null;
+        }
+
+        private async Task SaveSubmissionToDB(int examId, ExamSubmissionDto examSubmissionDto)
+        {
+            var submissions = MapExamSubmissionToEntities(examId, examSubmissionDto);
             await _context.StudentsAnswersSubmissions.AddRangeAsync(submissions);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateStudentExamScore(string studentId, int examId, int studentGrade)
+        private async Task UpdateStudentExamScore(string studentId, int examId, int studentGrade)
         {
             var studentExam = await _context.StudentExam.FirstOrDefaultAsync(se => se.StudentId == studentId && se.ExamId == examId);
 
@@ -138,7 +193,6 @@ namespace EduNexBL.Repository
             }
         }
 
-
         private bool IsStudentStartedExam(string studentId, int examId)
         {
             var studentExam = _context.StudentExam
@@ -146,8 +200,15 @@ namespace EduNexBL.Repository
 
             return studentExam != null;
         }
+        private bool IsExamEnded(string studentId, int examId)
+        {
+            var studentExam = _context.StudentExam
+                 .FirstOrDefault(se => se.StudentId == studentId && se.ExamId == examId && se.EndTime != null);
 
-        private List<StudentsAnswersSubmissions> MapExamSubmissionToEntities(int examId,ExamSubmissionDto examSubmissionDto)
+            return studentExam != null;
+        }
+
+        private List<StudentsAnswersSubmissions> MapExamSubmissionToEntities(int examId, ExamSubmissionDto examSubmissionDto)
         {
             var submissions = new List<StudentsAnswersSubmissions>();
 
