@@ -1002,8 +1002,6 @@ namespace EduNexDB.Migrations
                         .IsRequired();
                 });
 
-<<<<<<< HEAD
-=======
             modelBuilder.Entity("EduNexDB.Entites.City", b =>
                 {
                     b.Navigation("Appusers");
@@ -1014,7 +1012,7 @@ namespace EduNexDB.Migrations
                     b.Navigation("Lectures");
                 });
 
->>>>>>> edu/Amin
+
             modelBuilder.Entity("EduNexDB.Entites.Exam", b =>
                 {
                     b.Navigation("Questions");
@@ -1022,8 +1020,6 @@ namespace EduNexDB.Migrations
                     b.Navigation("StudentExams");
                 });
 
-<<<<<<< HEAD
-=======
             modelBuilder.Entity("EduNexDB.Entites.Governorate", b =>
                 {
                     b.Navigation("Cities");
@@ -1036,7 +1032,7 @@ namespace EduNexDB.Migrations
                     b.Navigation("Videos");
                 });
 
->>>>>>> edu/Amin
+
             modelBuilder.Entity("EduNexDB.Entites.Level", b =>
                 {
                     b.Navigation("Students");

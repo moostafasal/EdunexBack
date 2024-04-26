@@ -48,13 +48,8 @@ namespace EduNexAPI
             );
             builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-<<<<<<< HEAD
-            builder.Services.AddScoped<IExam, ExamRepo>();
-            builder.Services.AddScoped<IStudent, StudentRepo>();
-            builder.Services.AddScoped<IStudentExam, StudentExamRepo>();
+
             builder.Services.AddScoped<IAdminRepository, AdminRepository>();
-=======
->>>>>>> edu/Amin
 
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -67,7 +62,7 @@ namespace EduNexAPI
             .AddDefaultTokenProviders();
 
             builder.Services.AddScoped<TokenService>();
-            builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+            builder.Services.AddScoped<IFiles, CloudinaryService>();
 
             builder.Services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary"));
             builder.Services.AddSingleton(x =>
