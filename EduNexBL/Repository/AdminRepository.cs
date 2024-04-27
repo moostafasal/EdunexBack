@@ -33,6 +33,13 @@ namespace EduNexBL.Repository
 
             return teachers;
         }
+        public async Task<IEnumerable<TeacherDto>> GetTeachersPendingAsync()
+        {
+            var teachers = await _context.Teachers.Where(i=>i.Status == TeacherStatus.Pending).Select(t => _mapper.Map<TeacherDto>(t))
+               .ToListAsync();
+
+            return teachers;
+        }
 
         public async Task<bool> ApproveTeacherAsync(string id)
         {
@@ -124,5 +131,7 @@ namespace EduNexBL.Repository
 
             return students;
         }
+
+       
     }
 }

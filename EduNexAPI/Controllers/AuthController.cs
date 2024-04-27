@@ -61,8 +61,14 @@ namespace EduNexAPI.Controllers
                 var teacher = (Teacher)user;
                 if (teacher.Status == TeacherStatus.Pending)
                 {
-                    ModelState.AddModelError("", "Your account is pending approval. Please wait for admin approval.");
-                    return BadRequest(ModelState);
+
+                    var response = new
+                    {
+                        Teacher = teacher.Id,
+                        ErrorMessage = "Your account is pending approval. Please wait for admin approval."
+                    };
+
+                return BadRequest(response);
                 }
                 else if (teacher.Status == TeacherStatus.Rejected)
                 {

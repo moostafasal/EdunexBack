@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EduNexBL.DTOs;
+using EduNexDB.Entites;
 
 namespace EduNexBL.IRepository
 {
     public interface IAdminRepository
     {
         Task<IEnumerable<TeacherDto>> GetTeachersAsync();
+        Task<IEnumerable<TeacherDto>> GetTeachersPendingAsync();   
         Task<bool> ApproveTeacherAsync(string id);
         Task<bool> RejectTeacherAsync(string id);
         Task<TeacherDto> GetTeacherByIdAsync(string id);

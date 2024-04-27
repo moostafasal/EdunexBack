@@ -126,6 +126,7 @@ namespace EduNexAPI.Controllers
         }
 
 
+
         [HttpPost("login/teacher")]
 
         public async Task<ActionResult<LoginUserDto>> TeacherLogin(LoginUserDto model)
@@ -259,7 +260,38 @@ namespace EduNexAPI.Controllers
             }
         }
 
+
+        [HttpPost("teacherInfo/{id}")]
+        public async Task<IActionResult> UpdateTeacherInfo(string id, [FromBody] string aboutTeacher)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(aboutTeacher))
+                {
+                    return BadRequest("Invalid id or aboutTeacher");
+                }
+
+                var teacher = await _userManager.FindByIdAsync(id);
+                if (teacher == null)
+                {
+                    return NotFound("Teacher not found");
+                }
+
+                teacher.NationalId = aboutTeacher;
+                await _userManager.UpdateAsync(teacher);
+
+                return Ok("Teacher information updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred");
+            }
+        }
+
+
+
     }
+
 
 
     //private async Task<ImageUploadResult> UploadPhotoToCloudinary(IFormFile file)
