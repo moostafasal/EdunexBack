@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EduNexBL.DTOs;
+using EduNexBL.DTOs.AuthDtos;
 using EduNexDB.Entites;
 
 namespace EduNexBL.IRepository
@@ -18,5 +19,7 @@ namespace EduNexBL.IRepository
         Task<StudentDto> GetStudentByIdAsync(string id);
         Task<IEnumerable<UserDto>> SearchUsersAsync(SearchQuery query);
         Task<IEnumerable<StudentDto>> GetStudentsAsync();
+        Task UpdateTeachersAboutMe(string id ,AboutinfoDto Aboutinfo);
+
     }
 }
