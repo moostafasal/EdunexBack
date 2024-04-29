@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -81,7 +82,7 @@ namespace EduNexAPI.Controllers
 
                 PhoneNumber = model.PhoneNumber,
 
-                gender = (Gender)Enum.Parse(typeof(Gender), model.gender),
+                gender = (Gender)Enum.Parse(typeof(Gender), model.Gender),
 
 
                 DateOfBirth = model.DateOfBirth,
@@ -204,7 +205,7 @@ namespace EduNexAPI.Controllers
 
         }
         [HttpPost("registerwithimage/teacher")]
-        public async Task<ActionResult> TeacherWithImage(RegisterTeacherDto model)
+        public async Task<ActionResult> TeacherWithImage([FromForm] RegisterTeacherDto model)
         {
             try
             {
@@ -220,37 +221,45 @@ namespace EduNexAPI.Controllers
                     return BadRequest(ModelState);
                 }
 
-                if (model.file == null || model.file.Length == 0)
+                if (model.ProfilePicture == null || model.ProfilePicture.Length == 0)
                 {
-                    ModelState.AddModelError("File", "Please upload a valid file.");
+                    ModelState.AddModelError("ProfilePicture", "Please upload a valid file.");
                     return BadRequest(ModelState);
                 }
 
-                var uploadResult = await _cloudinaryService.UploadImageAsync(model.file);
+                // Upload the image file to Cloudinary
+                var uploadResult = await _cloudinaryService.UploadImageAsync(model.ProfilePicture);
                 if (uploadResult == null)
                 {
-                    ModelState.AddModelError("File", "Error uploading image to Cloudinary.");
+                    ModelState.AddModelError("ProfilePicture", "Error uploading image");
                     return BadRequest(ModelState);
                 }
 
                 var newUser = _mapper.Map<Teacher>(model);
                 newUser.UserName = model.Email;
-                newUser.ProfilePhoto = uploadResult;
-
+                newUser.ProfilePhoto = uploadResult; 
+                // Create the user
                 var result = await _userManager.CreateAsync(newUser, model.Password);
                 if (result.Succeeded)
                 {
+                    // Add the 'Teacher' role to the user
                     await _userManager.AddToRoleAsync(newUser, "Teacher");
-                    var token = _tokenService.GenerateAccessToken(newUser.Id);
-                    return Ok(token);
+
+                    // Generate access token
+                    var token = await _tokenService.GenerateAccessToken(newUser.Id); // Ensure to await token generation
+
+                    // Return the created user and the token as a response
+                    return Ok(new
+                    {
+                        User = newUser, // Optionally return user information
+                        Token = token
+                    });
+
                 }
                 else
                 {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
-                    return BadRequest(ModelState);
+                    // If the user creation failed, return a bad request response with the errors
+                    return BadRequest(result.Errors);
                 }
             }
             catch (Exception ex)
@@ -259,37 +268,6 @@ namespace EduNexAPI.Controllers
                 return StatusCode(500, ModelState);
             }
         }
-
-
-        [HttpPost("teacherInfo/{id}")]
-        public async Task<IActionResult> UpdateTeacherInfo(string id, [FromBody] string aboutTeacher)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(aboutTeacher))
-                {
-                    return BadRequest("Invalid id or aboutTeacher");
-                }
-
-                var teacher = await _userManager.FindByIdAsync(id);
-                if (teacher == null)
-                {
-                    return NotFound("Teacher not found");
-                }
-
-                teacher.NationalId = aboutTeacher;
-                await _userManager.UpdateAsync(teacher);
-
-                return Ok("Teacher information updated successfully");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "An unexpected error occurred");
-            }
-        }
-
-
-
     }
 
 

@@ -49,6 +49,7 @@ namespace AuthenticationMechanism.Services
             using (var stream = file.OpenReadStream())
             {
                 string uniqueFileName = GenerateUniqueFileName(file.FileName);
+               
 
                 var uploadParams = new RawUploadParams
                 {

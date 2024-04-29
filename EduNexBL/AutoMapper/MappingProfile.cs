@@ -24,9 +24,11 @@ namespace EduNexBL.AutoMapper
             CreateMap<AnswerDto, Answer>();
             CreateMap<Answer, AnswerDto>();
             CreateMap<RegisterTeacherDto, Teacher>();
+
             CreateMap<Teacher, TeacherDto>()
              .ForMember(dest => dest.gender, opt => opt.MapFrom(src => src.gender.ToString()))
              .ForMember(dest => dest.Age, opt => opt.MapFrom(src => CalculateAge(src.DateOfBirth)));
+
 
             CreateMap<Course, CourseMainData>()
                .ForMember(dest => dest.CourseType, opt => opt.MapFrom(src => src.CourseType.ToString()))
@@ -44,7 +46,8 @@ namespace EduNexBL.AutoMapper
                 age--;
             return age;
 
-            
+
+
         }
     }
 }

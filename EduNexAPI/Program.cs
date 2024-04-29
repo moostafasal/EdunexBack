@@ -1,3 +1,4 @@
+using Amazon.S3;
 using AuthenticationMechanism.Services;
 using AuthenticationMechanism.tokenservice;
 using CloudinaryDotNet;
@@ -5,6 +6,7 @@ using EduNexBL.AutoMapper;
 using EduNexBL.Base;
 using EduNexBL.IRepository;
 using EduNexBL.Repository;
+using EduNexBL.Services;
 using EduNexBL.UnitOfWork;
 using EduNexDB.Context;
 using EduNexDB.Entites;
@@ -48,8 +50,12 @@ namespace EduNexAPI
             );
             builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
             builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+            builder.Services.AddScoped<IStorageService, StorageService>();
+
+            //builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+            //builder.Services.AddAWSService<IAmazonS3>();
+
 
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>

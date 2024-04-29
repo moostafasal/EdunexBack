@@ -126,7 +126,7 @@ namespace EduNexAPI.Controllers
 
                 PhoneNumber = model.PhoneNumber,
 
-                gender = (Gender)Enum.Parse(typeof(Gender), model.gender),
+                gender = (Gender)Enum.Parse(typeof(Gender), model.Gender),
 
 
                 DateOfBirth = model.DateOfBirth,
