@@ -69,16 +69,23 @@ namespace EduNexAPI.Controllers
                         Token = token,
 
 
-                        ErrorMessage = "Your account is pending approval. Please wait for admin approval."
+                        Message = "Your account is pending approval. Please wait for admin approval."
                         
                     };
 
-                return BadRequest(response);
+                return Ok(response);
                 }
                 else if (teacher.Status == TeacherStatus.Rejected)
                 {
-                    ModelState.AddModelError("", "Your account has been rejected by the admin.");
-                    return BadRequest(ModelState);
+                    var response = new
+                    {
+                        Teacher = teacher.Id,
+                        Token = token,
+
+
+                        Message = "Your account is Rejected ."
+
+                    };
                 }
             }
 
