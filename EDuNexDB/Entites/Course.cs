@@ -27,6 +27,7 @@ namespace EduNexDB.Entites
         public string Thumbnail { get; set; } = null!;
 
         [Required]
+        [EnumDataType(typeof(CourseType))]
         public CourseType CourseType { get; set; }
 
         [Required]
@@ -40,7 +41,7 @@ namespace EduNexDB.Entites
         public string TeacherId { get; set; } = null!;
         public Teacher? Teacher { get; set; }
 
-        public ICollection<Lecture> Lectures { get; set; } = new List<Lecture>();
+        public ICollection<Lecture>? Lectures { get; set; } = new List<Lecture>();
 
     }
 }
