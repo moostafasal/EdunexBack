@@ -29,6 +29,7 @@ namespace EduNexAPI.Controllers
             // Process file
             await using var memoryStream = new MemoryStream();
             await file.CopyToAsync(memoryStream);
+            
 
             var fileExt = Path.GetExtension(file.FileName);
             var docName = $"{Guid.NewGuid}.{fileExt}";
@@ -38,7 +39,9 @@ namespace EduNexAPI.Controllers
             {
                 BucketName = "edunex-profile-photo",
                 InputStream = memoryStream,
+                
                 Name = docName
+                
             };
 
             var cred = new AwsCredentials()
@@ -48,7 +51,7 @@ namespace EduNexAPI.Controllers
             };
 
             var result = await _storageService.UploadFileAsync(s3Obj, cred);
-            // 
+
             return Ok(result);
 
         }

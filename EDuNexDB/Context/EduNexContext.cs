@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EduNexDB.Context
 {
-    public class EduNexContext : IdentityDbContext<ApplicationUser>
+    public class EduNexContext:IdentityDbContext<ApplicationUser>
     {
         public DbSet<Level> Levels { get; set; }
         public DbSet<Subject> Subjects { get; set; }
@@ -35,7 +35,7 @@ namespace EduNexDB.Context
         {
 
         }
-
+        
 
         public override int SaveChanges()
         {
@@ -57,7 +57,6 @@ namespace EduNexDB.Context
             return base.SaveChanges();
         }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IdentityRole>().HasData(
@@ -73,6 +72,70 @@ namespace EduNexDB.Context
                     new Level { Id = 3, LevelName = "Level three" }
 
                );
+
+            modelBuilder.Entity<Subject>().HasData(
+                new Subject {
+                    Id=1,
+                    SubjectName = "Mathematics",
+                    LevelId = 1,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    IsDeleted = false
+                
+
+            }, 
+                new Subject
+            {
+                    Id=2,
+                SubjectName = "Mathematics",
+                LevelId = 1,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                IsDeleted = false
+
+
+            }
+                );
+
+
+//            modelBuilder.Entity<Course>().HasData(
+//    new Course { Id = 1, CourseName = "Algebra", Thumbnail = "algebra.jpg", CourseType = CourseType.Scientific, Price = 49.99m, SubjectId = 1, TeacherId = "TeacherIdHere", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now, IsDeleted = false },
+//    new Course { Id = 2, CourseName = "Algebra", Thumbnail = "algebra.jpg", CourseType = CourseType.Scientific, Price = 49.99m, SubjectId = 1, TeacherId = "TeacherIdHere", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now, IsDeleted = false },
+//    new Course { Id = 3, CourseName = "Algebra", Thumbnail = "algebra.jpg", CourseType = CourseType.Scientific, Price = 49.99m, SubjectId = 1, TeacherId = "TeacherIdHere", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now, IsDeleted = false }
+//);
+
+
+            modelBuilder.Entity<Lecture>().HasData(
+     new Lecture
+     {
+         Id = 1,
+         LectureTitle = "الفصل  الاول ",
+         Price = 9.99m,
+         CourseId = 1,
+         CreatedAt = DateTime.Now,
+         UpdatedAt = DateTime.Now,
+         IsDeleted = false
+     },
+     new Lecture
+     {
+         Id = 2,
+         LectureTitle = "Introduction to Hamo",
+         Price = 9.99m,
+         CourseId = 1,
+         CreatedAt = DateTime.Now,
+         UpdatedAt = DateTime.Now,
+         IsDeleted = false
+     }
+ );
+
+
+
+            //add teacher 
+            
+
+
+
+
 
 
 
@@ -101,7 +164,7 @@ namespace EduNexDB.Context
 
             modelBuilder.Entity<Transaction>()
        .Property(t => t.Amount)
-       .HasColumnType("decimal(18, 2)");
+       .HasColumnType("decimal(18, 2)"); 
 
             modelBuilder.Entity<Wallet>()
        .Property(w => w.Balance)

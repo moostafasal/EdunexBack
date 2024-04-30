@@ -1,4 +1,5 @@
-﻿using EduNexBL.DTOs;
+﻿using EduNexBL;
+using EduNexBL.DTOs;
 using EduNexBL.IRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,10 +8,11 @@ public class AdminController : ControllerBase
 {
     private readonly IAdminRepository _adminRepository;
 
-    public AdminController(IAdminRepository adminRepository)
+    public AdminController(IAdminRepository adminRepository )
     {
         _adminRepository = adminRepository;
     }
+
 
     [HttpGet("teachers")]
     public async Task<ActionResult<IEnumerable<TeacherDto>>> GetTeachers()
@@ -33,6 +35,7 @@ public class AdminController : ControllerBase
             return Ok("Teacher approved successfully.");
         return NotFound();
     }
+
 
     [HttpPut("teachers/reject/{id}")]
     public async Task<IActionResult> RejectTeacher(string id)

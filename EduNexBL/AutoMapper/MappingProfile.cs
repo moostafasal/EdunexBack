@@ -24,6 +24,9 @@ namespace EduNexBL.AutoMapper
             CreateMap<AnswerDto, Answer>();
             CreateMap<Answer, AnswerDto>();
             CreateMap<RegisterTeacherDto, Teacher>();
+            CreateMap<VideoDTO, Video>();
+            CreateMap<Video, VideoDTO>();
+
 
             CreateMap<Teacher, TeacherDto>()
              .ForMember(dest => dest.gender, opt => opt.MapFrom(src => src.gender.ToString()))

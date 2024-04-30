@@ -1,23 +1,34 @@
-﻿using AutoMapper;
+﻿using AuthenticationMechanism.Services;
+using AutoMapper;
+using CloudinaryDotNet;
 using EduNexBL.DTOs.CourseDTOs;
+using EduNexBL.DTOs.ExamintionDtos;
+using EduNexBL.IRepository;
 using EduNexBL.UnitOfWork;
+using EduNexDB.Entites;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace EduNexAPI.Controllers
 {
-    [Route("api/courses/{courseId}/lectures/{lectureId}/videos")]
+
+    //[Route("api/courses/{courseId}/lectures/{lectureId}/videos")]
+    [Route("api/courses/videos")]
+
     [ApiController]
     public class VideosController : ControllerBase
     {
      
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper; 
-        public VideosController(IUnitOfWork unitOfWork,IMapper mapper)
+        private readonly IMapper _mapper;
+        private readonly IFiles _cloudinary;
+
+        public VideosController(IUnitOfWork unitOfWork,IMapper mapper , IFiles files)
         {
            _unitOfWork =   unitOfWork;
             _mapper = mapper;
+            _cloudinary = files;
         }
 
         [HttpGet]
@@ -48,8 +59,21 @@ namespace EduNexAPI.Controllers
 
         // POST api/<VideosController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> Post(IFormFile file , string Name)
         {
+            //name file 
+          var filePath= await _cloudinary.UploadVideoAsync(file);
+            var video = new Video
+            {
+                VideoPath = filePath,
+                VideoTitle=Name
+            };
+            await _unitOfWork.VideoRepo.Add(video);
+
+           var createdVideo=_mapper.Map<VideoDTO>(video);
+
+
+            return CreatedAtAction(nameof(Get), createdVideo);
         }
 
         // PUT api/<VideosController>/5

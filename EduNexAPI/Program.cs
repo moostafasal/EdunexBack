@@ -1,7 +1,9 @@
 using Amazon.S3;
 using AuthenticationMechanism.Services;
 using AuthenticationMechanism.tokenservice;
+using BunnyCDN.Net.Storage;
 using CloudinaryDotNet;
+using EduNexBL;
 using EduNexBL.AutoMapper;
 using EduNexBL.Base;
 using EduNexBL.IRepository;
@@ -41,8 +43,12 @@ namespace EduNexAPI
         {
             var builder = WebApplication.CreateBuilder(args);
             var configuration = new ConfigurationBuilder()
+
                 .AddJsonFile("appsettings.json")
+
+
                 .Build();
+
 
             builder.Services.AddControllers();
             builder.Services.AddDbContext<EduNexContext>(
@@ -52,6 +58,8 @@ namespace EduNexAPI
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IAdminRepository, AdminRepository>();
             builder.Services.AddScoped<IStorageService, StorageService>();
+
+            //builder.Services.AddSingleton<BunnyCDNStorage>();
 
             //builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
             //builder.Services.AddAWSService<IAmazonS3>();
@@ -69,8 +77,6 @@ namespace EduNexAPI
 
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<IFiles, CloudinaryService>();
-            builder.Services.AddScoped<SeedData>();
-
 
             builder.Services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary"));
             builder.Services.AddSingleton(x =>

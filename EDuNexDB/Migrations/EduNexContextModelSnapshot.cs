@@ -56,7 +56,7 @@ namespace EduNexDB.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("Answers");
+                    b.ToTable("Answers", (string)null);
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.ApplicationUser", b =>
@@ -186,7 +186,7 @@ namespace EduNexDB.Migrations
 
                     b.HasIndex("LectureId");
 
-                    b.ToTable("AttachmentFile");
+                    b.ToTable("AttachmentFile", (string)null);
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.Course", b =>
@@ -236,7 +236,7 @@ namespace EduNexDB.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Courses");
+                    b.ToTable("Courses", (string)null);
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.Exam", b =>
@@ -283,7 +283,7 @@ namespace EduNexDB.Migrations
 
                     b.HasIndex("LectureId");
 
-                    b.ToTable("Exams");
+                    b.ToTable("Exams", (string)null);
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.Lecture", b =>
@@ -320,7 +320,7 @@ namespace EduNexDB.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Lectures");
+                    b.ToTable("Lectures", (string)null);
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.Level", b =>
@@ -349,7 +349,7 @@ namespace EduNexDB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Levels");
+                    b.ToTable("Levels", (string)null);
 
                     b.HasData(
                         new
@@ -416,7 +416,7 @@ namespace EduNexDB.Migrations
 
                     b.HasIndex("ExamId");
 
-                    b.ToTable("Questions");
+                    b.ToTable("Questions", (string)null);
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.StudentExam", b =>
@@ -440,7 +440,7 @@ namespace EduNexDB.Migrations
 
                     b.HasIndex("ExamId");
 
-                    b.ToTable("StudentExam");
+                    b.ToTable("StudentExam", (string)null);
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.StudentsAnswersSubmissions", b =>
@@ -486,7 +486,7 @@ namespace EduNexDB.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("StudentsAnswersSubmissions");
+                    b.ToTable("StudentsAnswersSubmissions", (string)null);
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.Subject", b =>
@@ -520,7 +520,7 @@ namespace EduNexDB.Migrations
 
                     b.HasIndex("LevelId");
 
-                    b.ToTable("Subjects");
+                    b.ToTable("Subjects", (string)null);
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.Transaction", b =>
@@ -560,7 +560,7 @@ namespace EduNexDB.Migrations
 
                     b.HasIndex("WalletId");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.Video", b =>
@@ -598,7 +598,7 @@ namespace EduNexDB.Migrations
 
                     b.HasIndex("LectureId");
 
-                    b.ToTable("Videos");
+                    b.ToTable("Videos", (string)null);
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.Wallet", b =>
@@ -621,7 +621,7 @@ namespace EduNexDB.Migrations
 
                     b.HasKey("WalletId");
 
-                    b.ToTable("Wallets");
+                    b.ToTable("Wallets", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -800,12 +800,6 @@ namespace EduNexDB.Migrations
             modelBuilder.Entity("EduNexDB.Entites.Teacher", b =>
                 {
                     b.HasBaseType("EduNexDB.Entites.ApplicationUser");
-
-                    b.Property<string>("AboutMe")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AccountNote")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
