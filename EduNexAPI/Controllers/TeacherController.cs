@@ -100,8 +100,8 @@ namespace EduNexAPI.Controllers
                 UserName = model.Email,
 
                 Status = TeacherStatus.Pending,
-                AboutMe=" ",
-                AccountNote=" "
+                AboutMe="",
+                AccountNote=""
                 
                 //LevelId = model.LevelId
 
