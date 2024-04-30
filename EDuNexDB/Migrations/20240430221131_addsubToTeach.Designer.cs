@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduNexDB.Migrations
 {
     [DbContext(typeof(EduNexContext))]
-    [Migration("20240429143437_addedteacherattr")]
-    partial class addedteacherattr
+    [Migration("20240430221131_addsubToTeach")]
+    partial class addsubToTeach
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -152,6 +152,44 @@ namespace EduNexDB.Migrations
                     b.ToTable("AspNetUsers", (string)null);
 
                     b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("EduNexDB.Entites.AttachmentFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AttachmentPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AttachmentTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LectureId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LectureId");
+
+                    b.ToTable("AttachmentFile");
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.Course", b =>
@@ -784,6 +822,9 @@ namespace EduNexDB.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<string>("subject")
+                        .HasColumnType("nvarchar(max)");
+
                     b.ToTable("Teachers", (string)null);
                 });
 
@@ -796,6 +837,17 @@ namespace EduNexDB.Migrations
                         .IsRequired();
 
                     b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("EduNexDB.Entites.AttachmentFile", b =>
+                {
+                    b.HasOne("EduNexDB.Entites.Lecture", "Lecture")
+                        .WithMany("Attachments")
+                        .HasForeignKey("LectureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lecture");
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.Course", b =>
@@ -1025,6 +1077,8 @@ namespace EduNexDB.Migrations
 
             modelBuilder.Entity("EduNexDB.Entites.Lecture", b =>
                 {
+                    b.Navigation("Attachments");
+
                     b.Navigation("Exams");
 
                     b.Navigation("Videos");

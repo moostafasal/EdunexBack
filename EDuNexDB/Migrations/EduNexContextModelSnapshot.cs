@@ -813,6 +813,9 @@ namespace EduNexDB.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<string>("subject")
+                        .HasColumnType("nvarchar(max)");
+
                     b.ToTable("Teachers", (string)null);
                 });
 

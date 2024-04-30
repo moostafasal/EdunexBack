@@ -5,6 +5,7 @@ using AutoMapper;
 using Azure;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using EduNexBL.DTOs;
 using EduNexBL.DTOs.AuthDtos;
 using EduNexBL.DTOs.ExamintionDtos;
 using EduNexBL.IRepository;
@@ -37,7 +38,7 @@ namespace EduNexAPI.Controllers
         private readonly IAdminRepository _adminRepository;
         private readonly IFiles _cloudinaryService;
         private readonly IMapper _mapper;
-        public TeacherController(IFiles cloudinaryService, IAdminRepository adminRepository, TokenService tokenService, UserManager<ApplicationUser> userManager, IMapper mapper, SignInManager<ApplicationUser> signInManager, EduNexContext context)
+        public TeacherController(IFiles cloudinaryService,IAdminRepository adminRepository, TokenService tokenService, UserManager<ApplicationUser> userManager, IMapper mapper, SignInManager<ApplicationUser> signInManager, EduNexContext context)
         {
             _tokenService = tokenService;
             _userManager = userManager;
@@ -46,7 +47,6 @@ namespace EduNexAPI.Controllers
             _mapper = mapper;
             _context = context;
             _adminRepository = adminRepository;
-
         }
 
         [HttpPost("register/teacher")]
@@ -99,10 +99,8 @@ namespace EduNexAPI.Controllers
 
                 UserName = model.Email,
 
-                Status = TeacherStatus.Pending,
-                AboutMe="",
-                AccountNote=""
-                
+                Status = TeacherStatus.Pending
+
                 //LevelId = model.LevelId
 
             };
@@ -331,8 +329,27 @@ namespace EduNexAPI.Controllers
             }
         }
 
-    }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateTeacher(string id, UpdateTeacherDto updateTeacherDto)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    return BadRequest("Invalid id");
+                }
 
+                await _adminRepository.UpdateTeacher(id, updateTeacherDto);
+
+                return Ok("Teacher information updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred");
+            }
+        }
+
+    }
 
 
 

@@ -5,19 +5,15 @@
 namespace EduNexDB.Migrations
 {
     /// <inheritdoc />
-    public partial class addedteacherattr : Migration
+    public partial class addsubToTeach : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "AboutMe",
-                table: "Teachers",
-                type: "nvarchar(max)",
-                nullable: true);
+           
 
             migrationBuilder.AddColumn<string>(
-                name: "AccountNote",
+                name: "subject",
                 table: "Teachers",
                 type: "nvarchar(max)",
                 nullable: true);
@@ -26,12 +22,10 @@ namespace EduNexDB.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "AboutMe",
-                table: "Teachers");
+          
 
             migrationBuilder.DropColumn(
-                name: "AccountNote",
+                name: "subject",
                 table: "Teachers");
         }
     }

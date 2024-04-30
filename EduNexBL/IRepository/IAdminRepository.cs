@@ -21,6 +21,8 @@ namespace EduNexBL.IRepository
         Task<IEnumerable<StudentDto>> GetStudentsAsync();
         Task UpdateTeachersAboutMe(string id ,AboutinfoDto Aboutinfo);
         Task UpdateTeachersAccountNote(string id, AccountNoteDto Aboutinfo);
+        Task UpdateTeacher(string id, UpdateTeacherDto teacherDto);
+
 
 
     }

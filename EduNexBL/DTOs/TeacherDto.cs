@@ -21,8 +21,26 @@ namespace EduNexBL.DTOs
         //public string? nationalId { get; set; }
         public string? AboutMe { get; set; }
         public string? AccountNote { get; set; }
-        public string Age { get; set; }
+        public int Age { get; set; }
+        public string subject { get; set; }
 
+        //public static implicit operator TeacherDto(TeacherDto v)
+        //{
+        //    throw new NotImplementedException();
+        //}
+    }
 
+    public class UpdateTeacherDto
+    {
+        public string ?Email { get; set; }
+        public string ?PhoneNumber { get; set; }
+       
+        public string? Address { get; set; }
+        //public string? nationalId { get; set; }
+        public string? AboutMe { get; set; }
+       
+   
+        public string ?subject{  get; set; }
+      
     }
 }

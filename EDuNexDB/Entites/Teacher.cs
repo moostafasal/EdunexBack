@@ -20,8 +20,8 @@ namespace EduNexDB.Entites
         [Column("AboutMe")]
         public string? AboutMe { get; set; }
         public string? AccountNote { get; set; }
-       
 
+        public string? subject { get; set; }
 
         public TeacherStatus Status { get; set; } = TeacherStatus.Pending; // Set default status to Pending
 

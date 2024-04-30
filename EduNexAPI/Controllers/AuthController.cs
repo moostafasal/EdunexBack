@@ -69,7 +69,7 @@ namespace EduNexAPI.Controllers
                         Token = token,
 
 
-                        Message = "Your account is pending approval. Please wait for admin approval."
+                        Message = "pending"
                         
                     };
 
@@ -83,7 +83,7 @@ namespace EduNexAPI.Controllers
                         Token = token,
 
 
-                        Message = "Your account is Rejected ."
+                        Message = "Rejected"
 
                     };
                 }
