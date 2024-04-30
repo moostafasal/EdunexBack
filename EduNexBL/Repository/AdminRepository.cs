@@ -150,8 +150,18 @@ namespace EduNexBL.Repository
             if(teacher != null) 
             {
              teacher.AboutMe = Aboutinfo.AboutMe;
-             teacher.AccountNote=Aboutinfo.AccountNote;
+             //teacher.AccountNote=Aboutinfo.AccountNote;
              _context.SaveChanges();
+            }
+        }
+        public async Task UpdateTeachersAccountNote(string id, AccountNoteDto Aboutinfo)
+        {
+            var teacher = await _context.Teachers.FindAsync(id);
+            if (teacher != null)
+            {
+                //teacher.AboutMe = Aboutinfo.AboutMe;
+                teacher.AccountNote=Aboutinfo.AccountNote;
+                _context.SaveChanges();
             }
         }
     }

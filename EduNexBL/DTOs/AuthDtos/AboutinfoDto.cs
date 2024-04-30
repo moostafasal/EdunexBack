@@ -10,6 +10,12 @@ namespace EduNexBL.DTOs.AuthDtos
     {
      
         public string AboutMe { get; set; }
-        public string AccountNote { get; set; }
+        //public string? AccountNote { get; set; }
+    }
+    public class AccountNoteDto
+    {
+
+       // public string AboutMe { get; set; }
+        public string? AccountNote { get; set; }
     }
 }
