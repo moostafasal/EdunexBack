@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EduNexAPI.Controllers
 {
-    [Route("api/courses/{courseId}/lectures/{lectureId}")]
+    [Route("api/courses/{courseId}/lectures/{lectureId}/videos")]
     [ApiController]
     public class VideosController : ControllerBase
     {
