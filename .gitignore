@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/EduNexAPI/appsettings.json
+/EduNexAPI/appsettings.json

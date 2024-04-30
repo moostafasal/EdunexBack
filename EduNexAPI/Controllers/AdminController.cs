@@ -18,6 +18,12 @@ public class AdminController : ControllerBase
         var teachers = await _adminRepository.GetTeachersAsync();
         return Ok(teachers);
     }
+    [HttpGet("teachers/Pending")]
+    public async Task<ActionResult<IEnumerable<TeacherDto>>> GetTeachersPending()
+    {
+        var teachers = await _adminRepository.GetTeachersPendingAsync();
+        return Ok(teachers);
+    }
 
     [HttpPut("teachers/approve/{id}")]
     public async Task<IActionResult> ApproveTeacher(string id)

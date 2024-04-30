@@ -54,6 +54,7 @@ namespace EduNexAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            var token = await _tokenService.GenerateAccessToken(user.Id);
             // Check if the user is a teacher
             if (await _userManager.IsInRoleAsync(user, "Teacher"))
             {
@@ -61,18 +62,34 @@ namespace EduNexAPI.Controllers
                 var teacher = (Teacher)user;
                 if (teacher.Status == TeacherStatus.Pending)
                 {
-                    ModelState.AddModelError("", "Your account is pending approval. Please wait for admin approval.");
-                    return BadRequest(ModelState);
+
+                    var response = new
+                    {
+                        Teacher = teacher.Id,
+                        Token = token,
+
+
+                        Message = "Your account is pending approval. Please wait for admin approval."
+                        
+                    };
+
+                return Ok(response);
                 }
                 else if (teacher.Status == TeacherStatus.Rejected)
                 {
-                    ModelState.AddModelError("", "Your account has been rejected by the admin.");
-                    return BadRequest(ModelState);
+                    var response = new
+                    {
+                        Teacher = teacher.Id,
+                        Token = token,
+
+
+                        Message = "Your account is Rejected ."
+
+                    };
                 }
             }
 
             // Generate a token for the user
-            var token = await _tokenService.GenerateAccessToken(user.Id);
 
             // Return the token as a response
             return Ok(new

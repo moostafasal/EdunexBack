@@ -8,6 +8,7 @@ using CloudinaryDotNet.Actions;
 using EduNexBL.DTOs.AuthDtos;
 using EduNexBL.DTOs.ExamintionDtos;
 using EduNexBL.IRepository;
+using EduNexBL.Repository;
 using EduNexDB.Context;
 using EduNexDB.Entites;
 using Microsoft.AspNetCore.Http;
@@ -33,9 +34,10 @@ namespace EduNexAPI.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly EduNexContext _context;
+        private readonly IAdminRepository _adminRepository;
         private readonly IFiles _cloudinaryService;
         private readonly IMapper _mapper;
-        public TeacherController(IFiles cloudinaryService, TokenService tokenService, UserManager<ApplicationUser> userManager, IMapper mapper, SignInManager<ApplicationUser> signInManager, EduNexContext context)
+        public TeacherController(IFiles cloudinaryService, IAdminRepository adminRepository, TokenService tokenService, UserManager<ApplicationUser> userManager, IMapper mapper, SignInManager<ApplicationUser> signInManager, EduNexContext context)
         {
             _tokenService = tokenService;
             _userManager = userManager;
@@ -43,6 +45,8 @@ namespace EduNexAPI.Controllers
             _cloudinaryService = cloudinaryService;
             _mapper = mapper;
             _context = context;
+            _adminRepository = adminRepository;
+
         }
 
         [HttpPost("register/teacher")]
@@ -95,8 +99,10 @@ namespace EduNexAPI.Controllers
 
                 UserName = model.Email,
 
-                Status = TeacherStatus.Pending
-
+                Status = TeacherStatus.Pending,
+                AboutMe="",
+                AccountNote=""
+                
                 //LevelId = model.LevelId
 
             };
@@ -125,6 +131,7 @@ namespace EduNexAPI.Controllers
             }
 
         }
+
 
 
         [HttpPost("login/teacher")]
@@ -267,7 +274,38 @@ namespace EduNexAPI.Controllers
                 return StatusCode(500, ModelState);
             }
         }
+
+        [HttpPost("teacherInfo/{id}")]
+        public async Task<IActionResult> UpdateTeacherInfo(string id, AboutinfoDto aboutinfo)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    return BadRequest("Invalid id or aboutTeacher");
+                }
+
+                //var teacher = await _adminRepository.GetTeacherByIdAsync(id);
+                //if (teacher == null)
+                //{
+                //    return NotFound("Teacher not found");
+                //}
+
+                
+
+                await _adminRepository.UpdateTeachersAboutMe(id,aboutinfo);
+
+                return Ok("Teacher information updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred");
+            }
+        }
+
     }
+
+
 
 
     //private async Task<ImageUploadResult> UploadPhotoToCloudinary(IFormFile file)

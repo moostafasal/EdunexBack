@@ -5,9 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using EduNexBL.DTOs;
+using EduNexBL.DTOs.AuthDtos;
 using EduNexBL.IRepository;
 using EduNexDB.Context;
 using EduNexDB.Entites;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace EduNexBL.Repository
@@ -33,6 +37,14 @@ namespace EduNexBL.Repository
 
             return teachers;
         }
+        public async Task<IEnumerable<TeacherDto>> GetTeachersPendingAsync()
+        {
+            var teachers = await _context.Teachers.Where(i=>i.Status == TeacherStatus.Pending).Select(t => _mapper.Map<TeacherDto>(t))
+               .ToListAsync();
+
+            return teachers;
+        }
+
 
         public async Task<bool> ApproveTeacherAsync(string id)
         {
@@ -67,7 +79,14 @@ namespace EduNexBL.Repository
                 Id = teacher.Id,
                 FirstName = teacher.FirstName,
                 LastName = teacher.LastName,
-                Email=teacher.Email
+                Email = teacher.Email,
+                AccountNote = teacher.AccountNote,
+                AboutMe = teacher.AboutMe,
+                gender = teacher.gender,
+                Address = teacher.Address,
+                PhoneNumber = teacher.PhoneNumber,
+                NationalId = teacher?.NationalId,
+                ProfilePhoto = teacher?.ProfilePhoto,
                 
                 // Map other properties as needed
             };
@@ -123,6 +142,17 @@ namespace EduNexBL.Repository
                 .ToListAsync();
 
             return students;
+        }
+
+        public async Task UpdateTeachersAboutMe(string id , AboutinfoDto Aboutinfo)
+        {
+            var teacher= await _context.Teachers.FindAsync(id);
+            if(teacher != null) 
+            {
+             teacher.AboutMe = Aboutinfo.AboutMe;
+             teacher.AccountNote=Aboutinfo.AccountNote;
+             _context.SaveChanges();
+            }
         }
     }
 }
