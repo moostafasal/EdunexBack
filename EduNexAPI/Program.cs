@@ -69,6 +69,8 @@ namespace EduNexAPI
 
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<IFiles, CloudinaryService>();
+            builder.Services.AddScoped<SeedData>();
+
 
             builder.Services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary"));
             builder.Services.AddSingleton(x =>
