@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using EduNexBL.DTOs;
+using EduNexBL.DTOs.AuthDtos;
 using EduNexBL.IRepository;
 using EduNexDB.Context;
 using EduNexDB.Entites;
@@ -74,7 +75,14 @@ namespace EduNexBL.Repository
                 Id = teacher.Id,
                 FirstName = teacher.FirstName,
                 LastName = teacher.LastName,
-                Email=teacher.Email
+                Email = teacher.Email,
+                AboutMe = teacher.AboutMe,
+                AccountNote = teacher.AccountNote,
+                gender = teacher.gender,
+                Address = teacher.Address,
+                PhoneNumber = teacher.PhoneNumber,
+                NationalId = teacher.NationalId,
+                subject = teacher.subject
                 
                 // Map other properties as needed
             };
@@ -149,6 +157,20 @@ namespace EduNexBL.Repository
             {
                 //teacher.AboutMe = Aboutinfo.AboutMe;
                 teacher.AccountNote=Aboutinfo.AccountNote;
+                _context.SaveChanges();
+            }
+        }
+
+        public async Task UpdateTeacher(string id, UpdateTeacherDto teacherDto)
+        {
+            var teacher = await _context.Teachers.FindAsync(id);
+            if (teacher != null)
+            {
+                teacher.AboutMe = teacherDto.AboutMe;
+                teacher.PhoneNumber=teacherDto.PhoneNumber;
+                teacher.Email=teacherDto.Email;
+                teacher.subject = teacherDto.subject;
+                teacher.Address = teacherDto.Address;
                 _context.SaveChanges();
             }
         }

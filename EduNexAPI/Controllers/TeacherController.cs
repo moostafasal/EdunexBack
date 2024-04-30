@@ -5,9 +5,11 @@ using AutoMapper;
 using Azure;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using EduNexBL.DTOs;
 using EduNexBL.DTOs.AuthDtos;
 using EduNexBL.DTOs.ExamintionDtos;
 using EduNexBL.IRepository;
+using EduNexBL.Repository;
 using EduNexDB.Context;
 using EduNexDB.Entites;
 using Microsoft.AspNetCore.Http;
@@ -33,9 +35,10 @@ namespace EduNexAPI.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly EduNexContext _context;
+        private readonly IAdminRepository _adminRepository;
         private readonly IFiles _cloudinaryService;
         private readonly IMapper _mapper;
-        public TeacherController(IFiles cloudinaryService, TokenService tokenService, UserManager<ApplicationUser> userManager, IMapper mapper, SignInManager<ApplicationUser> signInManager, EduNexContext context)
+        public TeacherController(IFiles cloudinaryService,IAdminRepository adminRepository, TokenService tokenService, UserManager<ApplicationUser> userManager, IMapper mapper, SignInManager<ApplicationUser> signInManager, EduNexContext context)
         {
             _tokenService = tokenService;
             _userManager = userManager;
@@ -43,6 +46,7 @@ namespace EduNexAPI.Controllers
             _cloudinaryService = cloudinaryService;
             _mapper = mapper;
             _context = context;
+            _adminRepository = adminRepository;
         }
 
         [HttpPost("register/teacher")]
@@ -316,6 +320,26 @@ namespace EduNexAPI.Controllers
 
 
                 await _adminRepository.UpdateTeachersAccountNote(id, accountNote);
+
+                return Ok("Teacher information updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred");
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateTeacher(string id, UpdateTeacherDto updateTeacherDto)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    return BadRequest("Invalid id");
+                }
+
+                await _adminRepository.UpdateTeacher(id, updateTeacherDto);
 
                 return Ok("Teacher information updated successfully");
             }
