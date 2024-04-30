@@ -275,7 +275,7 @@ namespace EduNexAPI.Controllers
             }
         }
 
-        [HttpPost("teacherInfo/{id}")]
+        [HttpPut("teacherInfo/{id}")]
         public async Task<IActionResult> UpdateTeacherInfo(string id, AboutinfoDto aboutinfo)
         {
             try
@@ -294,6 +294,34 @@ namespace EduNexAPI.Controllers
                 
 
                 await _adminRepository.UpdateTeachersAboutMe(id,aboutinfo);
+
+                return Ok("Teacher information updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred");
+            }
+        }
+
+        [HttpPut("TeacherAccountNote/{id}")]
+        public async Task<IActionResult> UpdateTeacherAccountNote(string id, AccountNoteDto accountNote)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    return BadRequest("Invalid id or aboutTeacher");
+                }
+
+                //var teacher = await _adminRepository.GetTeacherByIdAsync(id);
+                //if (teacher == null)
+                //{
+                //    return NotFound("Teacher not found");
+                //}
+
+
+
+                await _adminRepository.UpdateTeachersAccountNote(id, accountNote);
 
                 return Ok("Teacher information updated successfully");
             }

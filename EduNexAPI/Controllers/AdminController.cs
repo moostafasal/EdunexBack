@@ -40,10 +40,10 @@ public class AdminController : ControllerBase
         var result = await _adminRepository.RejectTeacherAsync(id);
         if (result)
             return Ok("Teacher rejected successfully.");
-        return NotFound();
+        return NotFound();  
     }
 
-    [HttpGet("teachers/{id}")]
+    [HttpGet("teacher/{id}")]
     public async Task<ActionResult<TeacherDto>> GetTeacherById(string id)
     {
         var teacher = await _adminRepository.GetTeacherByIdAsync(id);
