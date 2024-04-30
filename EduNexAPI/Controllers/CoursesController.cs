@@ -1,5 +1,4 @@
 ﻿using EduNexBL.DTOs.CourseDTOs;
-using EduNexBL.DTOs.ExamintionDtos;
 using EduNexBL.UnitOfWork;
 using EduNexDB.Entites;
 using Microsoft.AspNetCore.Mvc;
@@ -27,67 +26,27 @@ namespace EduNexAPI.Controllers
 
         // GET api/<CoursesController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<CourseDTO>>> Get(int id)
+        public string Get(int id)
         {
-            var Course = await _unitOfWork.CourseRepo.GetCourseById(id);
-            if (Course == null)
-            {
-                return BadRequest();
-            }
-
-            return Ok(Course);
+            return "value";
         }
 
         // POST api/<CoursesController>
         [HttpPost]
-        public async Task<ActionResult<Course>> Post(Course course)
+        public void Post([FromBody] string value)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            await _unitOfWork.CourseRepo.Add(course);
-            return CreatedAtAction(nameof(Get), new { id = course.Id }, course);
-
         }
 
         // PUT api/<CoursesController>/5
-
-        // PUT api/<ExamsController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] Course course)
+        public void Put(int id, [FromBody] string value)
         {
-            if (id != course.Id)
-            {
-                return BadRequest();
-            }
-
-            var existingCourse = await _unitOfWork.CourseRepo.GetById(id);
-            if (existingCourse == null)
-            {
-                return NotFound();
-            }
-
-            
-            await _unitOfWork.CourseRepo.Update(course);
-
-            return NoContent();
         }
 
         // DELETE api/<CoursesController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public void Delete(int id)
         {
-            var course = await _unitOfWork.CourseRepo.GetById(id);
-            if (course == null)
-            {
-                return NotFound();
-            }
-
-            await _unitOfWork.CourseRepo.Delete(course);
-
-            return NoContent();
         }
     }
 }

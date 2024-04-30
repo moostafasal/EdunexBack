@@ -11,7 +11,6 @@ namespace EduNexBL.DTOs.CourseDTOs
 {
     public class CourseMainData
     {
-        public int Id { get; set; }
         public string CourseName { get; set; } = null!;
 
         public string Thumbnail { get; set; } = null!;

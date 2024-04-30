@@ -29,7 +29,7 @@ namespace EduNexBL.DTOs.ExamintionDtos
         [Required]
         [EnumDataType(typeof(AssessmentType))]
         public string Type { get; set; } = null!;
-        public int LectureId { get; set; } 
+        //public int? LectureId { get; set; } 
         public IEnumerable<QuestionDto>? Questions { get; set; }
     }
 }

@@ -151,44 +151,6 @@ namespace EduNexDB.Migrations
                     b.UseTptMappingStrategy();
                 });
 
-            modelBuilder.Entity("EduNexDB.Entites.AttachmentFile", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AttachmentPath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AttachmentTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("LectureId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LectureId");
-
-                    b.ToTable("AttachmentFile");
-                });
-
             modelBuilder.Entity("EduNexDB.Entites.Course", b =>
                 {
                     b.Property<int>("Id")
@@ -833,17 +795,6 @@ namespace EduNexDB.Migrations
                     b.Navigation("Question");
                 });
 
-            modelBuilder.Entity("EduNexDB.Entites.AttachmentFile", b =>
-                {
-                    b.HasOne("EduNexDB.Entites.Lecture", "Lecture")
-                        .WithMany("Attachments")
-                        .HasForeignKey("LectureId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Lecture");
-                });
-
             modelBuilder.Entity("EduNexDB.Entites.Course", b =>
                 {
                     b.HasOne("EduNexDB.Entites.Subject", "Subject")
@@ -1057,10 +1008,16 @@ namespace EduNexDB.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("EduNexDB.Entites.City", b =>
+                {
+                    b.Navigation("Appusers");
+                });
+
             modelBuilder.Entity("EduNexDB.Entites.Course", b =>
                 {
                     b.Navigation("Lectures");
                 });
+
 
             modelBuilder.Entity("EduNexDB.Entites.Exam", b =>
                 {
@@ -1069,14 +1026,18 @@ namespace EduNexDB.Migrations
                     b.Navigation("StudentExams");
                 });
 
+            modelBuilder.Entity("EduNexDB.Entites.Governorate", b =>
+                {
+                    b.Navigation("Cities");
+                });
+
             modelBuilder.Entity("EduNexDB.Entites.Lecture", b =>
                 {
-                    b.Navigation("Attachments");
-
                     b.Navigation("Exams");
 
                     b.Navigation("Videos");
                 });
+
 
             modelBuilder.Entity("EduNexDB.Entites.Level", b =>
                 {

@@ -13,9 +13,6 @@ namespace EduNexBL.UnitOfWork
         public IStudent StudentRepo { get; }
         public IStudentExam StudentExamRepo { get; } 
         public ICourse CourseRepo { get; }
-        public ILecture LectureRepo { get; }
-        public IVideo VideoRepo {get; }
-
         void Commit();
     }
 }

@@ -11,6 +11,7 @@ namespace EduNexDB.Entites
     public class Exam:BaseEntity
     {
 
+
         [Required]
         public string Title { get; set; } = null!;
 
@@ -23,6 +24,7 @@ namespace EduNexDB.Entites
 
         [Required]
         public string Type { get; set; } = null!;
+
         public int LectureId { get; set; }
         public virtual Lecture? Lecture { get; set; }
         public ICollection<Question>? Questions { get; set; }

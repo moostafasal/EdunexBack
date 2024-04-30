@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EduNexDB.Context
 {
-    public class EduNexContext : IdentityDbContext<ApplicationUser>
+    public class EduNexContext:IdentityDbContext<ApplicationUser>
     {
         public DbSet<Level> Levels { get; set; }
         public DbSet<Subject> Subjects { get; set; }
@@ -35,7 +35,7 @@ namespace EduNexDB.Context
         {
 
         }
-
+        
 
         public override int SaveChanges()
         {
@@ -56,7 +56,6 @@ namespace EduNexDB.Context
 
             return base.SaveChanges();
         }
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -101,7 +100,7 @@ namespace EduNexDB.Context
 
             modelBuilder.Entity<Transaction>()
        .Property(t => t.Amount)
-       .HasColumnType("decimal(18, 2)");
+       .HasColumnType("decimal(18, 2)"); 
 
             modelBuilder.Entity<Wallet>()
        .Property(w => w.Balance)
