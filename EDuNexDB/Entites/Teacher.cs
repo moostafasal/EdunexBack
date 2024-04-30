@@ -13,10 +13,7 @@
 
         public string? Description { get; set; }
         public string? FacebookAccount { get; set; }
-        public string? AboutMe { get; set; }
-        public string? AccountNote { get; set; }
-       
-
+        //public string? AboutMe { get; set; }
 
         public TeacherStatus Status { get; set; } = TeacherStatus.Pending; // Set default status to Pending
 

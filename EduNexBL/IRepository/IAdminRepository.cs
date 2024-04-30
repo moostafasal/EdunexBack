@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EduNexBL.DTOs;
-using EduNexBL.DTOs.AuthDtos;
 using EduNexDB.Entites;
 
 namespace EduNexBL.IRepository

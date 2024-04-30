@@ -801,12 +801,6 @@ namespace EduNexDB.Migrations
                 {
                     b.HasBaseType("EduNexDB.Entites.ApplicationUser");
 
-                    b.Property<string>("AboutMe")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AccountNote")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
