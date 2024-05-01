@@ -79,7 +79,6 @@ namespace EduNexAPI.Controllers
             var existingAttachment = await _unitOfWork.AttachmentRepo.GetById(attachmentDto.Id); 
             if (existingAttachment == null) { return NotFound(); }
             existingAttachment.AttachmentTitle = attachmentDto.AttachmentTitle;
-            existingAttachment.AttachmentPath = attachmentDto.AttachmentPath;
 
             await _unitOfWork.AttachmentRepo.Update(existingAttachment); 
             return Ok(existingAttachment);

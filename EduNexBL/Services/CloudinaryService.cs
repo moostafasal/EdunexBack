@@ -25,7 +25,7 @@ namespace AuthenticationMechanism.Services
 
         public async Task<string> UploadImageAsync(IFormFile file)
         {
-            return await UploadFileAsync(file, "images");
+            return await UploadFileAsync(file, "image");
         }
 
         public async Task<string> UploadRawAsync(IFormFile file)
@@ -58,6 +58,7 @@ namespace AuthenticationMechanism.Services
                     UniqueFilename = false,
                     Overwrite = true,
                     Folder = folder
+                    type = 
                 };
 
                 var uploadResult = await _cloudinary.UploadAsync(uploadParams);
