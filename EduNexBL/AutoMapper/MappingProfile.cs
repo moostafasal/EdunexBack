@@ -28,6 +28,8 @@ namespace EduNexBL.AutoMapper
             CreateMap<Video, VideoDTO>();
             CreateMap<AttachmentDto, AttachmentFile>();
             CreateMap<AttachmentFile, AttachmentDto>();
+            CreateMap<Lecture, LectureDto>();
+            CreateMap<LectureDto,Lecture > (); 
 
 
             CreateMap<Teacher, TeacherDto>()

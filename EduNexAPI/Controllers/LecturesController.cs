@@ -58,7 +58,6 @@ namespace EduNexAPI.Controllers
             return Ok(lectureDto);
         }
 
-        // POST: api/courses/{courseId}/lectures
         [HttpPost]
         public async Task<IActionResult> CreateLecture(LectureDto lecture)
         {
@@ -73,7 +72,7 @@ namespace EduNexAPI.Controllers
             var lectureToAdd = _mapper.Map<Lecture>(lecture);
             await _unitOfWork.LectureRepo.Add(lectureToAdd);
 
-            return CreatedAtAction(nameof(GetLecture), new { id = lecture.Id }, lecture);
+            return Ok();
         }
 
         // PUT: api/courses/{courseId}/lectures/{lectureId}
