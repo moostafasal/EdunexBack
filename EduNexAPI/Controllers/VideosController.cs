@@ -13,34 +13,34 @@ using Microsoft.AspNetCore.Mvc;
 namespace EduNexAPI.Controllers
 {
 
-    //[Route("api/courses/{courseId}/lectures/{lectureId}/videos")]
+    [Route("api/courses/{courseId}/lectures/{lectureId}/videos")]
     [Route("api/courses/videos")]
 
     [ApiController]
     public class VideosController : ControllerBase
     {
-     
+
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IFiles _cloudinary;
 
-        public VideosController(IUnitOfWork unitOfWork,IMapper mapper , IFiles files)
+        public VideosController(IUnitOfWork unitOfWork, IMapper mapper, IFiles files)
         {
-           _unitOfWork =   unitOfWork;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _cloudinary = files;
         }
 
         [HttpGet]
-        public async  Task<IActionResult> Get()
+        public async Task<IActionResult> Get()
         {
-            var videos =  await _unitOfWork.VideoRepo.GetAll();
-            List<VideoDTO> videosDTO = new(); 
+            var videos = await _unitOfWork.VideoRepo.GetAll();
+            List<VideoDTO> videosDTO = new();
             foreach (var v in videos)
             {
                 videosDTO.Add(_mapper.Map<VideoDTO>(v));
             }
-            return Ok(videosDTO); 
+            return Ok(videosDTO);
 
         }
 
@@ -48,29 +48,29 @@ namespace EduNexAPI.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-           var video = _unitOfWork.VideoRepo.GetById(id);
-           if (video  == null)
-           {
-                return NotFound(); 
-           }
+            var video = _unitOfWork.VideoRepo.GetById(id);
+            if (video == null)
+            {
+                return NotFound();
+            }
 
-           return Ok(_mapper.Map<VideoDTO>(video)); 
+            return Ok(_mapper.Map<VideoDTO>(video));
         }
 
         // POST api/<VideosController>
         [HttpPost]
-        public async Task<IActionResult> Post(IFormFile file , string Name)
+        public async Task<IActionResult> Post(IFormFile file, string Name)
         {
             //name file 
-          var filePath= await _cloudinary.UploadVideoAsync(file);
+            var filePath = await _cloudinary.UploadVideoAsync(file);
             var video = new Video
             {
                 VideoPath = filePath,
-                VideoTitle=Name
+                VideoTitle = Name
             };
             await _unitOfWork.VideoRepo.Add(video);
 
-           var createdVideo=_mapper.Map<VideoDTO>(video);
+            var createdVideo = _mapper.Map<VideoDTO>(video);
 
 
             return CreatedAtAction(nameof(Get), createdVideo);
@@ -80,12 +80,12 @@ namespace EduNexAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(VideoDTO videoDTO)
         {
-            var existingVideo = await _unitOfWork.VideoRepo.GetById(videoDTO.id); 
+            var existingVideo = await _unitOfWork.VideoRepo.GetById(videoDTO.id);
             if (existingVideo == null) { return NotFound(); }
             existingVideo.VideoTitle = videoDTO.VideoTitle;
             existingVideo.VideoPath = videoDTO.VideoPath;
 
-            await _unitOfWork.VideoRepo.Update(existingVideo); 
+            await _unitOfWork.VideoRepo.Update(existingVideo);
             return Ok(existingVideo);
         }
 
@@ -95,7 +95,7 @@ namespace EduNexAPI.Controllers
         {
             var existingVideo = await _unitOfWork.VideoRepo.GetById(id);
             if (existingVideo == null) { return NotFound(); }
-            
+
             await _unitOfWork.VideoRepo.Delete(existingVideo);
             return Ok("Deleted");
         }
