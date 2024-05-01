@@ -14,7 +14,7 @@ namespace EduNexAPI.Controllers
 {
 
     [Route("api/courses/{courseId}/lectures/{lectureId}/videos")]
-    [Route("api/courses/videos")]
+    //[Route("api/courses/videos")]
 
     [ApiController]
     public class VideosController : ControllerBase

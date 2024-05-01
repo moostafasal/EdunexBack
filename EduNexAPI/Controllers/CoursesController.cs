@@ -32,7 +32,7 @@ namespace EduNexAPI.Controllers
             var Course = await _unitOfWork.CourseRepo.GetCourseById(id);
             if (Course == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             return Ok(Course);
