@@ -116,13 +116,12 @@ namespace EduNexAPI.Controllers
         }
 
 
-
         [HttpPost("seed-subjects")]
         public IActionResult SeedSubjects()
         {
             try
             {
-                var subjIds = _dbContext.Courses.Select(C => C.Id).ToList();
+                var subjIds = _dbContext.Levels.Select(C => C.Id).ToList();
 
                 var subjects = new List<Subject>();
 
