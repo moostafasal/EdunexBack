@@ -66,7 +66,6 @@ namespace EduNexAPI.Controllers
                 AttachmentPath = filePath,
                 AttachmentTitle = attachmentDto.AttachmentTitle,
                 LectureId = attachmentDto.LectureId
-
             };
             await _unitOfWork.AttachmentRepo.Add(attachment);
 
@@ -74,7 +73,7 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(AttachmentDto attachmentDto)
+        public async Task<IActionResult> Put([FromBody]AttachmentDto attachmentDto)
         {
             var existingAttachment = await _unitOfWork.AttachmentRepo.GetById(attachmentDto.Id); 
             if (existingAttachment == null) { return NotFound(); }

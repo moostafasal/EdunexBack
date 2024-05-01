@@ -7,8 +7,6 @@ namespace EduNexDB.Entites
     {
         [Required]
         public string AttachmentTitle { get; set; } = null!;
-
-        [Required]
         public string AttachmentPath { get; set; } = null!;
 
         [ForeignKey("Lecture")]
