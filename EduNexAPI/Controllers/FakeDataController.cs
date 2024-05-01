@@ -114,5 +114,118 @@ namespace EduNexAPI.Controllers
                 return StatusCode(500, "An error occurred while retrieving teachers.");
             }
         }
+
+
+
+        [HttpPost("seed-subjects")]
+        public IActionResult SeedSubjects()
+        {
+            try
+            {
+                var subjIds = _dbContext.Courses.Select(C => C.Id).ToList();
+
+                var subjects = new List<Subject>();
+
+                for (int i = 1; i <= 10; i++)
+                {
+                    var level = subjIds[new Random().Next(0, subjIds.Count)];
+
+                    subjects.Add(new Subject { SubjectName = $"Subject {i}", LevelId = level, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now, IsDeleted = false });
+                }
+
+                _dbContext.Subjects.AddRange(subjects);
+                _dbContext.SaveChanges();
+
+                return Ok("Subjects seeded successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while seeding subjects.");
+                return StatusCode(500, "An error occurred while seeding subjects.");
+            }
+        }
+
+        [HttpPost("seed-lectures")]
+        public IActionResult SeedLectures()
+        {
+            try
+            {
+                var coursesIds = _dbContext.Courses.Select(C => C.Id).ToList();
+
+
+                var lectures = new List<Lecture>();
+
+                for (int i = 1; i <= 10; i++)
+                {
+                    var randomCourse = coursesIds[new Random().Next(0, coursesIds.Count)];
+
+                    lectures.Add(new Lecture { LectureTitle = $"Lecture {i}", Price = 9.99m, CourseId = randomCourse, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now, IsDeleted = false });
+                }
+
+                _dbContext.Lectures.AddRange(lectures);
+                _dbContext.SaveChanges();
+
+                return Ok("Lectures seeded successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while seeding lectures.");
+                return StatusCode(500, "An error occurred while seeding lectures.");
+            }
+        }
+        [HttpPost("seed-courses")]
+        public IActionResult SeedCourses()
+        {
+            try
+            {
+                // Fetch teacher IDs from the database
+                var teacherIds = _dbContext.Teachers.Select(t => t.Id).ToList();
+                var subIds = _dbContext.Subjects.Select(S => S.Id).ToList();
+
+
+
+                if (teacherIds.Count == 0)
+                {
+                    return BadRequest("No teachers found in the database. Seed teachers before seeding courses.");
+                }
+
+                var courses = new List<Course>();
+
+                // Seed 10 courses
+                for (int i = 1; i <= 10; i++)
+                {
+                    // Get a random teacher ID
+                    var randomTeacherId = teacherIds[new Random().Next(0, teacherIds.Count)];
+                    var randomsubject = subIds[new Random().Next(0, subIds.Count)];
+
+                    courses.Add(new Course
+                    {
+                        CourseName = $"Course {i}",
+                        Thumbnail = "course_thumbnail.jpg",
+                        CourseType = CourseType.Scientific,
+                        Price = 29.99m,
+                        SubjectId = randomsubject,
+                        TeacherId = randomTeacherId, // Assign a random teacher ID
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now,
+                        IsDeleted = false
+                    });
+                }
+
+                _dbContext.Courses.AddRange(courses);
+                _dbContext.SaveChanges();
+
+                return Ok("Courses seeded successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while seeding courses.");
+                return StatusCode(500, "An error occurred while seeding courses.");
+            }
+        }
+
+
+
+
     }
 }
