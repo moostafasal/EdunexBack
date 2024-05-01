@@ -57,21 +57,20 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(IFormFile file , string Name)
+        public async Task<IActionResult> Post([FromForm]AttachmentAddDto attachmentDto)
         {
             //name file 
-            var filePath= await _cloudinary.UploadRawAsync(file);
+            var filePath= await _cloudinary.UploadRawAsync(attachmentDto.File);
             var attachment = new AttachmentFile
             {
                 AttachmentPath = filePath,
-                AttachmentTitle=Name
+                AttachmentTitle = attachmentDto.AttachmentTitle,
+                LectureId = attachmentDto.LectureId
+
             };
             await _unitOfWork.AttachmentRepo.Add(attachment);
 
-            var createdAttachment=_mapper.Map<AttachmentDto>(attachment);
-
-
-            return CreatedAtAction(nameof(Get), createdAttachment);
+            return Ok("Attachment Uploaded and Added");
         }
 
         [HttpPut("{id}")]
