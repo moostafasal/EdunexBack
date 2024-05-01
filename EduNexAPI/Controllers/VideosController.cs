@@ -78,15 +78,26 @@ namespace EduNexAPI.Controllers
 
         // PUT api/<VideosController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> Put(VideoDTO videoDTO)
         {
+            var existingVideo = await _unitOfWork.VideoRepo.GetById(videoDTO.id); 
+            if (existingVideo == null) { return NotFound(); }
+            existingVideo.VideoTitle = videoDTO.VideoTitle;
+            existingVideo.VideoPath = videoDTO.VideoPath;
+
+            await _unitOfWork.VideoRepo.Update(existingVideo); 
+            return Ok(existingVideo);
         }
 
         // DELETE api/<VideosController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-
+            var existingVideo = await _unitOfWork.VideoRepo.GetById(id);
+            if (existingVideo == null) { return NotFound(); }
+            
+            await _unitOfWork.VideoRepo.Delete(existingVideo);
+            return Ok("Deleted");
         }
     }
 }
