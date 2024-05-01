@@ -58,7 +58,6 @@ namespace AuthenticationMechanism.Services
                     UniqueFilename = false,
                     Overwrite = true,
                     Folder = folder
-                    type = 
                 };
 
                 var uploadResult = await _cloudinary.UploadAsync(uploadParams);
