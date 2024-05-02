@@ -47,7 +47,7 @@ namespace EduNexAPI.Controllers
         [HttpGet("{lectureId}")]
         public async Task<IActionResult> GetLecture(int lectureId)
         {
-            var lecture = await _unitOfWork.LectureRepo.GetById(lectureId);
+            var lecture = await _unitOfWork.LectureRepo.GetFullLectureById(lectureId);
 
             if (lecture == null)
             {
