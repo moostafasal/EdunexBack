@@ -57,23 +57,20 @@ namespace EduNexAPI.Controllers
             return Ok(_mapper.Map<VideoDTO>(video));
         }
 
-        // POST api/<VideosController>
         [HttpPost]
-        public async Task<IActionResult> Post(IFormFile file, string Name)
+        public async Task<IActionResult> Post([FromForm] VideoAddDto videoDto)
         {
             //name file 
-            var filePath = await _cloudinary.UploadVideoAsync(file);
+            var filePath = await _cloudinary.UploadVideoAsync(videoDto.File);
             var video = new Video
             {
                 VideoPath = filePath,
-                VideoTitle = Name
+                VideoTitle = videoDto.AttachmentTitle,
+                LectureId = videoDto.LectureId
             };
             await _unitOfWork.VideoRepo.Add(video);
 
-            var createdVideo = _mapper.Map<VideoDTO>(video);
-
-
-            return CreatedAtAction(nameof(Get), createdVideo);
+            return Ok("Video Uploaded and Added");
         }
 
         // PUT api/<VideosController>/5
@@ -83,7 +80,6 @@ namespace EduNexAPI.Controllers
             var existingVideo = await _unitOfWork.VideoRepo.GetById(videoDTO.id);
             if (existingVideo == null) { return NotFound(); }
             existingVideo.VideoTitle = videoDTO.VideoTitle;
-            existingVideo.VideoPath = videoDTO.VideoPath;
 
             await _unitOfWork.VideoRepo.Update(existingVideo);
             return Ok(existingVideo);
