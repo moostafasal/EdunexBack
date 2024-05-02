@@ -62,10 +62,10 @@ namespace EduNexAPI.Controllers
         {
             //name file 
             var filePath = await _cloudinary.UploadVideoAsync(videoDto.File);
-            var video = new Video
+            var video = new EduNexDB.Entites.Video
             {
                 VideoPath = filePath,
-                VideoTitle = videoDto.AttachmentTitle,
+                VideoTitle = videoDto.VideoTitle,
                 LectureId = videoDto.LectureId
             };
             await _unitOfWork.VideoRepo.Add(video);

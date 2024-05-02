@@ -7,7 +7,7 @@ namespace EduNexBL.DTOs.CourseDTOs
     public class VideoAddDto
     {
         [Required]
-        public string AttachmentTitle { get; set; }
+        public string VideoTitle { get; set; }
         [Required]
         public IFormFile File { get; set; }
         [Required]
