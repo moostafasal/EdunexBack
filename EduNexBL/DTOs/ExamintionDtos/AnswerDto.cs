@@ -9,7 +9,7 @@ namespace EduNexBL.DTOs.ExamintionDtos
 {
     public class AnswerDto
     {
-        public int? AnswerId { get; set; }
+        public int? Id { get; set; }
         [Required]
         public string Header { get; set; }
         [Required]

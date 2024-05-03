@@ -11,7 +11,7 @@ namespace EduNexBL.DTOs.ExamintionDtos
 {
     public class QuestionDto
     {
-        public int? QuestionId { get; set; }
+        public int? Id { get; set; }
         [Required]
         public string Header { get; set; } = null!;
         [Required]
