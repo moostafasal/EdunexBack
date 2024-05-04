@@ -30,7 +30,7 @@ namespace AuthenticationMechanism.Services
 
         public async Task<string> UploadRawAsync(IFormFile file)
         {
-            return await UploadFileAsync(file, "raw");
+            return await UploadFileAsync(file, "documents");
         }
 
         public async Task<string> UploadVideoAsync(IFormFile file)
@@ -49,7 +49,6 @@ namespace AuthenticationMechanism.Services
             using (var stream = file.OpenReadStream())
             {
                 string uniqueFileName = GenerateUniqueFileName(file.FileName);
-               
 
                 var uploadParams = new RawUploadParams
                 {
@@ -60,6 +59,15 @@ namespace AuthenticationMechanism.Services
                     Folder = folder
                 };
 
+                // Check if file is a PDF
+                //if (file.ContentType == "application/pdf")
+                //{
+                //    uploadParams = new ImageUploadParams
+                //    {
+                //        File = new FileDescription(file.FileName, stream)
+                //    };
+                //}
+
                 var uploadResult = await _cloudinary.UploadAsync(uploadParams);
 
                 if (uploadResult.Error != null)
@@ -68,6 +76,7 @@ namespace AuthenticationMechanism.Services
                 return uploadResult.SecureUrl.ToString();
             }
         }
+
 
         private string GenerateUniqueFileName(string fileName)
         {
