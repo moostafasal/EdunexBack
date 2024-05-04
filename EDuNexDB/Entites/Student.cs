@@ -15,5 +15,7 @@ namespace EduNexDB.Entites
         public virtual Level? Level { get; set; }
 
         public ICollection<StudentExam>? StudentExams { get; set; }
+        public ICollection<StudentCourse>? StudentCourses { get; set; }
+
     }
 }

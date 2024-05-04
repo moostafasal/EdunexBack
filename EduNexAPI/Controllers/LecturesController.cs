@@ -47,7 +47,7 @@ namespace EduNexAPI.Controllers
         [HttpGet("{lectureId}")]
         public async Task<IActionResult> GetLecture(int lectureId)
         {
-            var lecture = await _unitOfWork.LectureRepo.GetById(lectureId);
+            var lecture = await _unitOfWork.LectureRepo.GetFullLectureById(lectureId);
 
             if (lecture == null)
             {
@@ -77,12 +77,12 @@ namespace EduNexAPI.Controllers
 
         // PUT: api/courses/{courseId}/lectures/{lectureId}
         [HttpPut("{lectureId}")]
-        public async Task<IActionResult> UpdateLecture(int id,[FromBody] LectureDto updatedLectureData)
+        public async Task<IActionResult> UpdateLecture(int lectureId, [FromBody] LectureDto updatedLectureData)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
-            if (id != updatedLectureData.Id) return BadRequest(); 
+            if (lectureId != updatedLectureData.Id) return BadRequest(); 
 
-            var lectureToUpdate = await _unitOfWork.LectureRepo.GetById(id); 
+            var lectureToUpdate = await _unitOfWork.LectureRepo.GetById(lectureId); 
             if (lectureToUpdate == null) { return NotFound(); }
 
             lectureToUpdate.LectureTitle = updatedLectureData.LectureTitle; 

@@ -4,6 +4,7 @@ using EduNexDB.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduNexDB.Migrations
 {
     [DbContext(typeof(EduNexContext))]
-    partial class EduNexContextModelSnapshot : ModelSnapshot
+    [Migration("20240502112137_userId wallet update int")]
+    partial class userIdwalletupdateint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -214,7 +217,6 @@ namespace EduNexDB.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("Price")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("SubjectId")
@@ -420,33 +422,6 @@ namespace EduNexDB.Migrations
                     b.ToTable("Questions");
                 });
 
-            modelBuilder.Entity("EduNexDB.Entites.StudentCourse", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Enrolled")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("StudentId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("studentCourse");
-                });
-
             modelBuilder.Entity("EduNexDB.Entites.StudentExam", b =>
                 {
                     b.Property<string>("StudentId")
@@ -562,13 +537,24 @@ namespace EduNexDB.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<string>("TransactionDate")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("TransactionType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("WalletId")
                         .HasColumnType("int");
@@ -918,25 +904,6 @@ namespace EduNexDB.Migrations
                     b.Navigation("Exam");
                 });
 
-            modelBuilder.Entity("EduNexDB.Entites.StudentCourse", b =>
-                {
-                    b.HasOne("EduNexDB.Entites.Course", "Course")
-                        .WithMany("StudentCourses")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("EduNexDB.Entites.Student", "Student")
-                        .WithMany("StudentCourses")
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("Student");
-                });
-
             modelBuilder.Entity("EduNexDB.Entites.StudentExam", b =>
                 {
                     b.HasOne("EduNexDB.Entites.Exam", "Exam")
@@ -1101,8 +1068,6 @@ namespace EduNexDB.Migrations
             modelBuilder.Entity("EduNexDB.Entites.Course", b =>
                 {
                     b.Navigation("Lectures");
-
-                    b.Navigation("StudentCourses");
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.Exam", b =>
@@ -1133,8 +1098,6 @@ namespace EduNexDB.Migrations
 
             modelBuilder.Entity("EduNexDB.Entites.Student", b =>
                 {
-                    b.Navigation("StudentCourses");
-
                     b.Navigation("StudentExams");
                 });
 #pragma warning restore 612, 618

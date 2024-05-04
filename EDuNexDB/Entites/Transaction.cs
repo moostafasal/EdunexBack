@@ -8,21 +8,19 @@ using System.Threading.Tasks;
 
 namespace EduNexDB.Entites
 {
-    public class Transaction:BaseEntity
+    public class Transaction
     {
-        
-
+        [Key]
+        public int Id { get; set; }
         [ForeignKey("Wallet")]
         public int WalletId { get; set; }
         public Wallet? Wallet { get; set; }
-
         [Required]
         public string TransactionType { get; set; }
-
         [Required]
+        [DataType("integer")]
         public decimal Amount { get; set; }
-
         [Required]
-        public DateTime TransactionDate { get; set; }
+        public string TransactionDate { get; set; }
     }
 }

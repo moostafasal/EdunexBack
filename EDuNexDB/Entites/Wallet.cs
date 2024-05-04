@@ -13,10 +13,11 @@ namespace EduNexDB.Entites
         public int WalletId { get; set; }
 
         [Required]
+        [DataType("integer")]
         public decimal Balance { get; set; }
 
         [Required]
-        public int OwnerId { get; set; }
+        public string OwnerId { get; set; }
 
         [Required]
         public string OwnerType { get; set; }

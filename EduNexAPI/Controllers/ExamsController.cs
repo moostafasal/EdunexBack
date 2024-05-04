@@ -65,14 +65,14 @@ namespace EduNexAPI.Controllers
             await _unitOfWork.ExamRepo.Add(exam);
 
             var createdExamDto = _mapper.Map<ExamDto>(exam);
-            return CreatedAtAction(nameof(Get), new { id = createdExamDto.ExamId }, createdExamDto);
+            return CreatedAtAction(nameof(Get), new { id = createdExamDto.Id }, createdExamDto);
         }
 
         // PUT api/<ExamsController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] ExamDto examDto)
         {
-            if (id != examDto.ExamId)
+            if (id != examDto.Id)
             {
                 return BadRequest();
             }
@@ -116,20 +116,27 @@ namespace EduNexAPI.Controllers
 
             var exam = await _unitOfWork.ExamRepo.GetById(id);
             var student = await _unitOfWork.StudentRepo.GetById(request.StudentId);
-            if (exam == null || student == null) { return NotFound(); }
+            if (exam == null || student == null)
+            {
+                return NotFound();
+            }
 
             // Call the service method to start the exam
             var result = await _unitOfWork.ExamRepo.StartExam(request.StudentId, id);
             ////////////attention  
 
-            switch (result)
+            // Switch statement to handle different results from starting the exam
+            return result switch
             {
-                case ExamStartResult.Success:
-                    return Ok("Exam started successfully.");
-                default:
-                    return BadRequest(result);
-            }
+                ExamStartResult.Success => Ok("Exam started successfully."),
+                ExamStartResult.NotFound => NotFound("Exam or student not found."),
+                ExamStartResult.NotAvailable => BadRequest("Exam is not available."),
+                ExamStartResult.InvalidDuration => BadRequest("Invalid exam duration."),
+                ExamStartResult.AlreadyStarted => BadRequest("Exam has already been started."),
+                _ => BadRequest("Unknown error occurred."),// This may not happen in practice, but it's good to have a default case for completeness.
+            };
         }
+
 
         [HttpPost("{id}/submit")]
         public async Task<IActionResult> SubmitExam(int id, [FromBody] ExamSubmissionDto submission)
@@ -141,12 +148,24 @@ namespace EduNexAPI.Controllers
 
             var response = await _unitOfWork.ExamRepo.SubmitExam(id, submission);
 
-            if (response.SubmitResult == ExamSubmitResult.Success)
-                return Ok(response);
-            else
-                return BadRequest(response.SubmitResult);
-
+            // Return text response based on the ExamSubmitResult
+            switch (response.SubmitResult)
+            {
+                case ExamSubmitResult.Success:
+                    return Ok("Exam submission successful");
+                case ExamSubmitResult.NotFound:
+                    return BadRequest("Exam not found");
+                case ExamSubmitResult.NotAvailable:
+                    return BadRequest("Exam not available");
+                case ExamSubmitResult.NotStarted:
+                    return BadRequest("Exam not started");
+                case ExamSubmitResult.ExamNotEnded:
+                    return BadRequest("Exam not ended");
+                default:
+                    return BadRequest("Unknown error occurred");
+            }
         }
+
 
         [HttpGet("{id}/result")]
         public async Task<IActionResult> GetExamResult(int id, [FromBody] string studentId)
@@ -158,13 +177,32 @@ namespace EduNexAPI.Controllers
 
             var response = await _unitOfWork.ExamRepo.GetExamSubmitResultWithDetails(id, studentId);
 
-
-            return Ok(response); 
-            //if (response.SubmitResult == ExamSubmitResult.Success)
-            //    return Ok(response);
-            //else
-            //    return BadRequest(response.SubmitResult);
-
+            // Return text response based on the ExamSubmitResult
+            switch (response.SubmitResult)
+            {
+                case ExamSubmitResult.Success:
+                    return Ok("Exam submission successful");
+                case ExamSubmitResult.NotFound:
+                    return BadRequest("Exam not found");
+                case ExamSubmitResult.NotAvailable:
+                    return BadRequest("Exam not available");
+                case ExamSubmitResult.NotStarted:
+                    return BadRequest("Exam not started");
+                case ExamSubmitResult.ExamNotEnded:
+                    return BadRequest("Exam not ended");
+                default:
+                    return BadRequest("Unknown error occurred");
+            }
         }
+
+
+        [HttpGet("{id}/getinfo")]
+        public async Task<IActionResult> GetStudentExamInfo([FromBody] string studentId, int id)
+        {
+            var info = await _unitOfWork.ExamRepo.GetStudentExamInfo(studentId, id);
+            if (info != null) return Ok(info);
+            else return NotFound();
+        }
+
     }
 }

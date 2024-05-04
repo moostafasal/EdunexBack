@@ -31,6 +31,7 @@ namespace EduNexDB.Entites
         public CourseType CourseType { get; set; }
 
         [Required]
+        [DataType("integer")]
         public decimal Price { get; set; }
 
         [ForeignKey("Subject")]
@@ -42,6 +43,8 @@ namespace EduNexDB.Entites
         public Teacher? Teacher { get; set; }
 
         public ICollection<Lecture>? Lectures { get; set; } = new List<Lecture>();
+        public ICollection<StudentCourse>? StudentCourses { get; set; }
+
 
     }
 }

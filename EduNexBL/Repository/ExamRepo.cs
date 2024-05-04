@@ -51,7 +51,7 @@ namespace EduNexBL.Repository
             };
 
             _context.StudentExam.Add(studentExam);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return ExamStartResult.Success;
         }
@@ -312,6 +312,30 @@ namespace EduNexBL.Repository
         {
             var currentTime = DateTime.Now;
             return currentTime >= exam.StartDateTime && currentTime <= exam.EndDateTime;
+        }
+
+        // Method to get the start time of the exam submission for a student
+        public async Task<DateTime?> GetExamSubmissionStartTime(string studentId, int examId)
+        {
+            var studentExam = await _context.StudentExam
+                .FirstOrDefaultAsync(se => se.StudentId == studentId && se.ExamId == examId);
+
+            return studentExam?.StartTime;
+        }
+
+        // Method to get the end time of the exam submission for a student
+        public async Task<DateTime?> GetExamSubmissionEndTime(string studentId, int examId)
+        {
+            var studentExam = await _context.StudentExam
+                .FirstOrDefaultAsync(se => se.StudentId == studentId && se.ExamId == examId);
+
+            return studentExam?.EndTime;
+        }
+
+        public async Task<StudentExam> GetStudentExamInfo(string studentId, int examId)
+        {
+            return await _context.StudentExam
+                .FirstOrDefaultAsync(se => se.StudentId == studentId && se.ExamId == examId);
         }
     }
 }

@@ -32,13 +32,13 @@ namespace AuthenticationMechanism.tokenservice
                 return null; // Role not found or user has no role
 
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, userId),
-        new Claim(JwtRegisteredClaimNames.Aud, "http://localhost:5293/"),
-        new Claim(JwtRegisteredClaimNames.Iss, "http://localhost:5293/"),// Set the audience claim
+            {
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(JwtRegisteredClaimNames.Aud, "http://localhost:5293/"),
+                new Claim(JwtRegisteredClaimNames.Iss, "http://localhost:5293/"),// Set the audience claim
 
-        new Claim(ClaimTypes.Role, role[0]) // Add the user's role claim
-    };
+                new Claim(ClaimTypes.Role, role[0]) // Add the user's role claim
+            };
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes("D6AE1F1B3F45D32D2E18B5E9F1D301298C1C87223578F8D063DAC8E2E255971B");

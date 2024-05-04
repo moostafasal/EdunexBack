@@ -97,10 +97,77 @@ namespace EduNexAPI.Controllers
                 return StatusCode(500, "An error occurred while seeding fake teachers.");
             }
         }
+        [HttpPost("seed-Student")]
+        public async Task<IActionResult> SeedStudntManually()
+        {
+            try
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    var fakestundnt = new Student
+                    {
+                        FirstName = "احمد" + i.ToString(),
+                        LastName = "امين" + i.ToString(),
+                        PhoneNumber = "123456789" + i.ToString(), // Set a non-null value for PhoneNumber
+                        DateOfBirth = new DateTime(2001, 5, 10),
+                        gender = Gender.Male,
+                        ParentPhoneNumber = "01097723290",
+                        Religion = "مسلم",
+                        LevelId = 1,
+                        City = "بورسعيد",
+                        Address = "بورسعيد شارع المعديه 102",
+                        NationalId = "123232223456789",
+                    };
 
+                    _dbContext.Students.Add(fakestundnt);
 
+                    // Create a fake user account with default password
+                    var user = new ApplicationUser
+                    {
+                        FirstName = fakestundnt.FirstName,
+                        LastName = fakestundnt.LastName,
+                        UserName = $"Ahmed.Amin{i + 1}@example.com",
+                        Email = $"Amin{i + 1}@example.com",
+                        PhoneNumber = fakestundnt.PhoneNumber // Set PhoneNumber for ApplicationUser
+                    };
 
-        [HttpGet("teachers")] // Define the HTTP route for retrieving teachers
+                    // Check if PhoneNumber is null
+                    if (string.IsNullOrEmpty(user.PhoneNumber))
+                    {
+                        // Log error and continue to the next iteration
+                        _logger.LogError($"PhoneNumber is null for user {user.UserName}");
+                        continue;
+                    }
+
+                    var result = await _userManager.CreateAsync(user, "DefaultPassword123!"); // Change to your default password
+
+                    if (result.Succeeded)
+                    {
+                        // Assign the teacher role
+                        await _userManager.AddToRoleAsync(user, "Student");
+                    }
+                    else
+                    {
+                        // Log errors
+                        foreach (var error in result.Errors)
+                        {
+                            _logger.LogError(error.Description);
+                        }
+                    }
+                }
+
+                await _dbContext.SaveChangesAsync();
+
+                return Ok("Fake data seeded successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while seeding fake teachers.");
+                return StatusCode(500, "An error occurred while seeding fake teachers.");
+            }
+        }
+
+        [HttpGet("teachers")]
         public IActionResult GetTeachers()
         {
             try

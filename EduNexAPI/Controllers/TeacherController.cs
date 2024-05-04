@@ -39,7 +39,7 @@ namespace EduNexAPI.Controllers
         private readonly IAdminRepository _adminRepository;
         private readonly IFiles _cloudinaryService;
         private readonly IMapper _mapper;
-        public TeacherController(IFiles cloudinaryService,IAdminRepository adminRepository, TokenService tokenService, UserManager<ApplicationUser> userManager, IMapper mapper, SignInManager<ApplicationUser> signInManager, EduNexContext context)
+        public TeacherController(IFiles cloudinaryService, IAdminRepository adminRepository, TokenService tokenService, UserManager<ApplicationUser> userManager, IMapper mapper, SignInManager<ApplicationUser> signInManager, EduNexContext context)
         {
             _tokenService = tokenService;
             _userManager = userManager;
@@ -242,7 +242,7 @@ namespace EduNexAPI.Controllers
 
                 var newUser = _mapper.Map<Teacher>(model);
                 newUser.UserName = model.Email;
-                newUser.ProfilePhoto = uploadResult; 
+                newUser.ProfilePhoto = uploadResult;
                 // Create the user
                 var result = await _userManager.CreateAsync(newUser, model.Password);
                 if (result.Succeeded)
@@ -290,9 +290,9 @@ namespace EduNexAPI.Controllers
                 //    return NotFound("Teacher not found");
                 //}
 
-                
 
-                await _adminRepository.UpdateTeachersAboutMe(id,aboutinfo);
+
+                await _adminRepository.UpdateTeachersAboutMe(id, aboutinfo);
 
                 return Ok("Teacher information updated successfully");
             }

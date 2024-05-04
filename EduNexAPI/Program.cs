@@ -77,7 +77,8 @@ namespace EduNexAPI
 
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<IFiles, CloudinaryService>();
-
+            builder.Services.AddScoped<IWallet, WalletRepo>();
+            builder.Services.AddScoped<ITransaction, TransactionRepo>();
             builder.Services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary"));
             builder.Services.AddSingleton(x =>
             {
@@ -105,11 +106,13 @@ namespace EduNexAPI
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins("http://localhost:4200") 
+                    builder.WithOrigins("http://localhost:4200")
                            .AllowAnyMethod()
-                           .AllowAnyHeader();
+                           .AllowAnyHeader()
+                           .AllowCredentials(); // Allow credentials from the specified origin(s)
                 });
             });
+
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
