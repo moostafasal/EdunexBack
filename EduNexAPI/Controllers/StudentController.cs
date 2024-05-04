@@ -1,5 +1,6 @@
 ﻿
 using AuthenticationMechanism.tokenservice;
+using EduNexBL.DTOs;
 using EduNexBL.DTOs.AuthDtos;
 using EduNexDB.Context;
 using EduNexDB.Entites;
@@ -191,6 +192,73 @@ namespace EduNexAPI.Controllers
             return Ok(studentDto);
         }
 
+
+        [HttpPut("Student{id}")]
+        public async Task<IActionResult> UpdateStudent(string id, CustomStudentDto customStudentDto)
+        {
+            if (string.IsNullOrEmpty(id) || customStudentDto == null)
+            {
+                return BadRequest("Invalid data provided.");
+            }
+
+            var existingStudent = await _context.Students.FindAsync(id);
+            if (existingStudent == null)
+            {
+                return NotFound($"Student with ID {id} not found.");
+            }
+            if (ModelState.IsValid)
+            {
+
+                existingStudent.FirstName = customStudentDto.FirstName;
+                existingStudent.LastName = customStudentDto.LastName;
+                existingStudent.Email = customStudentDto.Email;
+                existingStudent.ParentPhoneNumber = customStudentDto.ParentPhoneNumber;
+                existingStudent.Religion = customStudentDto.Religion;
+                existingStudent.LevelId = customStudentDto.LevelId;
+                //existingStudent.gender = customStudentDto.Gender;
+
+                var updatedStudent = _context.Students.Update(existingStudent);
+                if (updatedStudent == null)
+                {
+                    return StatusCode(500, "Failed to update student.");
+                }
+                return Ok(updatedStudent);
+
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+
+        }
+
+
+        [HttpGet("GetStudents")]
+        public async Task<IActionResult> GetAllStudents()
+        {
+            var students = await _context.Students.ToListAsync();
+
+            if (students == null)
+            {
+                return BadRequest("No Found Data");
+            }
+            else
+            {
+                var studentsData = students.Select(i => new StudentDto
+                {
+                    Email = i.Email,
+                    ParentPhoneNumber = i.ParentPhoneNumber,
+                    FirstName = i.FirstName,
+                    LastName = i.LastName,
+                    Gender = i.gender,
+                    LevelId = i.LevelId,
+                    Id = i.Id,
+                    LevelName = i.Level != null ? i.Level.LevelName : null, 
+                    Religion = i.Religion
+                });
+                return Ok(studentsData);
+            }
+        }
 
 
     }
