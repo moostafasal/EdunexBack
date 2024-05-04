@@ -126,21 +126,15 @@ namespace EduNexAPI.Controllers
             ////////////attention  
 
             // Switch statement to handle different results from starting the exam
-            switch (result)
+            return result switch
             {
-                case ExamStartResult.Success:
-                    return Ok("Exam started successfully.");
-                case ExamStartResult.NotFound:
-                    return NotFound("Exam or student not found.");
-                case ExamStartResult.NotAvailable:
-                    return BadRequest("Exam is not available.");
-                case ExamStartResult.InvalidDuration:
-                    return BadRequest("Invalid exam duration.");
-                case ExamStartResult.AlreadyStarted:
-                    return BadRequest("Exam has already been started.");
-                default:
-                    return BadRequest("Unknown error occurred."); // This may not happen in practice, but it's good to have a default case for completeness.
-            }
+                ExamStartResult.Success => Ok("Exam started successfully."),
+                ExamStartResult.NotFound => NotFound("Exam or student not found."),
+                ExamStartResult.NotAvailable => BadRequest("Exam is not available."),
+                ExamStartResult.InvalidDuration => BadRequest("Invalid exam duration."),
+                ExamStartResult.AlreadyStarted => BadRequest("Exam has already been started."),
+                _ => BadRequest("Unknown error occurred."),// This may not happen in practice, but it's good to have a default case for completeness.
+            };
         }
 
 
