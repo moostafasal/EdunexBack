@@ -1,4 +1,5 @@
 ﻿
+using Amazon.Util.Internal;
 using AuthenticationMechanism.Services;
 using AuthenticationMechanism.tokenservice;
 using AutoMapper;
@@ -50,7 +51,7 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("register/teacher")]
-        public async Task<ActionResult> TeacherRegister(RegisterTeacherDto model)
+        public async Task<ActionResult> TeacherRegister([FromBody]RegisterTeacherDto model)
 
         {
             // Validate the model
@@ -346,6 +347,23 @@ namespace EduNexAPI.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, "An unexpected error occurred");
+            }
+        }
+
+        [HttpPost("AddedTeacherImage")]
+        public async Task<IActionResult> AddedTeacherImage(string id,IFormFile ProfilePicture)
+        {
+
+            var uploadResult = await _cloudinaryService.UploadImageAsync(ProfilePicture);
+            if (uploadResult == null)
+            {
+                ModelState.AddModelError("ProfilePicture", "Error uploading image");
+                return BadRequest(ModelState);
+            }
+            else
+            {
+                _adminRepository.AddedTeachersPhoto(id, uploadResult);
+                return Ok("ProfilePicture uploaded successfully");
             }
         }
 

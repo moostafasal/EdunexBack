@@ -16,7 +16,6 @@ namespace EduNexDB.Entites
         public string? Description { get; set; }
         public string? FacebookAccount { get; set; }
 
-
         [Column("AboutMe")]
         public string? AboutMe { get; set; }
         public string? AccountNote { get; set; }

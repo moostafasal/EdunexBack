@@ -52,8 +52,8 @@ namespace EduNexBL.DTOs.AuthDtos
         public string ConfirmPassword { get; set; }
 
         // Add property for file upload
-        [Required(ErrorMessage = "Please select a file.")]
+        
         [Display(Name = "Upload Profile Picture")]
-        public IFormFile ProfilePicture { get; set; }
+        public IFormFile? ProfilePicture { get; set; }
     }
 }

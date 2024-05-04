@@ -174,5 +174,17 @@ namespace EduNexBL.Repository
                 _context.SaveChanges();
             }
         }
+       public async Task AddedTeachersPhoto(string id, string path)
+        {
+            var teacher = await _context.Teachers.FindAsync(id);
+            if (teacher != null)
+            {
+                teacher.ProfilePhoto = path;
+                
+                _context.SaveChanges();
+            }
+
+        }
+
     }
 }

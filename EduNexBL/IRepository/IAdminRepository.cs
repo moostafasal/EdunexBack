@@ -23,6 +23,9 @@ namespace EduNexBL.IRepository
         Task UpdateTeachersAccountNote(string id, AccountNoteDto Aboutinfo);
         Task UpdateTeacher(string id, UpdateTeacherDto teacherDto);
 
+        Task AddedTeachersPhoto(string id, string path);
+
+
 
 
     }
