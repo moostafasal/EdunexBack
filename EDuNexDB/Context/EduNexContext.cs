@@ -27,6 +27,7 @@ namespace EduNexDB.Context
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<StudentCourse> studentCourse { get; set; }
 
         //public DbSet<City> cities { get; set; }
 
@@ -75,8 +76,18 @@ namespace EduNexDB.Context
 
 
 
+            //student couese mtom 
+            modelBuilder.Entity<StudentCourse>()
+                    .HasOne(sc => sc.Student)
+                    .WithMany(s => s.StudentCourses)
+                    .HasForeignKey(sc => sc.StudentId)
+                    .OnDelete(DeleteBehavior.NoAction); // Specify delete behavior
 
-
+            modelBuilder.Entity<StudentCourse>()
+                .HasOne(sc => sc.Course)
+                .WithMany(e => e.StudentCourses)
+                .HasForeignKey(sc => sc.CourseId)
+                .OnDelete(DeleteBehavior.NoAction); // Specify delete behavior
 
 
 
