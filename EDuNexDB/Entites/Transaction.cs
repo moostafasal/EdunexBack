@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace EduNexDB.Entites
 {
+
     public class Transaction
     {
         [Key]
@@ -22,5 +23,6 @@ namespace EduNexDB.Entites
         public decimal Amount { get; set; }
         [Required]
         public string TransactionDate { get; set; }
+
     }
 }

@@ -15,7 +15,7 @@ namespace EduNexBL.DTOs
         public string ParentPhoneNumber { get; set; }
         public string Religion { get; set; }
         public int? LevelId { get; set; }
-        public Gender ?Gender { get; set; }
+        public string? Gender { get; set; }
 
     }
 }

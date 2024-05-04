@@ -193,7 +193,7 @@ namespace EduNexAPI.Controllers
         }
 
 
-        [HttpPut("Student{id}")]
+        [HttpPut("Student/{id}")]
         public async Task<IActionResult> UpdateStudent(string id, CustomStudentDto customStudentDto)
         {
             if (string.IsNullOrEmpty(id) || customStudentDto == null)
@@ -206,31 +206,35 @@ namespace EduNexAPI.Controllers
             {
                 return NotFound($"Student with ID {id} not found.");
             }
+
             if (ModelState.IsValid)
             {
-
                 existingStudent.FirstName = customStudentDto.FirstName;
                 existingStudent.LastName = customStudentDto.LastName;
                 existingStudent.Email = customStudentDto.Email;
                 existingStudent.ParentPhoneNumber = customStudentDto.ParentPhoneNumber;
                 existingStudent.Religion = customStudentDto.Religion;
                 existingStudent.LevelId = customStudentDto.LevelId;
-                //existingStudent.gender = customStudentDto.Gender;
+                existingStudent.gender = (Gender)Enum.Parse(typeof(Gender), customStudentDto.Gender);
 
-                var updatedStudent = _context.Students.Update(existingStudent);
-                if (updatedStudent == null)
+                try
                 {
+                    _context.Students.Update(existingStudent); // Mark the entity as modified
+                    await _context.SaveChangesAsync();
+                    return Ok(existingStudent); // Return the updated student
+                }
+                catch (DbUpdateException)
+                {
+                    // Log the exception or handle it accordingly
                     return StatusCode(500, "Failed to update student.");
                 }
-                return Ok(updatedStudent);
-
             }
             else
             {
                 return BadRequest(ModelState);
             }
-
         }
+
 
 
         [HttpGet("GetStudents")]
@@ -253,7 +257,7 @@ namespace EduNexAPI.Controllers
                     Gender = i.gender,
                     LevelId = i.LevelId,
                     Id = i.Id,
-                    LevelName = i.Level != null ? i.Level.LevelName : null, 
+                    LevelName = i.Level != null ? i.Level.LevelName : null,
                     Religion = i.Religion
                 });
                 return Ok(studentsData);
