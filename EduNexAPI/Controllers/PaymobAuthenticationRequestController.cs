@@ -283,6 +283,7 @@ namespace EduNexAPI.Controllers
                     paymentKeyResponse.Data = "https://accept.paymob.com/api/acceptance/iframes/838672?payment_token=" + paymentKey;
 
                     await UpdateWalletBalance(userID, price);
+                    await CreateTransaction(userID, price);
 
                     // Return success status
                     return paymentKeyResponse;
