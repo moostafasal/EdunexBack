@@ -19,7 +19,7 @@ namespace EduNexBL.Base
 
         public async Task<T?> GetById(int id)
         {
-            return await _dbContext.Set<T>().SingleOrDefaultAsync();
+            return await _dbContext.Set<T>().FindAsync(id);
         }
 
         public async Task<IEnumerable<T>> GetAll()

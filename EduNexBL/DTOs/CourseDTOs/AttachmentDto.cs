@@ -6,7 +6,7 @@ namespace EduNexBL.DTOs.CourseDTOs
     {
         public int Id { get; set; }
         public string AttachmentTitle { get; set; } = null!;
-        public string AttachmentPath { get; set; } = null!;
+        public string? AttachmentPath { get; set; } = null!;
 
     }
 

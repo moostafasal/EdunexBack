@@ -31,6 +31,11 @@ namespace EduNexBL.AutoMapper
             CreateMap<WalletDTO, Wallet>();
             CreateMap<Transaction, TransactionDTO>();
             CreateMap<TransactionDTO, Transaction>();
+            CreateMap<AttachmentDto, AttachmentFile>();
+            CreateMap<AttachmentFile, AttachmentDto>();
+            CreateMap<Lecture, LectureDto>();
+            CreateMap<LectureDto,Lecture > (); 
+
 
             CreateMap<Teacher, TeacherDto>()
              .ForMember(dest => dest.gender, opt => opt.MapFrom(src => src.gender.ToString()))

@@ -130,7 +130,7 @@ namespace EduNexAPI.Controllers
 
         }
 
-        [HttpGet("Get-Student/{id}")]
+        [HttpGet("GetStudentById/{id}")]
         public async Task<ActionResult<StudentDto1>> GetStudentById(string id)
         {
             var student = await _context.Students

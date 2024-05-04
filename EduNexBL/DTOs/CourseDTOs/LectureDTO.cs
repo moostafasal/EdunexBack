@@ -11,12 +11,12 @@ namespace EduNexBL.DTOs.CourseDTOs
 {
     public class LectureDto
     {
-        public int? Id { set; get; } 
-
+        public int? Id { set; get; }
+        [Required]
         public string LectureTitle { get; set; } = null!;
-
+        [Required]
         public decimal Price { get; set; }
-
+        [Required]
         public int CourseId { get; set; }
 
         public List<VideoDTO>? Videos { get; set; } = new List<VideoDTO>();

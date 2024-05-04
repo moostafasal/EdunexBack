@@ -13,6 +13,7 @@ namespace EduNexBL.IRepository
     public interface ILecture : IRepository<Lecture>
     {
         Task<IEnumerable<Lecture>> GetLecturesByCourseId(int courseId);
+        Task<Lecture?> GetFullLectureById(int id);
         Task AddVideo(Video video);
         Task AddAttachment(AttachmentFile attachment);
         Task<bool> HasPreExam(int id);

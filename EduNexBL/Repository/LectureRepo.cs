@@ -28,6 +28,12 @@ namespace EduNexBL.Repository
                 .ToListAsync();
         }
 
+        public async Task<Lecture?> GetFullLectureById(int id)
+        {
+            return await _context.Lectures.Include(l => l.Attachments).Include(l => l.Videos).Include(l => l.Exams).FirstOrDefaultAsync(l => l.Id == id); 
+              
+        }
+
         public async Task AddAttachment(AttachmentFile attachment)
         {
             var lecture = await _context.Lectures.FindAsync(attachment.LectureId);

@@ -9,6 +9,7 @@ namespace EduNexBL.ENums
     public enum QuestionType
     {
         MultipleChoice,
-        TrueFalse
+        TrueFalse,
+        OneChoice
     }
 }

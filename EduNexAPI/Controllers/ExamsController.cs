@@ -65,14 +65,14 @@ namespace EduNexAPI.Controllers
             await _unitOfWork.ExamRepo.Add(exam);
 
             var createdExamDto = _mapper.Map<ExamDto>(exam);
-            return CreatedAtAction(nameof(Get), new { id = createdExamDto.ExamId }, createdExamDto);
+            return CreatedAtAction(nameof(Get), new { id = createdExamDto.Id }, createdExamDto);
         }
 
         // PUT api/<ExamsController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] ExamDto examDto)
         {
-            if (id != examDto.ExamId)
+            if (id != examDto.Id)
             {
                 return BadRequest();
             }
@@ -159,12 +159,21 @@ namespace EduNexAPI.Controllers
             var response = await _unitOfWork.ExamRepo.GetExamSubmitResultWithDetails(id, studentId);
 
 
-            return Ok(response); 
-            //if (response.SubmitResult == ExamSubmitResult.Success)
-            //    return Ok(response);
-            //else
-            //    return BadRequest(response.SubmitResult);
+            //return Ok(response); 
+            if (response.SubmitResult == ExamSubmitResult.Success)
+                return Ok(response);
+            else
+                return BadRequest(response.SubmitResult);
 
         }
+
+        [HttpGet("{id}/getinfo")]
+        public async Task<IActionResult> GetStudentExamInfo([FromBody] string studentId, int id)
+        {
+            var info = await _unitOfWork.ExamRepo.GetStudentExamInfo(studentId, id);
+            if (info != null) return Ok(info);
+            else return NotFound(); 
+        }
+
     }
 }
