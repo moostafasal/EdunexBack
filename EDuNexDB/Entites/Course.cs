@@ -31,6 +31,7 @@ namespace EduNexDB.Entites
         public CourseType CourseType { get; set; }
 
         [Required]
+        [DataType("integer")]
         public decimal Price { get; set; }
 
         [ForeignKey("Subject")]

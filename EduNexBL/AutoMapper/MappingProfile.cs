@@ -3,6 +3,7 @@ using EduNexBL.DTOs;
 using EduNexBL.DTOs.AuthDtos;
 using EduNexBL.DTOs.CourseDTOs;
 using EduNexBL.DTOs.ExamintionDtos;
+using EduNexBL.DTOs.PaymentDTOs;
 using EduNexDB.Entites;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,10 @@ namespace EduNexBL.AutoMapper
             CreateMap<RegisterTeacherDto, Teacher>();
             CreateMap<VideoDTO, Video>();
             CreateMap<Video, VideoDTO>();
-
+            CreateMap<Wallet, WalletDTO>();
+            CreateMap<WalletDTO, Wallet>();
+            CreateMap<Transaction, TransactionDTO>();
+            CreateMap<TransactionDTO, Transaction>();
 
             CreateMap<Teacher, TeacherDto>()
              .ForMember(dest => dest.gender, opt => opt.MapFrom(src => src.gender.ToString()))

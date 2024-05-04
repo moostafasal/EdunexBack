@@ -102,21 +102,25 @@ namespace EduNexDB.Context
 
 
             modelBuilder.Entity<Lecture>()
-                .Property(l => l.Price)
-                .HasColumnType("decimal(18,2)");
+                    .Property(l => l.Price)
+                    .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Course>()
+                    .Property(c => c.Price)
+                    .HasPrecision(18, 2);
 
 
             modelBuilder.Entity<Transaction>()
-       .Property(t => t.Amount)
-       .HasColumnType("decimal(18, 2)");
+                    .Property(t => t.Amount)
+                    .HasColumnType("decimal(18, 2)");
 
             modelBuilder.Entity<Wallet>()
-       .Property(w => w.Balance)
-       .HasColumnType("decimal(18, 2)");
+                    .Property(w => w.Balance)
+                    .HasColumnType("decimal(18, 2)");
 
             //configure Examination models relationships  
             modelBuilder.Entity<StudentExam>()
-           .HasKey(se => new { se.StudentId, se.ExamId });
+                  .HasKey(se => new { se.StudentId, se.ExamId });
             modelBuilder.Entity<StudentExam>()
                   .HasOne(se => se.Student)
                   .WithMany(s => s.StudentExams)
@@ -131,7 +135,7 @@ namespace EduNexDB.Context
 
 
             modelBuilder.Entity<StudentsAnswersSubmissions>()
-       .HasKey(s => s.Id);
+                .HasKey(s => s.Id);
 
             modelBuilder.Entity<StudentsAnswersSubmissions>()
                 .HasOne(s => s.Exam)
