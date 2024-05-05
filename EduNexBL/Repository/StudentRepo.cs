@@ -21,7 +21,7 @@ namespace EduNexBL.Repository
         }
         public async Task<Student?> GetById(string id)
         {
-            return await _Context.Students.SingleOrDefaultAsync();
+            return await _Context.Students.SingleOrDefaultAsync(s => s.Id == id);
         }
 
     }

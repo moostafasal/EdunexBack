@@ -43,6 +43,8 @@ namespace EduNexDB.Entites
         public Teacher? Teacher { get; set; }
 
         public ICollection<Lecture>? Lectures { get; set; } = new List<Lecture>();
+        public ICollection<StudentCourse>? StudentCourses { get; set; }
+
 
     }
 }

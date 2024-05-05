@@ -51,7 +51,7 @@ namespace EduNexBL.Repository
             };
 
             _context.StudentExam.Add(studentExam);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return ExamStartResult.Success;
         }
