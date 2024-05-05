@@ -25,6 +25,11 @@ namespace EduNexBL.Repository
             return await _Context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == id);
         }
 
+        public async Task<Wallet?> GetByIdAndOwnerType(string id, string ownertype)
+        {
+            return await _Context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == id && w.OwnerType == ownertype);
+        }
+
         public async Task UpdateWallet(Wallet wallet)
         {
             _Context.Wallets.Update(wallet);

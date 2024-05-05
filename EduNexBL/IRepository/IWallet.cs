@@ -11,6 +11,7 @@ namespace EduNexBL.IRepository
     public interface IWallet : IRepository<Wallet>
     {
         Task<Wallet?> GetById(string id);
+        Task<Wallet?> GetByIdAndOwnerType(string id, string ownerType);
         Task UpdateWallet(Wallet wallet);
     }
 }
