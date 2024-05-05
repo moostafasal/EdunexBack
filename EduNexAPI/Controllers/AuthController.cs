@@ -1,4 +1,5 @@
 ﻿using AuthenticationMechanism.tokenservice;
+using EduNexBL.DTOs;
 using EduNexBL.DTOs.AuthDtos;
 using EduNexDB.Entites;
 using Microsoft.AspNetCore.Http;
@@ -70,10 +71,10 @@ namespace EduNexAPI.Controllers
 
 
                         Message = "pending"
-                        
+
                     };
 
-                return Ok(response);
+                    return Ok(response);
                 }
                 else if (teacher.Status == TeacherStatus.Rejected)
                 {
@@ -179,6 +180,57 @@ namespace EduNexAPI.Controllers
             }
 
         }
+
+
+        [HttpPost("change-password/{userId}")]
+        public async Task<IActionResult> ChangePassword(string userId, ChangePasswordDto model)
+        {
+            // Validate the model
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Get the user by ID
+            var user = await _userManager.FindByIdAsync(userId);
+
+            // Check if the user exists
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Change the password
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+
+            // Check if the password change was successful
+            if (!result.Succeeded)
+            {
+                // If there are errors, return specific error messages
+                foreach (var error in result.Errors)
+                {
+                    if (error.Code == "PasswordMismatch")
+                    {
+                        ModelState.AddModelError("CurrentPassword", "The current password is incorrect.");
+                    }
+                    else if (error.Code == "PasswordTooShort")
+                    {
+                        ModelState.AddModelError("NewPassword", "The new password must be at least 6 characters long.");
+                    }
+                    // Add more conditions for other specific errors if needed
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+                return BadRequest(ModelState);
+            }
+
+            return Ok(new { message = "Password changed successfully." });
+        }
+
+
+
 
 
 
