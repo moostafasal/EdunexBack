@@ -82,7 +82,9 @@ namespace EduNexBL.Repository
                 Address = teacher.Address,
                 PhoneNumber = teacher.PhoneNumber,
                 NationalId = teacher.NationalId,
-                subject = teacher.subject
+                subject = teacher.subject,
+                ProfilePhoto=teacher.ProfilePhoto
+               
                 
                 // Map other properties as needed
             };
@@ -166,9 +168,7 @@ namespace EduNexBL.Repository
             var teacher = await _context.Teachers.FindAsync(id);
             if (teacher != null)
             {
-                teacher.AboutMe = teacherDto.AboutMe;
                 teacher.PhoneNumber=teacherDto.PhoneNumber;
-                teacher.Email=teacherDto.Email;
                 teacher.subject = teacherDto.subject;
                 teacher.Address = teacherDto.Address;
                 _context.SaveChanges();
@@ -180,11 +180,35 @@ namespace EduNexBL.Repository
             if (teacher != null)
             {
                 teacher.ProfilePhoto = path;
-                
+
+                _context.SaveChanges();
+            }
+            
+
+        }
+
+        public async Task UpdateAllTeacherData(string id, TeacherDto teachDto)
+        {
+            var teacher = await _context.Teachers.FindAsync(id);
+            if (teacher != null)
+            {
+                teacher.PhoneNumber = teachDto.PhoneNumber;
+                teacher.subject = teachDto.subject;
+                teacher.Address = teachDto.Address;
+                teacher.AboutMe = teachDto.AboutMe;
+                teacher.AccountNote= teachDto.AccountNote;
+                teacher.FirstName= teachDto.FirstName;
+                teacher.gender = teacher.gender;
+                teacher.Email = teachDto.Email;
+                teacher.Address = teacher.Address;
+                teacher.City = teacher.City;
+                teacher.Status = teacher.Status;
+                teacher.Description = teacher.Description;
+                teacher.NationalId = teacher.NationalId;
+                teacher.subject = teacher.subject;
                 _context.SaveChanges();
             }
 
         }
-
     }
 }
