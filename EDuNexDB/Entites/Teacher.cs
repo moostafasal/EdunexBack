@@ -8,7 +8,7 @@ namespace EduNexDB.Entites
         Approved,
         Rejected
     }
-    public class Teacher:ApplicationUser
+    public class Teacher : ApplicationUser
     {
 
         public string? ProfilePhoto { get; set; }
@@ -22,7 +22,13 @@ namespace EduNexDB.Entites
 
         public string? subject { get; set; }
 
-        public TeacherStatus Status { get; set; } = TeacherStatus.Pending; // Set default status to Pending
+
+        public ICollection<Course> Courses { get; set; }
+
+
+        public TeacherStatus Status { get; set; } = TeacherStatus.Pending;
+
+
 
     }
 }

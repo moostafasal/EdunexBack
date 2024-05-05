@@ -153,11 +153,26 @@ namespace EduNexBL.Repository
         public async Task<bool> IsStudentEnrolledInCourse(string studentId, int courseId)
         {
             // Check if there's any enrollment record matching the studentId and courseId
-            var sc =  await _context.StudentCourse
+            var sc = await _context.StudentCourse
             .FirstOrDefaultAsync(e => e.StudentId == studentId && e.CourseId == courseId);
 
             // If enrollment is not null, the student is enrolled in the course
             return sc != null;
         }
+        public async Task<bool> IsTeacherRelatedToCourse(string teacherId, int courseId)
+        {
+            // Check if there's any course with the given courseId and associated with the given teacherId
+            var course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == courseId && c.TeacherId == teacherId);
+
+            // If course is not null, the teacher is related to the course
+            return course != null;
+        }
+
+
+
+
+
+
+
     }
 }

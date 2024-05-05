@@ -20,6 +20,7 @@ namespace EduNexDB.Entites
     public class Course : BaseEntity
     {
 
+
         [Required]
         public string CourseName { get; set; } = null!;
 
@@ -44,6 +45,11 @@ namespace EduNexDB.Entites
 
         public ICollection<Lecture>? Lectures { get; set; } = new List<Lecture>();
         public ICollection<StudentCourse>? StudentCourses { get; set; }
+
+        public bool IsTeacherRelated(string teacherId)
+        {
+            return TeacherId == teacherId;
+        }
 
 
     }
