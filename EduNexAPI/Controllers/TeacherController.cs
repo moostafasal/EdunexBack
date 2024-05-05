@@ -350,6 +350,26 @@ namespace EduNexAPI.Controllers
             }
         }
 
+        [HttpPut("AllTeacherData/{id}")]
+        public async Task<IActionResult> UpdateAllTeacherData(string id, TeacherDto updateTeachDto)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    return BadRequest("Invalid id");
+                }
+
+                await _adminRepository.UpdateAllTeacherData(id, updateTeachDto);
+
+                return Ok("Teacher information updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred");
+            }
+        }
+
         [HttpPost("AddedTeacherImage")]
         public async Task<IActionResult> AddedTeacherImage(string id,IFormFile ProfilePicture)
         {
@@ -362,8 +382,8 @@ namespace EduNexAPI.Controllers
             }
             else
             {
-                _adminRepository.AddedTeachersPhoto(id, uploadResult);
-                return Ok("ProfilePicture uploaded successfully");
+                await _adminRepository.AddedTeachersPhoto(id, uploadResult);
+                return Ok("ProfilePicture uploaded successfully"+ uploadResult);
             }
         }
 
