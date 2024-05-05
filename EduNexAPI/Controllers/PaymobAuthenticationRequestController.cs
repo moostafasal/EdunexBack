@@ -225,7 +225,7 @@ namespace EduNexAPI.Controllers
             }
         }
         
-        [Microsoft.AspNetCore.Mvc.HttpPost("GetPaymentKey")]
+        [HttpPost("GetPaymentKey")]
         public async Task<BaseResponseWithDataModel<string>> GetPaymentKey(PaymentKeyRequestDTO paymentKeyRequest, int price, string userId)
         {
             BaseResponseWithDataModel<string> paymentKeyResponse = new BaseResponseWithDataModel<string>();
@@ -301,6 +301,29 @@ namespace EduNexAPI.Controllers
                 // Handle any exceptions
                 paymentKeyResponse.ErrorMsg = ex.Message;
                 return paymentKeyResponse;
+            }
+        }
+
+        [HttpGet("GetWalletBalance")]
+        public async Task<IActionResult> GetWalletBalance(string ownerId, string ownerType)
+        {
+            try
+            {
+                Wallet displayedWallet = await _walletRepo.GetByIdAndOwnerType(ownerId, ownerType);
+
+                if (displayedWallet != null)
+                {
+                    return Ok(new { Balance = displayedWallet.Balance });
+                }
+                else
+                {
+                    return NotFound($"Wallet not found for the provided owner with data: id = {ownerId} & OwnerType: {ownerType}");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
     }

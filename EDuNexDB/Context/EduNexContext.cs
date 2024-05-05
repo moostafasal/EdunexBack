@@ -29,6 +29,7 @@ namespace EduNexDB.Context
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<StudentCourse> StudentCourse { get; set; }
 
+
         //public DbSet<City> cities { get; set; }
 
         //public DbSet<Governorate> governorates { get; set; }
