@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EduNexBL.Base;
 using EduNexBL.DTOs.CourseDTOs;
+using EduNexBL.ENums;
 using EduNexBL.IRepository;
 using EduNexDB.Context;
 using EduNexDB.Entites;
@@ -103,6 +104,60 @@ namespace EduNexBL.Repository
                 AttachmentTitle = attachment.AttachmentTitle,
                 AttachmentPath = attachment.AttachmentPath,
             };
+        }
+
+        public async Task<EnrollmentResult> EnrollStudentInCourse(string studentId, int courseId)
+        {
+            try
+            {
+                var student = await _context.Students.SingleOrDefaultAsync(s => s.Id == studentId);
+                var course = await _context.Courses.SingleOrDefaultAsync(c => c.Id == courseId);
+
+                if (student == null)
+                {
+                    return EnrollmentResult.StudentNotFound;
+                }
+
+                if (course == null)
+                {
+                    return EnrollmentResult.CourseNotFound;
+                }
+
+                // Check if the student is already enrolled in the course (if needed)
+                if (await IsStudentEnrolledInCourse(studentId, courseId))
+                {
+                    return EnrollmentResult.AlreadyEnrolled;
+                }
+
+                // Create a new enrollment
+                var enrollment = new StudentCourse
+                {
+                    StudentId = studentId,
+                    CourseId = courseId,
+                    Enrolled = DateTime.Now // or any appropriate timestamp
+                };
+
+                // Add the enrollment to the database
+                _context.StudentCourse.Add(enrollment);
+                _context.SaveChanges();
+
+                return EnrollmentResult.Success;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return EnrollmentResult.Error;
+            }
+        }
+
+        public async Task<bool> IsStudentEnrolledInCourse(string studentId, int courseId)
+        {
+            // Check if there's any enrollment record matching the studentId and courseId
+            var sc =  await _context.StudentCourse
+            .FirstOrDefaultAsync(e => e.StudentId == studentId && e.CourseId == courseId);
+
+            // If enrollment is not null, the student is enrolled in the course
+            return sc != null;
         }
     }
 }

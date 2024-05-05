@@ -27,7 +27,7 @@ namespace EduNexDB.Context
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
-        public DbSet<StudentCourse> studentCourse { get; set; }
+        public DbSet<StudentCourse> StudentCourse { get; set; }
 
         //public DbSet<City> cities { get; set; }
 

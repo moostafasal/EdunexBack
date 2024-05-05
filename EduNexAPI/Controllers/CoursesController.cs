@@ -1,5 +1,6 @@
 ﻿using EduNexBL.DTOs.CourseDTOs;
 using EduNexBL.DTOs.ExamintionDtos;
+using EduNexBL.ENums;
 using EduNexBL.UnitOfWork;
 using EduNexDB.Entites;
 using Microsoft.AspNetCore.Mvc;
@@ -88,6 +89,27 @@ namespace EduNexAPI.Controllers
             await _unitOfWork.CourseRepo.Delete(course);
 
             return NoContent();
+        }
+
+        [HttpPost("enroll")]
+        public async Task<IActionResult> EnrollStudentInCourse(EnrollmentRequestDto enrollmentRequestDto)
+        {
+            var result = await _unitOfWork.CourseRepo.EnrollStudentInCourse(enrollmentRequestDto.StudentId, enrollmentRequestDto.CourseId);
+            return result switch
+            {
+                EnrollmentResult.Success => Ok(),
+                EnrollmentResult.StudentNotFound => NotFound("Student not found."),
+                EnrollmentResult.CourseNotFound => NotFound("Course not found."),
+                EnrollmentResult.AlreadyEnrolled => BadRequest("Student is already enrolled in the course."),
+                _ => StatusCode(500, "An error occurred while processing the enrollment.")
+            };
+        }
+
+        [HttpGet("checkenrollment")]
+        public async Task<IActionResult> CheckEnrollment([FromQuery]EnrollmentRequestDto enrollmentDto)
+        {
+            var isEnrolled = await _unitOfWork.CourseRepo.IsStudentEnrolledInCourse(enrollmentDto.StudentId, enrollmentDto.CourseId);
+            return Ok(isEnrolled);
         }
     }
 }
