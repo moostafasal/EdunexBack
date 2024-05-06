@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using EduNexBL.IRepository;
+using EduNexBL.ENums;
+using Amazon.S3.Model;
 
 namespace EduNexAPI.Controllers
 {
@@ -16,10 +18,11 @@ namespace EduNexAPI.Controllers
         private readonly HttpClient _client;
         private readonly IWallet _walletRepo;
         private readonly ITransaction _TransactionRepo;
+        private readonly ICourse _CourseRepo;
         internal string authToken = String.Empty;
         internal string created_at = String.Empty;
         internal string payment_method = String.Empty;
-        public PaymobAuthenticationRequestController(IConfiguration configuration, IMapper mapper, IWallet walletRepo, ITransaction transactionRepo)
+        public PaymobAuthenticationRequestController(IConfiguration configuration, IMapper mapper, IWallet walletRepo, ITransaction transactionRepo, ICourse courseRepo)
         {
             _configuration = configuration;
             _mapper = mapper;
@@ -28,6 +31,7 @@ namespace EduNexAPI.Controllers
             _client.DefaultRequestHeaders.Accept.Clear();
             _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
             _TransactionRepo = transactionRepo;
+            _CourseRepo = courseRepo;
         }
 
         private async Task UpdateWalletBalance(string userId, int amount)
@@ -324,6 +328,24 @@ namespace EduNexAPI.Controllers
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpPost("PurchaseCourse")]
+        public async Task<IActionResult> PurchaseCourse(string studentId, int courseId)
+        {
+            try
+            {
+                var EnrollInCourse = await _CourseRepo.EnrollStudentInCourse(studentId, courseId);
+                if (EnrollInCourse == EnrollmentResult.Success)
+                {
+                    return Ok();
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
             }
         }
     }

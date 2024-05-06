@@ -34,15 +34,16 @@ namespace EduNexBL.UnitOfWork
         public IAttachment AttachmentRepo => _attachmentRepo.Value;
         public IWallet WalletRepo => _walletRepo.Value;
 
-        public UnitOfWork(EduNexContext context, IMapper mapper)
+        public UnitOfWork(EduNexContext context, IMapper mapper, IWallet walletRepo)
         {
             _context = context;
             _mapper = mapper;
+            _walletRepo = (Lazy<IWallet>?)walletRepo;
 
             _examRepo = new Lazy<IExam>(() => new ExamRepo(_context));
             _studentRepo = new Lazy<IStudent>(() => new StudentRepo(_context));
             _studentExamRepo = new Lazy<IStudentExam>(() => new StudentExamRepo(_context));
-            _courseRepo = new Lazy<ICourse>(() => new CourseRepo(_context, _mapper));
+            _courseRepo = new Lazy<ICourse>(() => new CourseRepo(_context, _mapper, walletRepo));
             _lectureRepo = new Lazy<ILecture>(() => new LectureRepo(_context));
             _videoRepo = new Lazy<IVideo>(() => new VideoRepo(_context));
             _attachmentRepo = new Lazy<IAttachment>(() => new AttachmentRepo(_context));
