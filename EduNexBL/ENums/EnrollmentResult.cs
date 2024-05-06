@@ -12,6 +12,7 @@ namespace EduNexBL.ENums
         StudentNotFound,
         CourseNotFound,
         AlreadyEnrolled,
+        InsufficientBalance,
         Error
     }
 }

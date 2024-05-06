@@ -22,6 +22,7 @@ namespace EduNexAPI.Controllers
         internal string authToken = String.Empty;
         internal string created_at = String.Empty;
         internal string payment_method = String.Empty;
+
         public PaymobAuthenticationRequestController(IConfiguration configuration, IMapper mapper, IWallet walletRepo, ITransaction transactionRepo, ICourse courseRepo)
         {
             _configuration = configuration;
@@ -336,17 +337,29 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                var EnrollInCourse = await _CourseRepo.EnrollStudentInCourse(studentId, courseId);
-                if (EnrollInCourse == EnrollmentResult.Success)
+                var enrollmentResult = await _CourseRepo.EnrollStudentInCourse(studentId, courseId);
+
+                switch (enrollmentResult)
                 {
-                    return Ok();
+                    case EnrollmentResult.Success:
+                        return Ok("Course purchased successfully.");
+                    case EnrollmentResult.AlreadyEnrolled:
+                        return Conflict("Student is already enrolled in the course.");
+                    case EnrollmentResult.InsufficientBalance:
+                        return BadRequest("Insufficient balance to purchase the course.");
+                    case EnrollmentResult.StudentNotFound:
+                        return NotFound("Student not found.");
+                    case EnrollmentResult.CourseNotFound:
+                        return NotFound("Course not found.");
+                    default:
+                        return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
                 }
-                return BadRequest();
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, $"An unexpected error occurred : {ex.Message}");
             }
         }
+
     }
 }
