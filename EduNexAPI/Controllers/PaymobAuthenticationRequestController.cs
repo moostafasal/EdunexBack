@@ -8,6 +8,10 @@ using Newtonsoft.Json;
 using EduNexBL.IRepository;
 using EduNexBL.ENums;
 using Amazon.S3.Model;
+using Azure;
+using System.Reflection;
+using System.Data;
+using Newtonsoft.Json.Linq;
 
 namespace EduNexAPI.Controllers
 {
@@ -230,8 +234,8 @@ namespace EduNexAPI.Controllers
             }
         }
         
-        [HttpPost("GetPaymentKey")]
-        public async Task<BaseResponseWithDataModel<string>> GetPaymentKey(PaymentKeyRequestDTO paymentKeyRequest, int price, string userId)
+        [HttpPost("GetPaymentKeyForBancCard")]
+        public async Task<BaseResponseWithDataModel<string>> GetPaymentKeyForBankCard(PaymentKeyCardRequestDTO paymentKeyCardRequest, int price, string userId)
         {
             BaseResponseWithDataModel<string> paymentKeyResponse = new BaseResponseWithDataModel<string>();
             var orderRequest = new OrderRequestDTO();
@@ -256,11 +260,11 @@ namespace EduNexAPI.Controllers
                 {
                     auth_token = authToken,
                     amount_cents = amountCents,
-                    expiration = paymentKeyRequest.expiration,
+                    expiration = paymentKeyCardRequest.expiration,
                     order_id = int.Parse(id),
-                    billing_data = paymentKeyRequest.billing_data,
-                    currency = paymentKeyRequest.currency,
-                    integration_id = paymentKeyRequest.integration_id
+                    billing_data = paymentKeyCardRequest.billing_data,
+                    currency = paymentKeyCardRequest.currency,
+                    integration_id = paymentKeyCardRequest.integration_id
                 };
 
                 // Convert object to JSON string
@@ -306,6 +310,161 @@ namespace EduNexAPI.Controllers
                 // Handle any exceptions
                 paymentKeyResponse.ErrorMsg = ex.Message;
                 return paymentKeyResponse;
+            }
+        }
+
+        //[HttpPost("GetPaymentKeyForMobileWallet")]
+        public async Task<BaseResponseWithDataModel<string>> GetPaymentKeyForMobileWallet(PaymentKeyMobileWalletRequestDTO paymentKeyMobileWalletRequest, int price, string userId)
+        {
+            BaseResponseWithDataModel<string> paymentKeyResponse = new BaseResponseWithDataModel<string>();
+            var orderRequest = new OrderRequestDTO();
+            var amountCents = price * 100;
+            var userID = userId;
+            try
+            {
+                // Get the Paymob token
+                BaseResponseWithDataModel<string> idResponse = await CreateOrder(orderRequest, amountCents);
+
+                if (!string.IsNullOrEmpty(idResponse.ErrorMsg))
+                {
+                    string errorMessage = $"Paymob API request failed with status code: {idResponse.ErrorMsg}";
+                    idResponse.ErrorMsg = errorMessage;
+                    return idResponse;
+                }
+
+                string id = idResponse.Data;
+
+                // Prepare the order request data
+                var requestKey = new
+                {
+                    auth_token = authToken,
+                    amount_cents = amountCents,
+                    expiration = paymentKeyMobileWalletRequest.expiration,
+                    order_id = int.Parse(id),
+                    billing_data = paymentKeyMobileWalletRequest.billing_data,
+                    currency = paymentKeyMobileWalletRequest.currency,
+                    integration_id = paymentKeyMobileWalletRequest.integration_id
+                };
+
+                // Convert object to JSON string
+                string jsonRequest = JsonConvert.SerializeObject(requestKey);
+
+                // Create StringContent with JSON data
+                var content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+                // Create a new HttpClient instance
+                using var client = new HttpClient();
+                client.BaseAddress = new Uri("https://accept.paymob.com/api/acceptance/");
+
+                // Send POST request to Paymob order creation endpoint
+                HttpResponseMessage response = await client.PostAsync("payment_keys", content);
+
+                // Check if request was successful
+                if (response.IsSuccessStatusCode)
+                {
+                    // Read response content
+                    string responseContent = await response.Content.ReadAsStringAsync();
+
+                    // Deserialize JSON response to extract token
+                    dynamic responseObject = JsonConvert.DeserializeObject<KeyResponseModel>(responseContent);
+                    string paymentKey = responseObject.token;
+                    paymentKeyResponse.Data = paymentKey;
+
+                    await UpdateWalletBalance(userID, price);
+                    await CreateTransaction(userID, price);
+
+                    // Return success status
+                    return paymentKeyResponse;
+                }
+                else
+                {
+                    // Handle error response from Paymob API
+                    string errorMessage = $"Paymob order creation failed with status code: {response.StatusCode}";
+                    paymentKeyResponse.ErrorMsg = errorMessage;
+                    return paymentKeyResponse;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions
+                paymentKeyResponse.ErrorMsg = ex.Message;
+                return paymentKeyResponse;
+            }
+        }
+
+        [HttpPost("WalletPayRequest")]
+        public async Task<BaseResponseWithDataModel<string>> RequestMobileWalletURL(int _price, string _userId, string walletMobileNumber)
+        {
+            BaseResponseWithDataModel<string> redirectURL = new BaseResponseWithDataModel<string>();
+            PaymentKeyMobileWalletRequestDTO paymentKeyMobileWalletRequest = new PaymentKeyMobileWalletRequestDTO();
+            int price = _price;
+            string userId = _userId;
+            try
+            {
+              BaseResponseWithDataModel<string> paymentToken = await GetPaymentKeyForMobileWallet(paymentKeyMobileWalletRequest, price, userId);
+
+                if (!string.IsNullOrEmpty(paymentToken.ErrorMsg))
+                {
+                    string errorMessage = $"Paymob API request failed with status code: {paymentToken.ErrorMsg}";
+                    paymentToken.ErrorMsg = errorMessage;
+                    return paymentToken;
+                }
+
+                string Token = paymentToken.Data;
+
+                var walletPayRequest = new
+                {
+                    source = new
+                    {
+                        identifier = walletMobileNumber,
+                        subtype = "WALLET"
+                    },
+                    payment_token = Token
+                };
+
+                // Convert object to JSON string
+                string jsonRequest = JsonConvert.SerializeObject(walletPayRequest);
+
+                // Create StringContent with JSON data
+                var content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+                // Create a new HttpClient instance
+                using var client = new HttpClient();
+                client.BaseAddress = new Uri("https://accept.paymob.com/api/acceptance/payments/pay");
+
+                // Send POST request to Paymob order creation endpoint
+                HttpResponseMessage response = await client.PostAsync("pay", content);
+
+                // Check if request was successful
+                if (response.IsSuccessStatusCode)
+                {
+                    // Read response content
+                    string responseContent = await response.Content.ReadAsStringAsync();
+
+                    // Deserialize JSON response to extract token
+                    dynamic responseObject = JsonConvert.DeserializeObject<UrlResponseModel>(responseContent);
+                    string walletredirectURL = responseObject.redirect_url;
+                    redirectURL.Data = walletredirectURL;
+
+                    await UpdateWalletBalance(userId, price);
+                    await CreateTransaction(userId, price);
+
+                    // Return success status
+                    return redirectURL;
+                }
+                else
+                {
+                    // Handle error response from Paymob API
+                    string errorMessage = $"Paymob order creation failed with status code: {response.StatusCode}";
+                    redirectURL.ErrorMsg = errorMessage;
+                    return redirectURL;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions
+                redirectURL.ErrorMsg = ex.Message;
+                return redirectURL;
             }
         }
 
