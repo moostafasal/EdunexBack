@@ -114,6 +114,9 @@ namespace EduNexBL.Repository
             result.ExamType = exam.Type;
             result.ExamGrade = await CalcTotalExamGrade(examId);
             result.StudentGrade = CalculateStudentGrade(examSubmissionDto);
+            var studentExam = _context.StudentExam.FirstOrDefault(se => se.StudentId == studentId && se.ExamId == examId);
+            studentExam.Score = result.StudentGrade;
+            _context.SaveChanges();
             result.StudentAnswersWithCorrectAnswers = GetStudentAnswersWithCorrectAnswers(examSubmissionDto);
 
             result.SubmitResult = ExamSubmitResult.Success;
