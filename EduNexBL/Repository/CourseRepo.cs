@@ -112,7 +112,7 @@ namespace EduNexBL.Repository
             {
                 var student = await _context.Students.SingleOrDefaultAsync(s => s.Id == studentId);
                 var course = await _context.Courses.SingleOrDefaultAsync(c => c.Id == courseId);
-                var studentWallet = await _context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == studentId);
+                //var studentWallet = await _context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == studentId);
 
                 if (student == null)
                 {
@@ -124,10 +124,10 @@ namespace EduNexBL.Repository
                     return EnrollmentResult.CourseNotFound;
                 }
 
-                if (studentWallet == null)
-                {
-                    return EnrollmentResult.Error;
-                }
+                //if (studentWallet == null)
+                //{
+                //    return EnrollmentResult.Error;
+                //}
 
                 // Check if the student is already enrolled in the course (if needed)
                 if (await IsStudentEnrolledInCourse(studentId, courseId))
@@ -135,14 +135,14 @@ namespace EduNexBL.Repository
                     return EnrollmentResult.AlreadyEnrolled;
                 }
 
-                //Checks student balance in the wallet
-                if (studentWallet.Balance < course.Price)
-                {
-                    return EnrollmentResult.Error;
-                }
+                ////Checks student balance in the wallet
+                //if (studentWallet.Balance < course.Price)
+                //{
+                //    return EnrollmentResult.Error;
+                //}
 
-                //Update student balance in his wallet
-                studentWallet.Balance -= course.Price;
+                ////Update student balance in his wallet
+                //studentWallet.Balance -= course.Price;
                 //await _WalletRepo.Update(studentWallet);
 
                 // Create a new enrollment
