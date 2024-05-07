@@ -15,14 +15,12 @@ namespace EduNexBL.Repository
     public class CourseRepo : Repository<Course>, ICourse
     {
         private readonly IMapper _mapper;
-        private readonly IWallet _WalletRepo;
         private readonly EduNexContext _context;
 
-        public CourseRepo(EduNexContext dbContext, IMapper mapper, IWallet walletRepo) : base(dbContext)
+        public CourseRepo(EduNexContext dbContext, IMapper mapper) : base(dbContext)
         {
             _mapper = mapper;
             _context = dbContext;
-            _WalletRepo = walletRepo;
         }
 
         public async Task<ICollection<CourseMainData>> GetAllCoursesMainData()
@@ -145,7 +143,7 @@ namespace EduNexBL.Repository
 
                 //Update student balance in his wallet
                 studentWallet.Balance -= course.Price;
-                await _WalletRepo.Update(studentWallet);
+                //await _WalletRepo.Update(studentWallet);
 
                 // Create a new enrollment
                 var enrollment = new StudentCourse
