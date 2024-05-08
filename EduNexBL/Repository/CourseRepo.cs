@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using EduNexBL.Base;
+using EduNexBL.DTOs;
 using EduNexBL.DTOs.CourseDTOs;
 using EduNexBL.ENums;
 using EduNexBL.IRepository;
 using EduNexDB.Context;
 using EduNexDB.Entites;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -183,11 +185,30 @@ namespace EduNexBL.Repository
             return course != null;
         }
 
+        public async Task<List<StudentCoursesDTO?>> CoursesEnrolledByStudent(string studentId)
+        {
+            var student = await _context.Students
+                .Include(s => s.StudentCourses)
+                .ThenInclude(sc => sc.Course)
+                .FirstOrDefaultAsync(s => s.Id == studentId);
 
+            if (student == null)
+            {
+                return null;  
+            }
 
+            var studentCoursesDTOs = student.StudentCourses
+                .Select(sc => new StudentCoursesDTO
+                {
+                    CourseId = sc.CourseId,
+                    CourseName = sc.Course.CourseName,
+                    CourseThumbnail = sc.Course.Thumbnail
+                })
+                .ToList();
 
-
-
+            return studentCoursesDTOs;
+        }
 
     }
 }
+
