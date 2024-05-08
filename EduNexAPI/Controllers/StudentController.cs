@@ -154,6 +154,10 @@ namespace EduNexAPI.Controllers
                 Religion = student.Religion,
                 LevelId = student.LevelId,
                 LevelName = student.Level != null ? student.Level.LevelName : null,
+                Address = student.Address,
+                City = student.City,   
+                DateOfBirth = student.DateOfBirth,
+                PhoneNumber = student.PhoneNumber
 
             };
 

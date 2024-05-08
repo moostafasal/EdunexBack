@@ -1,4 +1,7 @@
-﻿public class StudentDto1
+﻿using EduNexDB.Entites;
+using System.ComponentModel.DataAnnotations;
+
+public class StudentDto1
 {
     public string Id { get; set; }
     public string FirstName { get; set; }
@@ -9,4 +12,8 @@
     public string Gender { get; set; }
     public int? LevelId { get; set; }
     public string LevelName { get; set; }
+    public string PhoneNumber { get; set; }
+    public DateTime DateOfBirth { get; set; }
+    public string? Address { get; set; }
+    public string? City { get; set; }
 }

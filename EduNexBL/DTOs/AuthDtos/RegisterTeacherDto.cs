@@ -51,8 +51,10 @@ namespace EduNexBL.DTOs.AuthDtos
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
+        public string? City { get; set; }
+
         // Add property for file upload
-        
+
         [Display(Name = "Upload Profile Picture")]
         public IFormFile? ProfilePicture { get; set; }
     }
