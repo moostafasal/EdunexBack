@@ -34,12 +34,16 @@ namespace EduNexBL.AutoMapper
             CreateMap<AttachmentDto, AttachmentFile>();
             CreateMap<AttachmentFile, AttachmentDto>();
             CreateMap<Lecture, LectureDto>();
-            CreateMap<LectureDto,Lecture > (); 
+            CreateMap<LectureDto, Lecture>();
 
 
             CreateMap<Teacher, TeacherDto>()
              .ForMember(dest => dest.gender, opt => opt.MapFrom(src => src.gender.ToString()))
-             .ForMember(dest => dest.Age, opt => opt.MapFrom(src => CalculateAge(src.DateOfBirth)));
+             .ForMember(dest => dest.Age, opt => opt.MapFrom(src => CalculateAge(src.DateOfBirth)))
+                 .ForMember(dest => dest.status, opt => opt.MapFrom(src => src.Status.ToString()));
+
+            ;
+
 
 
             CreateMap<Course, CourseMainData>()
