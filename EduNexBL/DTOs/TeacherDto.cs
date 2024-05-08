@@ -22,8 +22,7 @@ namespace EduNexBL.DTOs
         public string? AccountNote { get; set; }
         public int Age { get; set; }
         public string subject { get; set; }
-        public string DateOfBirth { get; set; }
-
+        public DateTime DateOfBirth { get; set; }
         public string? FacebookAccount { get; set; }
         public string? City { get; set; }
 

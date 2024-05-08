@@ -100,8 +100,12 @@ namespace EduNexAPI.Controllers
 
                 UserName = model.Email,
 
-                Status = TeacherStatus.Pending
+                Status = TeacherStatus.Pending,
 
+                FacebookAccount = model.FacebookAccount,
+
+                City=model.City
+                
                 //LevelId = model.LevelId
 
             };
