@@ -8,15 +8,7 @@ using System.Threading.Tasks;
 
 namespace EduNexDB.Entites
 {
-    public enum CourseType
-    {
-        [Display(Name = "Literature")]
-        Literature,
-        [Display(Name = "Scientific")]
-        Scientific,
-        [Display(Name = "General")]
-        General
-    }
+   
     public class Course : BaseEntity
     {
 
@@ -26,10 +18,6 @@ namespace EduNexDB.Entites
 
         [Required]
         public string Thumbnail { get; set; } = null!;
-
-        [Required]
-        [EnumDataType(typeof(CourseType))]
-        public CourseType CourseType { get; set; }
 
         [Required]
         [DataType("integer")]

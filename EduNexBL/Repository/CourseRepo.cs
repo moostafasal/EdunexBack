@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using EduNexBL.Base;
+using EduNexBL.DTOs;
 using EduNexBL.DTOs.CourseDTOs;
 using EduNexBL.ENums;
 using EduNexBL.IRepository;
 using EduNexDB.Context;
 using EduNexDB.Entites;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,14 +17,12 @@ namespace EduNexBL.Repository
     public class CourseRepo : Repository<Course>, ICourse
     {
         private readonly IMapper _mapper;
-        private readonly IWallet _WalletRepo;
         private readonly EduNexContext _context;
 
-        public CourseRepo(EduNexContext dbContext, IMapper mapper, IWallet walletRepo) : base(dbContext)
+        public CourseRepo(EduNexContext dbContext, IMapper mapper) : base(dbContext)
         {
             _mapper = mapper;
             _context = dbContext;
-            _WalletRepo = walletRepo;
         }
 
         public async Task<ICollection<CourseMainData>> GetAllCoursesMainData()
@@ -63,7 +63,6 @@ namespace EduNexBL.Repository
                 Id = course.Id,
                 CourseName = course.CourseName,
                 Thumbnail = course.Thumbnail,
-                CourseType = course.CourseType.ToString(), // Convert enum to string
                 Price = course.Price,
                 SubjectName = course.Subject?.SubjectName ?? "", // Assuming Subject has a Name property
                 TeacherName = $"{course.Teacher?.FirstName} {course.Teacher?.LastName}", // Assuming Teacher has a Name property
@@ -114,7 +113,7 @@ namespace EduNexBL.Repository
             {
                 var student = await _context.Students.SingleOrDefaultAsync(s => s.Id == studentId);
                 var course = await _context.Courses.SingleOrDefaultAsync(c => c.Id == courseId);
-                var studentWallet = await _context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == studentId);
+                //var studentWallet = await _context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == studentId);
 
                 if (student == null)
                 {
@@ -126,10 +125,10 @@ namespace EduNexBL.Repository
                     return EnrollmentResult.CourseNotFound;
                 }
 
-                if (studentWallet == null)
-                {
-                    return EnrollmentResult.Error;
-                }
+                //if (studentWallet == null)
+                //{
+                //    return EnrollmentResult.Error;
+                //}
 
                 // Check if the student is already enrolled in the course (if needed)
                 if (await IsStudentEnrolledInCourse(studentId, courseId))
@@ -137,15 +136,15 @@ namespace EduNexBL.Repository
                     return EnrollmentResult.AlreadyEnrolled;
                 }
 
-                //Checks student balance in the wallet
-                if (studentWallet.Balance < course.Price)
-                {
-                    return EnrollmentResult.Error;
-                }
+                ////Checks student balance in the wallet
+                //if (studentWallet.Balance < course.Price)
+                //{
+                //    return EnrollmentResult.Error;
+                //}
 
-                //Update student balance in his wallet
-                studentWallet.Balance -= course.Price;
-                await _WalletRepo.Update(studentWallet);
+                ////Update student balance in his wallet
+                //studentWallet.Balance -= course.Price;
+                //await _WalletRepo.Update(studentWallet);
 
                 // Create a new enrollment
                 var enrollment = new StudentCourse
@@ -186,11 +185,30 @@ namespace EduNexBL.Repository
             return course != null;
         }
 
+        public async Task<List<StudentCoursesDTO?>> CoursesEnrolledByStudent(string studentId)
+        {
+            var student = await _context.Students
+                .Include(s => s.StudentCourses)
+                .ThenInclude(sc => sc.Course)
+                .FirstOrDefaultAsync(s => s.Id == studentId);
 
+            if (student == null)
+            {
+                return null;  
+            }
 
+            var studentCoursesDTOs = student.StudentCourses
+                .Select(sc => new StudentCoursesDTO
+                {
+                    CourseId = sc.CourseId,
+                    CourseName = sc.Course.CourseName,
+                    CourseThumbnail = sc.Course.Thumbnail
+                })
+                .ToList();
 
-
-
+            return studentCoursesDTOs;
+        }
 
     }
 }
+

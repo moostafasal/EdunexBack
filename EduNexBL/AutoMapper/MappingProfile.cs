@@ -43,7 +43,6 @@ namespace EduNexBL.AutoMapper
 
 
             CreateMap<Course, CourseMainData>()
-               .ForMember(dest => dest.CourseType, opt => opt.MapFrom(src => src.CourseType.ToString()))
                .ForMember(dest => dest.LevelName, opt => opt.MapFrom(src => src.Subject.Level.LevelName))
                .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Subject.SubjectName))
                .ForMember(dest => dest.ProfilePhoto, opt => opt.MapFrom(src => src.Teacher.ProfilePhoto))

@@ -50,8 +50,29 @@ public class AdminController : ControllerBase
     public async Task<ActionResult<TeacherDto>> GetTeacherById(string id)
     {
         var teacher = await _adminRepository.GetTeacherByIdAsync(id);
+
         if (teacher == null)
             return NotFound();
+
+        //var newTeacher = new TeacherDto
+        //{
+        //    AboutMe = teacher.AboutMe,
+        //    City = teacher.City,
+        //    FacebookAccount = teacher.FacebookAccount,
+        //    PhoneNumber = teacher.PhoneNumber,
+        //    DateOfBirth = teacher.DateOfBirth,
+        //    AccountNote = teacher.AccountNote,
+        //    Address = teacher.Address,
+        //    Age = teacher.Age,
+        //    Email = teacher.Email,
+        //    FirstName = teacher.FirstName,
+        //    LastName = teacher.LastName,
+        //    gender = teacher.gender,
+        //    Id = teacher.Id,
+        //    NationalId = teacher.NationalId,
+        //    ProfilePhoto = teacher.ProfilePhoto,
+        //    subject = teacher.subject
+        //};
         return Ok(teacher);
     }
 

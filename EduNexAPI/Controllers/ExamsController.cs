@@ -128,11 +128,11 @@ namespace EduNexAPI.Controllers
             // Switch statement to handle different results from starting the exam
             return result switch
             {
-                ExamStartResult.Success => Ok("Exam started successfully."),
+                ExamStartResult.Success => Ok(),
                 ExamStartResult.NotFound => NotFound("Exam or student not found."),
                 ExamStartResult.NotAvailable => BadRequest("Exam is not available."),
                 ExamStartResult.InvalidDuration => BadRequest("Invalid exam duration."),
-                ExamStartResult.AlreadyStarted => BadRequest("Exam has already been started."),
+                ExamStartResult.AlreadyStarted => Ok(),
                 _ => BadRequest("Unknown error occurred."),// This may not happen in practice, but it's good to have a default case for completeness.
             };
         }
@@ -166,9 +166,24 @@ namespace EduNexAPI.Controllers
             }
         }
 
+        [HttpGet("{examId}/submission/{studentId}")]
+        public async Task<IActionResult> GetExamStudentResult(int examId, string studentId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        [HttpGet("{id}/result")]
-        public async Task<IActionResult> GetExamResult(int id, [FromBody] string studentId)
+            var response = await _unitOfWork.ExamRepo.GetExamSubmitResultWithDetails(examId, studentId);
+
+            // Return text response based on the ExamSubmitResult
+            return Ok(response);
+        }
+
+
+
+        [HttpGet("{id}/result/{studentId}")]
+        public async Task<IActionResult> GetExamResult(int id,string studentId)
         {
             if (!ModelState.IsValid)
             {
@@ -196,8 +211,8 @@ namespace EduNexAPI.Controllers
         }
 
 
-        [HttpGet("{id}/getinfo")]
-        public async Task<IActionResult> GetStudentExamInfo([FromBody] string studentId, int id)
+        [HttpGet("{id}/getinfo/{studentId}")]
+        public async Task<IActionResult> GetStudentExamInfo(string studentId, int id)
         {
             var info = await _unitOfWork.ExamRepo.GetStudentExamInfo(studentId, id);
             if (info != null) return Ok(info);

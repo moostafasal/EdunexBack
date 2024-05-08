@@ -114,6 +114,9 @@ namespace EduNexBL.Repository
             result.ExamType = exam.Type;
             result.ExamGrade = await CalcTotalExamGrade(examId);
             result.StudentGrade = CalculateStudentGrade(examSubmissionDto);
+            var studentExam = _context.StudentExam.FirstOrDefault(se => se.StudentId == studentId && se.ExamId == examId);
+            studentExam.Score = result.StudentGrade;
+            _context.SaveChanges();
             result.StudentAnswersWithCorrectAnswers = GetStudentAnswersWithCorrectAnswers(examSubmissionDto);
 
             result.SubmitResult = ExamSubmitResult.Success;
@@ -122,16 +125,25 @@ namespace EduNexBL.Repository
 
         private async Task<ExamSubmissionDto> GetStudentSubmissionDto(string studentId, int examId)
         {
-
             var studentAnswers = await _context.StudentsAnswersSubmissions
                 .Where(s => s.StudentId == studentId && s.ExamId == examId)
                 .ToListAsync();
 
-            var studentSubmission = studentAnswers.Select(answer => new SubmittedQuestionDto
+            var studentSubmission = new List<SubmittedQuestionDto>();
+
+            foreach (var questionId in studentAnswers.Select(a => a.QuestionId).Distinct())
             {
-                QuestionId = answer.QuestionId,
-                SelectedAnswersIds = new List<int?> { answer.AnswerId }
-            }).ToList();
+                var submittedAnswerIds = studentAnswers
+                    .Where(a => a.QuestionId == questionId)
+                    .Select(a => a.AnswerId)
+                    .ToList();
+
+                studentSubmission.Add(new SubmittedQuestionDto
+                {
+                    QuestionId = questionId,
+                    SelectedAnswersIds = submittedAnswerIds
+                });
+            }
 
             if (studentSubmission.Any())
             {

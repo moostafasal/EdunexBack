@@ -31,7 +31,7 @@ namespace EduNexDB.Entites
         public DateTime DateOfBirth { get; set; }
 
         [Required]
-        public Gender gender { get; set; }
+        public Gender gender { get; set; } 
 
         public string ?Address { get; set; }
 
