@@ -61,7 +61,6 @@ namespace EduNexBL.Repository
                 Id = course.Id,
                 CourseName = course.CourseName,
                 Thumbnail = course.Thumbnail,
-                CourseType = course.CourseType.ToString(), // Convert enum to string
                 Price = course.Price,
                 SubjectName = course.Subject?.SubjectName ?? "", // Assuming Subject has a Name property
                 TeacherName = $"{course.Teacher?.FirstName} {course.Teacher?.LastName}", // Assuming Teacher has a Name property
