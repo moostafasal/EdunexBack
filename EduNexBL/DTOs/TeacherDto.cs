@@ -15,19 +15,21 @@ namespace EduNexBL.DTOs
         public string Email { get; set; }
         public string?ProfilePhoto { get; set; }
         public string PhoneNumber { get; set; }
-        public string NationalId { get; set; }
+        public string? NationalId { get; set; }
         public Gender gender { get; set; }
         public string? Address { get; set; }
-        //public string? nationalId { get; set; }
         public string? AboutMe { get; set; }
         public string? AccountNote { get; set; }
         public int Age { get; set; }
         public string subject { get; set; }
+        public string DateOfBirth { get; set; }
 
-        //public static implicit operator TeacherDto(TeacherDto v)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public string? FacebookAccount { get; set; }
+        public string? City { get; set; }
+
+
+
+
     }
 
     public class UpdateTeacherDto

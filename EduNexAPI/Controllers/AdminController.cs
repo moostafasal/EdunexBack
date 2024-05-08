@@ -50,8 +50,10 @@ public class AdminController : ControllerBase
     public async Task<ActionResult<TeacherDto>> GetTeacherById(string id)
     {
         var teacher = await _adminRepository.GetTeacherByIdAsync(id);
+
         if (teacher == null)
             return NotFound();
+
         return Ok(teacher);
     }
 
