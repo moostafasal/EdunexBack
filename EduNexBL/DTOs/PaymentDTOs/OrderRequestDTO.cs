@@ -15,5 +15,11 @@ namespace EduNexBL.DTOs.PaymentDTOs
         }
         public readonly string Currency = "EGP";
         public readonly string[] Items = Array.Empty<string>();
+
+        public OrderRequestDTO(string authToken, int price)
+        {
+            this.AuthToken = authToken;
+            this.AmountCents = price;
+        }
     }
 }

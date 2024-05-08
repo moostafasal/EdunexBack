@@ -83,7 +83,10 @@ namespace EduNexBL.Repository
                 PhoneNumber = teacher.PhoneNumber,
                 NationalId = teacher.NationalId,
                 subject = teacher.subject,
-                ProfilePhoto=teacher.ProfilePhoto
+                ProfilePhoto=teacher.ProfilePhoto,
+                FacebookAccount=teacher.FacebookAccount,
+                City= teacher.City,
+                DateOfBirth = teacher.DateOfBirth
                
                 
                 // Map other properties as needed
