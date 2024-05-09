@@ -15,6 +15,7 @@ namespace EduNexBL.IRepository
     {
         public Task<ICollection<CourseMainData>> GetAllCoursesMainData();
         public Task<CourseDTO?> GetCourseById(int id);
+        public Task<ICollection<SubjectRDTO>> Getsubject();
         public CourseDTO MapCourseToCourseDTO(Course course);
         public LectureDto MapLectureToLectureDTO(Lecture lecture);
         public Task<List<StudentCoursesDTO?>> CoursesEnrolledByStudent(string studentId);
@@ -22,7 +23,7 @@ namespace EduNexBL.IRepository
         public Task<bool> IsStudentEnrolledInCourse(string studentId, int courseId);
         public Task<bool> IsTeacherRelatedToCourse(string teacherId, int courseId);
 
-      
+
 
     }
 }

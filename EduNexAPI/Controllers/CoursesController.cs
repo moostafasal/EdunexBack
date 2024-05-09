@@ -1,6 +1,8 @@
 ﻿using AuthenticationMechanism.Services;
+using EduNexBL.DTOs;
 using EduNexBL.DTOs.CourseDTOs;
 using EduNexBL.DTOs.ExamintionDtos;
+using EduNexBL.DTOs.SubjectDTOs;
 using EduNexBL.ENums;
 using EduNexBL.UnitOfWork;
 using EduNexDB.Entites;
@@ -29,6 +31,14 @@ namespace EduNexAPI.Controllers
         {
             return await _unitOfWork.CourseRepo.GetAllCoursesMainData();
         }
+
+        [HttpGet("get-All-Subject")]
+        public async Task<IEnumerable<SubjectRDTO>> GetSubjects()
+        {
+            return await _unitOfWork.CourseRepo.Getsubject();
+        }
+
+
 
         // GET api/<CoursesController>/5
         [HttpGet("{id}")]
@@ -128,7 +138,7 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpGet("checkenrollment")]
-        public async Task<IActionResult> CheckEnrollment([FromQuery]EnrollmentRequestDto enrollmentDto)
+        public async Task<IActionResult> CheckEnrollment([FromQuery] EnrollmentRequestDto enrollmentDto)
         {
             var isEnrolled = await _unitOfWork.CourseRepo.IsStudentEnrolledInCourse(enrollmentDto.StudentId, enrollmentDto.CourseId);
             return Ok(isEnrolled);
@@ -141,8 +151,10 @@ namespace EduNexAPI.Controllers
             {
                 return NotFound("student not found");
             }
-            return Ok( await _unitOfWork.CourseRepo.CoursesEnrolledByStudent(studentId));
+            return Ok(await _unitOfWork.CourseRepo.CoursesEnrolledByStudent(studentId));
         }
+
+
 
     }
 }
