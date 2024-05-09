@@ -136,12 +136,32 @@ namespace EduNexAPI.Controllers
         [HttpGet("GetCoursesEnrolledByStudent")]
         public async Task<IActionResult> GetCoursesByStudent(string studentId)
         {
+
             var student = await _unitOfWork.StudentRepo.GetById(studentId);
             if (student == null)
             {
                 return NotFound("student not found");
             }
             return Ok( await _unitOfWork.CourseRepo.CoursesEnrolledByStudent(studentId));
+        }
+
+
+        [HttpGet("CountStudents")]
+        public async Task<IActionResult> CountEnrolledStudentsInCourse([FromQuery]int courseId)
+        {
+            var course = await _unitOfWork.CourseRepo.GetById(courseId);
+            if (course == null) return NotFound();
+            int count = await _unitOfWork.CourseRepo.CountEnrolledStudentsInCourse(courseId);
+            return Ok(count);
+        }
+
+        [HttpGet("CountLectures")]
+        public async Task<IActionResult> CountLecturesInCourse([FromQuery] int courseId)
+        {
+            var course = await _unitOfWork.CourseRepo.GetById(courseId);
+            if (course == null) return NotFound();
+            int count = await _unitOfWork.CourseRepo.CountCourseLectures(courseId);
+            return Ok(count);
         }
 
     }
