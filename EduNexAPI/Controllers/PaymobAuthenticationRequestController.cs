@@ -106,7 +106,7 @@ namespace EduNexAPI.Controllers
         }
 
         //Get Auth_token from Paymob
-        [HttpPost("GetAuthToken")]
+        //[HttpPost("GetAuthToken")]
         public async Task<BaseResponseWithDataModel<string>> GetPaymobToken()
         {
             var AuthResponse = new BaseResponseWithDataModel<string>();
