@@ -34,6 +34,16 @@ namespace EduNexBL.Repository
 
             return teachers;
         }
+
+        public async Task<IEnumerable<TeacherDto>> GetApprovedTeachers()
+        {
+            var approvedTeachers = await _context.Teachers
+                .Where(t => t.Status == TeacherStatus.Approved)
+                .Select(t => _mapper.Map<TeacherDto>(t))
+                .ToListAsync();
+
+            return approvedTeachers;
+        }
         public async Task<IEnumerable<TeacherDto>> GetTeachersPendingAsync()
         {
             var teachers = await _context.Teachers.Where(i => i.Status == TeacherStatus.Pending).Select(t => _mapper.Map<TeacherDto>(t))
