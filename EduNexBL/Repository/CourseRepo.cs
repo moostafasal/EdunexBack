@@ -221,6 +221,16 @@ namespace EduNexBL.Repository
             return studentCoursesDTOs;
         }
 
+        public async Task<int> CountEnrolledStudentsInCourse(int courseId)
+        {
+            int count = await _context.StudentCourse.CountAsync(sc => sc.CourseId == courseId);
+            return count; 
+        }
+        public async Task<int> CountCourseLectures(int courseId)
+        {
+            int count = await _context.Lectures.CountAsync(l => l.CourseId == courseId);
+            return count;
+        }
     }
 }
 
