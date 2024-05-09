@@ -69,7 +69,8 @@ namespace EduNexBL.Repository
                 ProfilePhoto = course.Teacher?.ProfilePhoto ?? "", // Assuming Teacher has a ProfilePhoto property
                 LevelName = course.Subject?.Level?.LevelName ?? "", // Assuming Subject has a Level property and Level has a Name property
                 LectureList = course.Lectures.Select(MapLectureToLectureDTO).ToList(),
-                teacherId = course.TeacherId
+                teacherId = course.TeacherId,
+                AboutTeacher = course.Teacher.AboutMe
 
             };
         }
