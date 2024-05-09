@@ -68,7 +68,9 @@ namespace EduNexBL.Repository
                 TeacherName = $"{course.Teacher?.FirstName} {course.Teacher?.LastName}", // Assuming Teacher has a Name property
                 ProfilePhoto = course.Teacher?.ProfilePhoto ?? "", // Assuming Teacher has a ProfilePhoto property
                 LevelName = course.Subject?.Level?.LevelName ?? "", // Assuming Subject has a Level property and Level has a Name property
-                LectureList = course.Lectures.Select(MapLectureToLectureDTO).ToList()
+                LectureList = course.Lectures.Select(MapLectureToLectureDTO).ToList(),
+                teacherId = course.TeacherId
+
             };
         }
 
@@ -194,7 +196,7 @@ namespace EduNexBL.Repository
 
             if (student == null)
             {
-                return null;  
+                return null;
             }
 
             var studentCoursesDTOs = student.StudentCourses

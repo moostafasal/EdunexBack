@@ -16,11 +16,11 @@ namespace EduNexBL.DTOs.CourseDTOs
         public decimal Price { get; set; }
 
         public string SubjectName { get; set; } = null!;
-
+        public string teacherId { get; set; } = null!;
         public string TeacherName { get; set; } = null!;
         public string ProfilePhoto { get; set; } = null!;
         public string LevelName { get; set; } = null!;
-        public List<LectureDto>? LectureList { get; set;} = new List<LectureDto>();
+        public List<LectureDto>? LectureList { get; set; } = new List<LectureDto>();
 
     }
 }
