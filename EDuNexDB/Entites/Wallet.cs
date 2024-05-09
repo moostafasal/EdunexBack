@@ -21,5 +21,6 @@ namespace EduNexDB.Entites
 
         [Required]
         public string OwnerType { get; set; }
+
     }
 }

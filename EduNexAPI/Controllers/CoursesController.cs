@@ -111,5 +111,16 @@ namespace EduNexAPI.Controllers
             var isEnrolled = await _unitOfWork.CourseRepo.IsStudentEnrolledInCourse(enrollmentDto.StudentId, enrollmentDto.CourseId);
             return Ok(isEnrolled);
         }
+        [HttpGet("GetCoursesEnrolledByStudent")]
+        public async Task<IActionResult> GetCoursesByStudent(string studentId)
+        {
+            var student = await _unitOfWork.StudentRepo.GetById(studentId);
+            if (student == null)
+            {
+                return NotFound("student not found");
+            }
+            return Ok( await _unitOfWork.CourseRepo.CoursesEnrolledByStudent(studentId));
+        }
+
     }
 }

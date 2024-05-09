@@ -69,9 +69,9 @@ namespace EduNexDB.Context
 
           );
             modelBuilder.Entity<Level>().HasData(
-                   new Level { Id = 1, LevelName = "Level one" },
-                   new Level { Id = 2, LevelName = "Level two" },
-                    new Level { Id = 3, LevelName = "Level three" }
+                   new Level { Id = 1, LevelName = "الصف الأول الثانوي" },
+                   new Level { Id = 2, LevelName = "الصف الثاني الثانوي" },
+                    new Level { Id = 3, LevelName = "الصف الثالث الثانوي" }
 
                );
 

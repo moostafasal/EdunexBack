@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EduNexAPI.Controllers
@@ -15,7 +16,7 @@ namespace EduNexAPI.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly EduNexContext _dbContext;
-        private readonly ILogger<FakeDataController> _logger; // Add logger
+        private readonly ILogger<FakeDataController> _logger;
 
         public FakeDataController(UserManager<ApplicationUser> userManager, EduNexContext dbContext, ILogger<FakeDataController> logger)
         {
@@ -29,57 +30,59 @@ namespace EduNexAPI.Controllers
         {
             try
             {
+                var maleFirstNames = new List<string> { "محمد", "أحمد", "علي", "يوسف", "عمر", "أيمن", "مصطفى", "خالد", "طارق", "حسين" };
+                var femaleFirstNames = new List<string> { "فاطمة", "زينب", "مريم", "آمنة", "سارة", "نور", "آية", "ليلى", "داليا", "رنا" };
+                var lastNames = new List<string> { "السعيد", "المصري", "العراقي", "الجزائري", "التونسي", "السعودي", "اللبناني", "الإماراتي", "البحريني", "الكويتي" };
+
                 for (int i = 0; i < 10; i++)
                 {
+                    var gender = (i % 2 == 0) ? Gender.Male : Gender.Female;
+                    var firstName = (gender == Gender.Male) ? maleFirstNames[i] : femaleFirstNames[i];
+                    var lastName = lastNames[i];
+                    var phoneNumber = $"0101234567{i}";
+
                     var fakeTeacher = new Teacher
                     {
-                        FirstName = "John" + i.ToString(),
-                        LastName = "Doe" + i.ToString(),
-                        PhoneNumber = "123456789" + i.ToString(), // Set a non-null value for PhoneNumber
-                        DateOfBirth = new DateTime(1985, 5, 10),
-                        gender = Gender.Male,
-                        // Add other properties
-                        ProfilePhoto = "john.jpg",
-                        Description = "Math teacher with 10 years of experience",
-                        FacebookAccount = "john.doe",
-                        AboutMe = "I love teaching and helping students understand complex concepts.",
-                        AccountNote = "Account created on April 30, 2024",
-                        Address = "123 Main Street, City, Country",
-                        NationalId = "123456789",
+                        FirstName = firstName,
+                        LastName = lastName,
+                        PhoneNumber = phoneNumber,
+                        DateOfBirth = new DateTime(1980, 1, 1),
+                        gender = gender,
+                        ProfilePhoto = "https://via.placeholder.com/225X325",
+                        Description = $"مدرس في مادة الرياضيات بخبرة أكثر من {10 + i} سنة.",
+                        FacebookAccount = $"{firstName}.{lastName}{i}",
+                        AboutMe = $"أسعى لتقديم تعليم ممتاز وتحفيز الطلاب على تحقيق أهدافهم في مادة الرياضيات.",
+                        AccountNote = $"تم إنشاء الحساب في {DateTime.Now:yyyy-MM-dd}",
+                        Address = "شارع النيل، القاهرة، مصر",
+                        NationalId = $"123456789{i}",
                         Status = TeacherStatus.Approved
-                        // Add other properties as needed
                     };
 
                     _dbContext.Teachers.Add(fakeTeacher);
 
-                    // Create a fake user account with default password
                     var user = new ApplicationUser
                     {
                         FirstName = fakeTeacher.FirstName,
                         LastName = fakeTeacher.LastName,
-                        UserName = $"john.doe{i + 1}@example.com",
-                        Email = $"john.doe{i + 1}@example.com",
-                        PhoneNumber = fakeTeacher.PhoneNumber // Set PhoneNumber for ApplicationUser
+                        UserName = $"{firstName.ToLower()}.{lastName.ToLower()}{i + 1}@example.com",
+                        Email = $"{firstName.ToLower()}.{lastName.ToLower()}{i + 1}@example.com",
+                        PhoneNumber = fakeTeacher.PhoneNumber
                     };
 
-                    // Check if PhoneNumber is null
                     if (string.IsNullOrEmpty(user.PhoneNumber))
                     {
-                        // Log error and continue to the next iteration
                         _logger.LogError($"PhoneNumber is null for user {user.UserName}");
                         continue;
                     }
 
-                    var result = await _userManager.CreateAsync(user, "DefaultPassword123!"); // Change to your default password
+                    var result = await _userManager.CreateAsync(user, "DefaultPassword123!");
 
                     if (result.Succeeded)
                     {
-                        // Assign the teacher role
                         await _userManager.AddToRoleAsync(user, "Teacher");
                     }
                     else
                     {
-                        // Log errors
                         foreach (var error in result.Errors)
                         {
                             _logger.LogError(error.Description);
@@ -97,58 +100,63 @@ namespace EduNexAPI.Controllers
                 return StatusCode(500, "An error occurred while seeding fake teachers.");
             }
         }
-        [HttpPost("seed-Student")]
-        public async Task<IActionResult> SeedStudntManually()
+
+        [HttpPost("seed-students")]
+        public async Task<IActionResult> SeedStudentsManually()
         {
             try
             {
+                var maleFirstNames = new List<string> { "علي", "محمد", "أحمد", "يوسف", "خالد", "عمر", "مصطفى", "طارق", "عماد", "حسين" };
+                var femaleFirstNames = new List<string> { "مريم", "فاطمة", "زينب", "آية", "سارة", "نور", "ليلى", "آمنة", "ملك", "أمل" };
+                var lastNames = new List<string> { "السعيد", "المصري", "العراقي", "الجزائري", "التونسي", "السعودي", "اللبناني", "الإماراتي", "البحريني", "الكويتي" };
+
                 for (int i = 0; i < 10; i++)
                 {
-                    var fakestundnt = new Student
+                    var gender = (i % 2 == 0) ? Gender.Male : Gender.Female;
+                    var firstName = (gender == Gender.Male) ? maleFirstNames[i] : femaleFirstNames[i];
+                    var lastName = lastNames[i];
+                    var phoneNumber = $"0101234567{i}";
+
+                    var fakeStudent = new Student
                     {
-                        FirstName = "احمد" + i.ToString(),
-                        LastName = "امين" + i.ToString(),
-                        PhoneNumber = "123456789" + i.ToString(), // Set a non-null value for PhoneNumber
-                        DateOfBirth = new DateTime(2001, 5, 10),
-                        gender = Gender.Male,
-                        ParentPhoneNumber = "01097723290",
+                        FirstName = firstName,
+                        LastName = lastName,
+                        PhoneNumber = phoneNumber,
+                        DateOfBirth = new DateTime(2005, 1, 1),
+                        gender = gender,
+                        ParentPhoneNumber = $"0109876543{i}",
                         Religion = "مسلم",
                         LevelId = 1,
-                        City = "بورسعيد",
-                        Address = "بورسعيد شارع المعديه 102",
-                        NationalId = "123232223456789",
+                        City = "القاهرة",
+                        Address = "شارع المريوطية، الجيزة، مصر",
+                        NationalId = $"123456789{i}"
                     };
 
-                    _dbContext.Students.Add(fakestundnt);
+                    _dbContext.Students.Add(fakeStudent);
 
-                    // Create a fake user account with default password
                     var user = new ApplicationUser
                     {
-                        FirstName = fakestundnt.FirstName,
-                        LastName = fakestundnt.LastName,
-                        UserName = $"Ahmed.Amin{i + 1}@example.com",
-                        Email = $"Amin{i + 1}@example.com",
-                        PhoneNumber = fakestundnt.PhoneNumber // Set PhoneNumber for ApplicationUser
+                        FirstName = fakeStudent.FirstName,
+                        LastName = fakeStudent.LastName,
+                        UserName = $"{firstName.ToLower()}.{lastName.ToLower()}{i + 1}@example.com",
+                        Email = $"{firstName.ToLower()}.{lastName.ToLower()}{i + 1}@example.com",
+                        PhoneNumber = fakeStudent.PhoneNumber
                     };
 
-                    // Check if PhoneNumber is null
                     if (string.IsNullOrEmpty(user.PhoneNumber))
                     {
-                        // Log error and continue to the next iteration
                         _logger.LogError($"PhoneNumber is null for user {user.UserName}");
                         continue;
                     }
 
-                    var result = await _userManager.CreateAsync(user, "DefaultPassword123!"); // Change to your default password
+                    var result = await _userManager.CreateAsync(user, "DefaultPassword123!");
 
                     if (result.Succeeded)
                     {
-                        // Assign the teacher role
                         await _userManager.AddToRoleAsync(user, "Student");
                     }
                     else
                     {
-                        // Log errors
                         foreach (var error in result.Errors)
                         {
                             _logger.LogError(error.Description);
@@ -162,42 +170,27 @@ namespace EduNexAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while seeding fake teachers.");
-                return StatusCode(500, "An error occurred while seeding fake teachers.");
+                _logger.LogError(ex, "An error occurred while seeding fake students.");
+                return StatusCode(500, "An error occurred while seeding fake students.");
             }
         }
-
-        [HttpGet("teachers")]
-        public IActionResult GetTeachers()
-        {
-            try
-            {
-                var teachers = _dbContext.Teachers.ToList();
-                return Ok(teachers);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while retrieving teachers.");
-                return StatusCode(500, "An error occurred while retrieving teachers.");
-            }
-        }
-
 
         [HttpPost("seed-subjects")]
         public IActionResult SeedSubjects()
         {
             try
             {
-                var subjIds = _dbContext.Levels.Select(C => C.Id).ToList();
-
-                var subjects = new List<Subject>();
-
-                for (int i = 1; i <= 10; i++)
+                var subjects = new List<Subject>
                 {
-                    var level = subjIds[new Random().Next(0, subjIds.Count)];
-
-                    subjects.Add(new Subject { SubjectName = $"Subject {i}", LevelId = level, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now, IsDeleted = false });
-                }
+                    new Subject { SubjectName = "اللغة العربية" , SubjectType = "General" , LevelId = 3},
+                    new Subject { SubjectName = "التاريخ" , SubjectType = "Scientific" , LevelId = 3},
+                    new Subject { SubjectName = "الجغرافيا" , SubjectType = "Literature" , LevelId = 3},
+                    new Subject { SubjectName = "الفيزياء" , SubjectType = "Scientific", LevelId = 3},
+                    new Subject { SubjectName = "الكيمياء" , SubjectType = "Scientific" , LevelId = 3},
+                    new Subject { SubjectName = "الفلسفة" , SubjectType = "Literature" , LevelId = 3},
+                    new Subject { SubjectName = "اللغة الإنجليزية",  SubjectType = "General" , LevelId = 3},
+                    new Subject { SubjectName = "الاقتصاد" , SubjectType = "Literature", LevelId = 3}
+                };
 
                 _dbContext.Subjects.AddRange(subjects);
                 _dbContext.SaveChanges();
@@ -216,16 +209,33 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                var coursesIds = _dbContext.Courses.Select(C => C.Id).ToList();
-
-
                 var lectures = new List<Lecture>();
+
+                // Get the list of all existing course IDs
+                var courseIds = _dbContext.Courses.Select(c => c.Id).ToList();
+
+                if (courseIds.Count == 0)
+                {
+                    return BadRequest("No courses found in the database. Seed courses before seeding lectures.");
+                }
 
                 for (int i = 1; i <= 10; i++)
                 {
-                    var randomCourse = coursesIds[new Random().Next(0, coursesIds.Count)];
+                    var randomSubject = _dbContext.Subjects.OrderBy(s => Guid.NewGuid()).FirstOrDefault();
+                    var randomTeacher = _dbContext.Teachers.OrderBy(t => Guid.NewGuid()).FirstOrDefault();
+                    var rand = new Random();
 
-                    lectures.Add(new Lecture { LectureTitle = $"Lecture {i}", Price = 9.99m, CourseId = randomCourse, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now, IsDeleted = false });
+                    var randomPrice = Math.Round((decimal)(rand.NextDouble() * (50.00 - 5.00) + 5.00), 2);
+
+                    // Select a random course ID
+                    var randomCourseId = courseIds[rand.Next(0, courseIds.Count)];
+
+                    lectures.Add(new Lecture
+                    {
+                        LectureTitle = $"محاضرة {i}",
+                        Price = randomPrice,
+                        CourseId = randomCourseId // Assign a random course ID to the lecture
+                    });
                 }
 
                 _dbContext.Lectures.AddRange(lectures);
@@ -239,42 +249,38 @@ namespace EduNexAPI.Controllers
                 return StatusCode(500, "An error occurred while seeding lectures.");
             }
         }
+
+
         [HttpPost("seed-courses")]
         public IActionResult SeedCourses()
         {
             try
             {
-                // Fetch teacher IDs from the database
+                var rand = new Random();
+
+                // Get the list of all subject IDs
+                var subjectIds = _dbContext.Subjects.Select(s => s.Id).ToList();
+
+                // Get the list of all teacher IDs
                 var teacherIds = _dbContext.Teachers.Select(t => t.Id).ToList();
-                var subIds = _dbContext.Subjects.Select(S => S.Id).ToList();
-
-
-
-                if (teacherIds.Count == 0)
-                {
-                    return BadRequest("No teachers found in the database. Seed teachers before seeding courses.");
-                }
 
                 var courses = new List<Course>();
 
-                // Seed 10 courses
                 for (int i = 1; i <= 10; i++)
                 {
-                    // Get a random teacher ID
-                    var randomTeacherId = teacherIds[new Random().Next(0, teacherIds.Count)];
-                    var randomsubject = subIds[new Random().Next(0, subIds.Count)];
+                    // Generate a random index to select a random subject ID
+                    var randomSubjectIndex = rand.Next(0, subjectIds.Count);
+
+                    // Generate a random index to select a random teacher ID
+                    var randomTeacherIndex = rand.Next(0, teacherIds.Count);
 
                     courses.Add(new Course
                     {
-                        CourseName = $"Course {i}",
-                        Thumbnail = "course_thumbnail.jpg",
-                        CourseType = CourseType.Scientific,
-                        Price = 29.99m,
-                        SubjectId = randomsubject,
-                        TeacherId = randomTeacherId, // Assign a random teacher ID
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
-                        IsDeleted = false
+                        CourseName = $"دورة {i}",
+                        Thumbnail = "https://via.placeholder.com/325X225",
+                        Price = Math.Round((decimal)(rand.NextDouble() * (50.00 - 5.00) + 5.00), 2), // Random price between 5.00 and 50.00
+                        SubjectId = subjectIds[randomSubjectIndex], // Select a random subject ID
+                        TeacherId = teacherIds[randomTeacherIndex], // Select a random teacher ID
                     });
                 }
 
@@ -288,10 +294,25 @@ namespace EduNexAPI.Controllers
                 _logger.LogError(ex, "An error occurred while seeding courses.");
                 return StatusCode(500, "An error occurred while seeding courses.");
             }
+        
         }
 
+        [HttpGet("teachers")]
+        public IActionResult GetTeachers()
+        {
+            try
+            {
+                var teachers = _dbContext.Teachers.ToList();
+                return Ok(teachers);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving teachers.");
+                return StatusCode(500, "An error occurred while retrieving teachers.");
+            }
+        }
 
-
+        // Add other methods as needed...
 
     }
 }
