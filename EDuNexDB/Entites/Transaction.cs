@@ -14,7 +14,7 @@ namespace EduNexDB.Entites
         [Key]
         public int Id { get; set; }
         [ForeignKey("Wallet")]
-        public int WalletId { get; set; }
+        public int? WalletId { get; set; }
         public Wallet? Wallet { get; set; }
         [Required]
         public string TransactionType { get; set; }

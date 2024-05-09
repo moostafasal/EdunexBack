@@ -10,7 +10,8 @@ namespace EduNexBL.ENums
     {
         Online_Card,
         Mobile_Wallet,
-        Accept_Kiosk
+        Accept_Kiosk,
+        coupon
 
     }
 }

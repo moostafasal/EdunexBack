@@ -17,7 +17,9 @@ namespace EduNexDB.Entites
         public decimal Balance { get; set; }
 
         [Required]
+
         public string OwnerId { get; set; }
+        public ApplicationUser User { get; set; }
 
         [Required]
         public string OwnerType { get; set; }

@@ -79,6 +79,7 @@ namespace EduNexAPI
             builder.Services.AddScoped<IFiles, CloudinaryService>();
             builder.Services.AddScoped<IWallet, WalletRepo>();
             builder.Services.AddScoped<ITransaction, TransactionRepo>();
+            builder.Services.AddScoped<CouponService>();
 
 
 

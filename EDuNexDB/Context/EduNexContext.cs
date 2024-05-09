@@ -29,6 +29,8 @@ namespace EduNexDB.Context
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<StudentCourse> StudentCourse { get; set; }
 
+        public DbSet<Coupon> Coupon { get; set; }
+
 
         //public DbSet<City> cities { get; set; }
 
@@ -90,7 +92,12 @@ namespace EduNexDB.Context
                 .HasForeignKey(sc => sc.CourseId)
                 .OnDelete(DeleteBehavior.NoAction); // Specify delete behavior
 
-
+            modelBuilder.Entity<Wallet>()
+              .HasOne(w => w.User)
+              .WithOne()
+              .HasForeignKey<Wallet>(w => w.OwnerId)
+              .IsRequired()
+              .OnDelete(DeleteBehavior.Cascade);
 
 
 
