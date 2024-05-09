@@ -98,6 +98,20 @@ namespace EduNexBL.Repository
                 .ThenInclude(question => question.Answers);
         }
 
+        public async Task<int> GetCourseIdOfExam(int examId)
+        {
+            var exam = await _context.Exams
+                .Include(exam => exam.Lecture) // Include lecture information
+                    .ThenInclude(lecture => lecture.Course) // Include course information from lecture
+                .FirstOrDefaultAsync(exam => exam.Id == examId);
+
+            if (exam != null && exam.Lecture != null && exam.Lecture.Course != null)
+            {
+                return exam.Lecture.Course.Id; // Assuming CourseId is the primary key of the course
+            }
+
+            return 0; // If exam with given ID doesn't exist or if lecture or course information is missing
+        }
         public async Task<ExamSubmitResultWithDetails> GetExamSubmitResultWithDetails(int examId, string studentId)
         {
             var result = new ExamSubmitResultWithDetails();
