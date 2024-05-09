@@ -25,9 +25,7 @@ namespace EduNexAPI.Controllers
         private readonly ICourse _CourseRepo;
         internal OrderRequestDTO orderRequest;
         internal PaymentKeyCardRequestDTO paymentKeyRequest;
-        internal string authToken = String.Empty;
         internal string created_at = String.Empty;
-        internal string payment_method = String.Empty;
 
         public PaymobAuthenticationRequestController(IConfiguration configuration, IMapper mapper, IWallet walletRepo, ITransaction transactionRepo, ICourse courseRepo)
         {
@@ -69,7 +67,7 @@ namespace EduNexAPI.Controllers
             }
         }
 
-        private async Task CreateTransaction(string userId, int amount) 
+        private async Task CreateTransaction(string transactionType, string userId, int amount) 
         {
             try
             {
@@ -81,7 +79,7 @@ namespace EduNexAPI.Controllers
                     transactionDTO = new TransactionDTO()
                     {
                         WalletId = wallet.WalletId,
-                        TransactionType = payment_method,
+                        TransactionType = transactionType,
                         Amount = (decimal)amount,
                         TransactionDate = created_at
                     };
@@ -108,6 +106,7 @@ namespace EduNexAPI.Controllers
         }
 
         //Get Auth_token from Paymob
+        //[HttpPost("GetAuthToken")]
         public async Task<BaseResponseWithDataModel<string>> GetPaymobToken()
         {
             var AuthResponse = new BaseResponseWithDataModel<string>();
@@ -145,7 +144,6 @@ namespace EduNexAPI.Controllers
                     // Deserialize JSON response to extract token
                     dynamic responseObject = JsonConvert.DeserializeObject<AuthResponseModel>(responseContent);
                     string token = responseObject.token;
-                    authToken = responseObject.token;
                     // Return the token
                     AuthResponse.Data = token;
                     return AuthResponse;
@@ -216,10 +214,10 @@ namespace EduNexAPI.Controllers
                     string responseContent = await response.Content.ReadAsStringAsync();
 
                     // Deserialize JSON response to extract token
-                    dynamic responseObject = JsonConvert.DeserializeObject<OrderResponseModel>(responseContent);
+                    dynamic responseObject = JsonConvert.DeserializeObject<dynamic>(responseContent);
                     int id = responseObject.id;
                     created_at = responseObject.created_at;
-                    payment_method = responseObject.payment_method;
+                    //payment_method = responseObject.payment_method;
                     idResponse.Data = id.ToString();
                     // Return success status
                     return idResponse;
@@ -240,8 +238,8 @@ namespace EduNexAPI.Controllers
             }
         }
 
-        [HttpPost("GetPaymentKeyForBankCard")]
-        public async Task<BaseResponseWithDataModel<string>> GetPaymentKeyForBankCard(IntegrationType integrationType, int price, string userId)
+        //GetPaymentKey based on Integration id
+        public async Task<BaseResponseWithDataModel<string>> GetPaymentKeyBasedOnIntegrationId(IntegrationType integrationType, int price, string userId)
         {
             BaseResponseWithDataModel<string> paymentKeyResponse = new BaseResponseWithDataModel<string>();
             var amountCents = price;
@@ -257,6 +255,8 @@ namespace EduNexAPI.Controllers
                         return int.Parse(_configuration["Paymob:OnlineCardIntegrationId"]);
                     case IntegrationType.Mobile_Wallet:
                         return int.Parse(_configuration["Paymob:MobileWalletIntegrationId"]);
+                    case IntegrationType.Accept_Kiosk:
+                        return int.Parse(_configuration["Paymob:AcceptKioskIntegrationId"]);
                     default:
                         return 0;
                 }
@@ -311,12 +311,9 @@ namespace EduNexAPI.Controllers
                     string responseContent = await response.Content.ReadAsStringAsync();
 
                     // Deserialize JSON response to extract token
-                    dynamic responseObject = JsonConvert.DeserializeObject<KeyResponseModel>(responseContent);
+                    dynamic responseObject = JsonConvert.DeserializeObject<dynamic>(responseContent);
                     string paymentKey = responseObject.token;
-                    paymentKeyResponse.Data = "https://accept.paymob.com/api/acceptance/iframes/838672?payment_token=" + paymentKey;
-
-                    await UpdateWalletBalance(userID, price);
-                    await CreateTransaction(userID, price);
+                    paymentKeyResponse.Data = paymentKey;
 
                     // Return success status
                     return paymentKeyResponse;
@@ -337,160 +334,186 @@ namespace EduNexAPI.Controllers
             }
         }
 
-        //[HttpPost("GetPaymentKeyForMobileWallet")]
-        //public async Task<BaseResponseWithDataModel<string>> GetPaymentKeyForMobileWallet(PaymentKeyMobileWalletRequestDTO paymentKeyMobileWalletRequest, int price, string userId)
-        //{
-        //    BaseResponseWithDataModel<string> paymentKeyResponse = new BaseResponseWithDataModel<string>();
-        //    var orderRequest = new OrderRequestDTO(authToken);
-        //    var amountCents = price * 100;
-        //    var userID = userId;
-        //    try
-        //    {
-        //        // Get the Paymob token
-        //        BaseResponseWithDataModel<string> idResponse = await CreateOrder(orderRequest, amountCents);
+        [HttpGet("GetIFrameForOnlineCardPayment")]
+        public async Task<BaseResponseWithDataModel<string>> GetIFrameForOnlineCardPayment(int price, string userId)
+        {
+            BaseResponseWithDataModel<string> IFrameAndPaymentKey = new BaseResponseWithDataModel<string>();
+            IntegrationType integrationType = IntegrationType.Online_Card;
+            string IFrame = "https://accept.paymob.com/api/acceptance/iframes/838672?payment_token=";
+            try
+            {
+                var PaymentKey = await GetPaymentKeyBasedOnIntegrationId(integrationType, price, userId);
+                if (string.IsNullOrEmpty(PaymentKey.ErrorMsg))
+                {
+                    var _paymentKey = PaymentKey.Data;
+                    string iframepaymentkey = IFrame + _paymentKey;
+                    IFrameAndPaymentKey.Data = iframepaymentkey;
 
-        //        if (!string.IsNullOrEmpty(idResponse.ErrorMsg))
-        //        {
-        //            string errorMessage = $"Paymob API request failed with status code: {idResponse.ErrorMsg}";
-        //            idResponse.ErrorMsg = errorMessage;
-        //            return idResponse;
-        //        }
+                    await UpdateWalletBalance(userId, price);
+                    await CreateTransaction(integrationType.ToString(), userId, price);
 
-        //        string id = idResponse.Data;
-
-        //        // Prepare the order request data
-        //        var requestKey = new
-        //        {
-        //            auth_token = orderRequest.AmountCents,
-        //            amount_cents = orderRequest.AmountCents,
-        //            expiration = paymentKeyMobileWalletRequest.expiration,
-        //            order_id = int.Parse(id),
-        //            billing_data = paymentKeyMobileWalletRequest.billing_data,
-        //            currency = paymentKeyMobileWalletRequest.currency,
-        //            integration_id = paymentKeyMobileWalletRequest.integration_id
-        //        };
-
-        //        // Convert object to JSON string
-        //        string jsonRequest = JsonConvert.SerializeObject(requestKey);
-
-        //        // Create StringContent with JSON data
-        //        var content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
-
-        //        // Create a new HttpClient instance
-        //        using var client = new HttpClient();
-        //        client.BaseAddress = new Uri("https://accept.paymob.com/api/acceptance/");
-
-        //        // Send POST request to Paymob order creation endpoint
-        //        HttpResponseMessage response = await client.PostAsync("payment_keys", content);
-
-        //        // Check if request was successful
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            // Read response content
-        //            string responseContent = await response.Content.ReadAsStringAsync();
-
-        //            // Deserialize JSON response to extract token
-        //            dynamic responseObject = JsonConvert.DeserializeObject<KeyResponseModel>(responseContent);
-        //            string paymentKey = responseObject.token;
-        //            paymentKeyResponse.Data = paymentKey;
-
-        //            await UpdateWalletBalance(userID, price);
-        //            await CreateTransaction(userID, price);
-
-        //            // Return success status
-        //            return paymentKeyResponse;
-        //        }
-        //        else
-        //        {
-        //            // Handle error response from Paymob API
-        //            string errorMessage = $"Paymob order creation failed with status code: {response.StatusCode}";
-        //            paymentKeyResponse.ErrorMsg = errorMessage;
-        //            return paymentKeyResponse;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Handle any exceptions
-        //        paymentKeyResponse.ErrorMsg = ex.Message;
-        //        return paymentKeyResponse;
-        //    }
-        //}
-
+                    return IFrameAndPaymentKey;
+                }
+                else
+                {
+                    IFrameAndPaymentKey.ErrorMsg = PaymentKey.ErrorMsg;
+                    return IFrameAndPaymentKey;
+                }
+            }
+            catch (Exception ex)
+            {
+                IFrameAndPaymentKey.ErrorMsg += ex.Message;
+                return IFrameAndPaymentKey;
+            }
+        }
+        
         [HttpPost("GetURLForMobileWalletPayment")]
-        //public async Task<BaseResponseWithDataModel<string>> RequestMobileWalletURL(int _price, string _userId, string walletMobileNumber)
-        //{
-        //    BaseResponseWithDataModel<string> redirectURL = new BaseResponseWithDataModel<string>();
-        //    PaymentKeyMobileWalletRequestDTO paymentKeyMobileWalletRequest = new PaymentKeyMobileWalletRequestDTO();
-        //    int price = _price;
-        //    string userId = _userId;
-        //    try
-        //    {
-        //      BaseResponseWithDataModel<string> paymentToken = await GetPaymentKeyForMobileWallet(paymentKeyMobileWalletRequest, price, userId);
+        public async Task<BaseResponseWithDataModel<string>> RequestMobileWalletURL(int price, string userId, string walletMobileNumber)
+        {
+            BaseResponseWithDataModel<string> redirectURL = new BaseResponseWithDataModel<string>();
+            IntegrationType integrationType = IntegrationType.Mobile_Wallet;           
+            try
+            {
+                var paymentToken = await GetPaymentKeyBasedOnIntegrationId(integrationType, price, userId);
 
-        //        if (!string.IsNullOrEmpty(paymentToken.ErrorMsg))
-        //        {
-        //            string errorMessage = $"Paymob API request failed with status code: {paymentToken.ErrorMsg}";
-        //            paymentToken.ErrorMsg = errorMessage;
-        //            return paymentToken;
-        //        }
+                if (!string.IsNullOrEmpty(paymentToken.ErrorMsg))
+                {
+                    string errorMessage = $"Paymob API request failed with status code: {paymentToken.ErrorMsg}";
+                    paymentToken.ErrorMsg = errorMessage;
+                    return paymentToken;
+                }
 
-        //        string token = paymentToken.Data;
+                string token = paymentToken.Data;
 
-        //        var walletPayRequest = new
-        //        {
-        //            source = new
-        //            {
-        //                identifier = walletMobileNumber,
-        //                subtype = "WALLET"
-        //            },
-        //            payment_token = token
-        //        };
+                var walletPayRequest = new
+                {
+                    source = new
+                    {
+                        identifier = walletMobileNumber,
+                        subtype = "WALLET"
+                    },
+                    payment_token = token
+                };
 
-        //        // Convert object to JSON string
-        //        string jsonRequest = JsonConvert.SerializeObject(walletPayRequest);
+                // Convert object to JSON string
+                string jsonRequest = JsonConvert.SerializeObject(walletPayRequest);
 
-        //        // Create StringContent with JSON data
-        //        var content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+                // Create StringContent with JSON data
+                var content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 
-        //        // Create a new HttpClient instance
-        //        using var client = new HttpClient();
-        //        client.BaseAddress = new Uri("https://accept.paymob.com/api/acceptance/payments/pay");
+                // Create a new HttpClient instance
+                using var client = new HttpClient();
+                client.BaseAddress = new Uri("https://accept.paymob.com/api/acceptance/payments/pay");
 
-        //        // Send POST request to Paymob order creation endpoint
-        //        HttpResponseMessage response = await client.PostAsync("pay", content);
+                // Send POST request to Paymob order creation endpoint
+                HttpResponseMessage response = await client.PostAsync("pay", content);
 
-        //        // Check if request was successful
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            // Read response content
-        //            string responseContent = await response.Content.ReadAsStringAsync();
+                // Check if request was successful
+                if (response.IsSuccessStatusCode)
+                {
+                    // Read response content
+                    string responseContent = await response.Content.ReadAsStringAsync();
 
-        //            // Deserialize JSON response to extract token
-        //            dynamic responseObject = JsonConvert.DeserializeObject<UrlResponseModel>(responseContent);
-        //            string walletredirectURL = responseObject.redirect_url;
-        //            redirectURL.Data = walletredirectURL;
+                    // Deserialize JSON response to extract token
+                    dynamic responseObject = JsonConvert.DeserializeObject<dynamic>(responseContent);
+                    string walletredirectURL = responseObject.redirect_url;
+                    redirectURL.Data = walletredirectURL;
 
-        //            await UpdateWalletBalance(userId, price);
-        //            await CreateTransaction(userId, price);
+                    await UpdateWalletBalance(userId, price);
+                    await CreateTransaction(integrationType.ToString(), userId, price);
 
-        //            // Return success status
-        //            return redirectURL;
-        //        }
-        //        else
-        //        {
-        //            // Handle error response from Paymob API
-        //            string errorMessage = $"Paymob order creation failed with status code: {response.StatusCode}";
-        //            redirectURL.ErrorMsg = errorMessage;
-        //            return redirectURL;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Handle any exceptions
-        //        redirectURL.ErrorMsg = ex.Message;
-        //        return redirectURL;
-        //    }
-        //}
+                    // Return success status
+                    return redirectURL;
+                }
+                else
+                {
+                    // Handle error response from Paymob API
+                    string errorMessage = $"Paymob order creation failed with status code: {response.StatusCode}";
+                    redirectURL.ErrorMsg = errorMessage;
+                    return redirectURL;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions
+                redirectURL.ErrorMsg = ex.Message;
+                return redirectURL;
+            }
+        }
+
+        [HttpPost("GetReferenceNumberForKioskPayment")]
+        public async Task<BaseResponseWithDataModel<string>> RequestKioskPaymentReferenceNumber(int price, string userId)
+        {
+            BaseResponseWithDataModel<string> referenceNumber = new BaseResponseWithDataModel<string>();
+            IntegrationType integrationType = IntegrationType.Accept_Kiosk;
+            try
+            {
+                var paymentToken = await GetPaymentKeyBasedOnIntegrationId(integrationType, price, userId);
+
+                if (!string.IsNullOrEmpty(paymentToken.ErrorMsg))
+                {
+                    string errorMessage = $"Paymob API request failed with status code: {paymentToken.ErrorMsg}";
+                    paymentToken.ErrorMsg = errorMessage;
+                    return paymentToken;
+                }
+
+                string token = paymentToken.Data;
+
+                var kioskPayRequest = new
+                {
+                    source = new
+                    {
+                        identifier = "AGGREGATOR",
+                        subtype = "AGGREGATOR"
+                    },
+                    payment_token = token
+                };
+
+                // Convert object to JSON string
+                string jsonRequest = JsonConvert.SerializeObject(kioskPayRequest);
+
+                // Create StringContent with JSON data
+                var content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+                // Create a new HttpClient instance
+                using var client = new HttpClient();
+                client.BaseAddress = new Uri("https://accept.paymob.com/api/acceptance/payments/pay");
+
+                // Send POST request to Paymob order creation endpoint
+                HttpResponseMessage response = await client.PostAsync("pay", content);
+
+                // Check if request was successful
+                if (response.IsSuccessStatusCode)
+                {
+                    // Read response content
+                    string responseContent = await response.Content.ReadAsStringAsync();
+
+                    // Deserialize JSON response to extract token
+                    dynamic responseObject = JsonConvert.DeserializeObject<dynamic>(responseContent);
+                    string kioskReferenceNumber = responseObject.data.bill_reference;
+                    referenceNumber.Data = kioskReferenceNumber;
+
+                    await UpdateWalletBalance(userId, price);
+                    await CreateTransaction(integrationType.ToString(), userId, price);
+
+                    // Return success status
+                    return referenceNumber;
+                }
+                else
+                {
+                    // Handle error response from Paymob API
+                    string errorMessage = $"Paymob order creation failed with status code: {response.StatusCode}";
+                    referenceNumber.ErrorMsg = errorMessage;
+                    return referenceNumber;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions
+                referenceNumber.ErrorMsg = ex.Message;
+                return referenceNumber;
+            }
+        }
 
         [HttpGet("GetWalletBalance")]
         public async Task<IActionResult> GetWalletBalance(string ownerId, string ownerType)
