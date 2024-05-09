@@ -12,6 +12,9 @@ using Azure;
 using System.Reflection;
 using System.Data;
 using Newtonsoft.Json.Linq;
+using EduNexBL.UnitOfWork;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.VisualBasic;
 
 namespace EduNexAPI.Controllers
 {
@@ -19,24 +22,19 @@ namespace EduNexAPI.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly HttpClient _client;
-        private readonly IWallet _walletRepo;
-        private readonly ITransaction _TransactionRepo;
-        private readonly ICourse _CourseRepo;
         internal OrderRequestDTO orderRequest;
         internal PaymentKeyCardRequestDTO paymentKeyRequest;
         internal string created_at = String.Empty;
 
-        public PaymobAuthenticationRequestController(IConfiguration configuration, IMapper mapper, IWallet walletRepo, ITransaction transactionRepo, ICourse courseRepo)
+        public PaymobAuthenticationRequestController(IConfiguration configuration, IUnitOfWork unitOfWork)
         {
             _configuration = configuration;
-            _mapper = mapper;
-            _walletRepo = walletRepo;
+            _unitOfWork = unitOfWork;
             _client = new HttpClient();
             _client.DefaultRequestHeaders.Accept.Clear();
             _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-            _TransactionRepo = transactionRepo;
-            _CourseRepo = courseRepo;
         }
 
         private async Task UpdateWalletBalance(string userId, int amount)
@@ -44,7 +42,7 @@ namespace EduNexAPI.Controllers
             try
             {
                 // Get the user's wallet from the repository
-                var userWallet = await _walletRepo.GetById(userId);
+                var userWallet = await _unitOfWork.WalletRepo.GetById(userId);
 
                 if (userWallet != null)
                 {
@@ -52,7 +50,7 @@ namespace EduNexAPI.Controllers
                     userWallet.Balance += amount;
 
                     // Update the wallet in the repository
-                    await _walletRepo.UpdateWallet(userWallet);
+                    await _unitOfWork.WalletRepo.UpdateWallet(userWallet);
                 }
                 else
                 {
@@ -72,7 +70,7 @@ namespace EduNexAPI.Controllers
             try
             {
                 TransactionDTO transactionDTO = new TransactionDTO();
-                var wallet = await _walletRepo.GetById(userId); 
+                var wallet = await _unitOfWork.WalletRepo.GetById(userId); 
                 if (wallet != null) 
                 {
                     // Create a new transaction WalletId
@@ -88,7 +86,7 @@ namespace EduNexAPI.Controllers
                     var transactionEntity = _mapper.Map<Transaction>(transactionDTO);
 
                     // Add the transaction to the repository
-                    await _TransactionRepo.Add(transactionEntity);
+                    await _unitOfWork.TransactionRepo.Add(transactionEntity);
 
                     //Read the transaction
                     Console.WriteLine($"{transactionDTO.WalletId},{transactionDTO.TransactionType},{transactionDTO.TransactionDate},{transactionDTO.Amount}");
@@ -106,7 +104,6 @@ namespace EduNexAPI.Controllers
         }
 
         //Get Auth_token from Paymob
-        //[HttpPost("GetAuthToken")]
         public async Task<BaseResponseWithDataModel<string>> GetPaymobToken()
         {
             var AuthResponse = new BaseResponseWithDataModel<string>();
@@ -520,7 +517,7 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                Wallet displayedWallet = await _walletRepo.GetByIdAndOwnerType(ownerId, ownerType);
+                Wallet displayedWallet = await _unitOfWork.WalletRepo.GetByIdAndOwnerType(ownerId, ownerType);
 
                 if (displayedWallet != null)
                 {
@@ -538,12 +535,54 @@ namespace EduNexAPI.Controllers
             }
         }
 
+        [HttpGet("GetStudentTransactions")]
+        public async Task<IActionResult> GetStudentTransactions(string StudId)
+        {
+            try
+            {
+                var Transactions = await _unitOfWork.TransactionRepo.GetTransactionsByStudentId(StudId);
+                if (Transactions != null)
+                {
+                    return Ok(Transactions);
+                }
+                else
+                {
+                    return NotFound("Transactions not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("GetTransactionById")]
+        public async Task<IActionResult> GetTransactionById(int id)
+        {
+            try
+            {
+                var transaction = await _unitOfWork.TransactionRepo.GetById(id);
+                if (transaction != null)
+                {
+                    return Ok(transaction);
+                }
+                else
+                {
+                    return NotFound("Transactions not found");
+                }
+            }
+            catch(Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
         [HttpPost("PurchaseCourse")]
         public async Task<IActionResult> PurchaseCourse(string studentId, int courseId)
         {
             try
             {
-                var enrollmentResult = await _CourseRepo.EnrollStudentInCourse(studentId, courseId);
+                var enrollmentResult = await _unitOfWork.CourseRepo.EnrollStudentInCourse(studentId, courseId);
 
                 switch (enrollmentResult)
                 {

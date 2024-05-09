@@ -11,7 +11,8 @@ namespace EduNexBL.IRepository
     public interface ITransaction : IRepository<Transaction>
     {
         Task<Transaction?> GetById(int id);
-        Task<IEnumerable<Transaction>> GetTransactionByStudentId(string StudId);
+        Task<IEnumerable<Transaction>> GetAllTransactions();
+        Task<IEnumerable<Transaction>> GetTransactionsByStudentId(string StudId);
         Task ADD(Transaction transaction);
     }
 }
