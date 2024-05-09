@@ -36,6 +36,14 @@ namespace EduNexBL.Repository
             return _mapper.Map<List<CourseMainData>>(courses);
         }
 
+        public async Task<ICollection<SubjectRDTO>> Getsubject()
+        {
+            var subjects = await _context.Subjects
+               .Select(s => new SubjectRDTO { Id = s.Id, SubjectName = s.SubjectName })
+               .ToListAsync();
+            return (subjects);
+
+        }
         public async Task<CourseDTO?> GetCourseById(int courseId)
         {
             var course = await _context.Courses
@@ -169,6 +177,7 @@ namespace EduNexBL.Repository
                 return EnrollmentResult.Error;
             }
         }
+
 
         public async Task<bool> IsStudentEnrolledInCourse(string studentId, int courseId)
         {

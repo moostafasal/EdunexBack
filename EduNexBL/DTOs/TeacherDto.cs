@@ -16,7 +16,7 @@ namespace EduNexBL.DTOs
         public string? ProfilePhoto { get; set; }
         public string PhoneNumber { get; set; }
         public string? NationalId { get; set; }
-        public Gender gender { get; set; }
+        public string gender { get; set; }
         public string? Address { get; set; }
         public string? AboutMe { get; set; }
         public string? AccountNote { get; set; }

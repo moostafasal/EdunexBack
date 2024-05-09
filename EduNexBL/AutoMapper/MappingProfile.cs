@@ -40,7 +40,10 @@ namespace EduNexBL.AutoMapper
             CreateMap<Teacher, TeacherDto>()
              .ForMember(dest => dest.gender, opt => opt.MapFrom(src => src.gender.ToString()))
              .ForMember(dest => dest.Age, opt => opt.MapFrom(src => CalculateAge(src.DateOfBirth)))
-                 .ForMember(dest => dest.status, opt => opt.MapFrom(src => src.Status.ToString()));
+                 .ForMember(dest => dest.status, opt => opt.MapFrom(src => src.Status.ToString()))
+                 .ForMember(dest => dest.gender, opt => opt.MapFrom(src => src.gender.ToString()));
+
+            ;
 
             ;
 

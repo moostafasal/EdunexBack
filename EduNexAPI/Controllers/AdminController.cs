@@ -8,7 +8,7 @@ public class AdminController : ControllerBase
 {
     private readonly IAdminRepository _adminRepository;
 
-    public AdminController(IAdminRepository adminRepository )
+    public AdminController(IAdminRepository adminRepository)
     {
         _adminRepository = adminRepository;
     }
@@ -43,7 +43,7 @@ public class AdminController : ControllerBase
         var result = await _adminRepository.RejectTeacherAsync(id);
         if (result)
             return Ok("Teacher rejected successfully.");
-        return NotFound();  
+        return NotFound();
     }
 
     [HttpGet("teacher/{id}")]
@@ -91,7 +91,6 @@ public class AdminController : ControllerBase
         var users = await _adminRepository.SearchUsersAsync(query);
         return Ok(users);
     }
-
     [HttpGet("students")]
     public async Task<ActionResult<IEnumerable<StudentDto>>> GetStudents()
     {
