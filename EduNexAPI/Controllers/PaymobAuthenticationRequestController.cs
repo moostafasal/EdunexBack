@@ -517,15 +517,15 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                Wallet displayedWallet = await _unitOfWork.WalletRepo.GetByIdAndOwnerType(ownerId, ownerType);
+                Wallet displayedWallet = await _unitOfWork.WalletRepo.GetById(ownerId);
 
                 if (displayedWallet != null)
                 {
-                    return Ok(new { Balance = displayedWallet.Balance });
+                    return Ok(displayedWallet.Balance);
                 }
                 else
                 {
-                    return NotFound($"Wallet not found for the provided owner with data: id = {ownerId} & OwnerType: {ownerType}");
+                    return NotFound($"Wallet not found for the provided owner with data: id = {ownerId}");
                 }
 
             }

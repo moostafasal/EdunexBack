@@ -24,5 +24,8 @@ namespace EduNexDB.Entites
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        [Required]
+        public DateTime ExpirationDate { get; set; }
     }
 }
