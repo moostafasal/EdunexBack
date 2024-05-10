@@ -141,7 +141,7 @@ namespace EduNexBL.Repository
                 {
                     revievedCoupon.NumberOfUses--;
                     _context.Coupon.Update(revievedCoupon);
-                    await _context.SaveChangesAsync();
+                    _context.SaveChanges();
                 }
             }
         }
@@ -170,7 +170,7 @@ namespace EduNexBL.Repository
                     return EnrollmentResult.AlreadyEnrolled;
                 }
 
-                if (couponCodes == null)
+                if (couponCodes == null || couponCodes.Length == 0)
                 {
                     //Checks student balance in the wallet
                     if (studentWallet.Balance < course.Price)
@@ -182,7 +182,7 @@ namespace EduNexBL.Repository
                         ////Update student balance in his wallet
                         studentWallet.Balance -= course.Price;
                         _context.Wallets.Update(studentWallet);
-                        await _context.SaveChangesAsync();
+                        _context.SaveChanges();
 
                         // Create a new enrollment
                         var Enrollment = new StudentCourse

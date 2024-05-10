@@ -127,7 +127,7 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("enroll")]
-        public async Task<IActionResult> EnrollStudentInCourse(EnrollmentRequestDto enrollmentRequestDto,[FromQuery] string[] couponcodes)
+        public async Task<IActionResult> EnrollStudentInCourse(EnrollmentRequestDto enrollmentRequestDto,[FromQuery] string[]? couponcodes)
         {
             var result = await _unitOfWork.CourseRepo.EnrollStudentInCourse(enrollmentRequestDto.StudentId, enrollmentRequestDto.CourseId, couponcodes);
             return result switch
