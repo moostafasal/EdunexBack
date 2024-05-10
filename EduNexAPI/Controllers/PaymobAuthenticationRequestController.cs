@@ -578,7 +578,7 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("PurchaseCourse")]
-        public async Task<IActionResult> PurchaseCourse(string studentId, int courseId,[FromQuery] string[] couponCodes)
+        public async Task<IActionResult> PurchaseCourse(string studentId, int courseId,[FromQuery] string[]? couponCodes)
         {
             try
             {
