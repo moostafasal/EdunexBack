@@ -4,6 +4,7 @@ using EduNexDB.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduNexDB.Migrations
 {
     [DbContext(typeof(EduNexContext))]
-    partial class EduNexContextModelSnapshot : ModelSnapshot
+    [Migration("20240509224102_addCoupon")]
+    partial class addCoupon
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,9 +205,6 @@ namespace EduNexDB.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpirationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("NumberOfUses")
@@ -600,7 +600,7 @@ namespace EduNexDB.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("WalletId")
+                    b.Property<int>("WalletId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -661,16 +661,13 @@ namespace EduNexDB.Migrations
 
                     b.Property<string>("OwnerId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OwnerType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("WalletId");
-
-                    b.HasIndex("OwnerId")
-                        .IsUnique();
 
                     b.ToTable("Wallets");
                 });
@@ -1037,7 +1034,9 @@ namespace EduNexDB.Migrations
                 {
                     b.HasOne("EduNexDB.Entites.Wallet", "Wallet")
                         .WithMany()
-                        .HasForeignKey("WalletId");
+                        .HasForeignKey("WalletId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Wallet");
                 });
@@ -1051,17 +1050,6 @@ namespace EduNexDB.Migrations
                         .IsRequired();
 
                     b.Navigation("Lecture");
-                });
-
-            modelBuilder.Entity("EduNexDB.Entites.Wallet", b =>
-                {
-                    b.HasOne("EduNexDB.Entites.ApplicationUser", "User")
-                        .WithOne()
-                        .HasForeignKey("EduNexDB.Entites.Wallet", "OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

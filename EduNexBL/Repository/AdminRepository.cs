@@ -34,9 +34,19 @@ namespace EduNexBL.Repository
 
             return teachers;
         }
+
+        public async Task<IEnumerable<TeacherDto>> GetApprovedTeachers()
+        {
+            var approvedTeachers = await _context.Teachers
+                .Where(t => t.Status == TeacherStatus.Approved)
+                .Select(t => _mapper.Map<TeacherDto>(t))
+                .ToListAsync();
+
+            return approvedTeachers;
+        }
         public async Task<IEnumerable<TeacherDto>> GetTeachersPendingAsync()
         {
-            var teachers = await _context.Teachers.Where(i=>i.Status == TeacherStatus.Pending).Select(t => _mapper.Map<TeacherDto>(t))
+            var teachers = await _context.Teachers.Where(i => i.Status == TeacherStatus.Pending).Select(t => _mapper.Map<TeacherDto>(t))
                .ToListAsync();
 
             return teachers;
@@ -78,18 +88,17 @@ namespace EduNexBL.Repository
                 Email = teacher.Email,
                 AboutMe = teacher.AboutMe,
                 AccountNote = teacher.AccountNote,
-                gender = teacher.gender,
+                gender = teacher.gender.ToString(),
                 Address = teacher.Address,
                 PhoneNumber = teacher.PhoneNumber,
                 NationalId = teacher.NationalId,
                 subject = teacher.subject,
-                ProfilePhoto=teacher.ProfilePhoto,
-                FacebookAccount=teacher.FacebookAccount,
-                City= teacher.City,
-                DateOfBirth = teacher.DateOfBirth
-               
-                
-                // Map other properties as needed
+                ProfilePhoto = teacher.ProfilePhoto,
+                FacebookAccount = teacher.FacebookAccount,
+                City = teacher.City,
+                DateOfBirth = teacher.DateOfBirth,
+                status = teacher.Status.ToString()
+
             };
 
             return teacherDto;
@@ -145,14 +154,14 @@ namespace EduNexBL.Repository
             return students;
         }
 
-        public async Task UpdateTeachersAboutMe(string id , AboutinfoDto Aboutinfo)
+        public async Task UpdateTeachersAboutMe(string id, AboutinfoDto Aboutinfo)
         {
-            var teacher= await _context.Teachers.FindAsync(id);
-            if(teacher != null) 
+            var teacher = await _context.Teachers.FindAsync(id);
+            if (teacher != null)
             {
-             teacher.AboutMe = Aboutinfo.AboutMe;
-             //teacher.AccountNote=Aboutinfo.AccountNote;
-             _context.SaveChanges();
+                teacher.AboutMe = Aboutinfo.AboutMe;
+                //teacher.AccountNote=Aboutinfo.AccountNote;
+                _context.SaveChanges();
             }
         }
         public async Task UpdateTeachersAccountNote(string id, AccountNoteDto Aboutinfo)
@@ -161,7 +170,7 @@ namespace EduNexBL.Repository
             if (teacher != null)
             {
                 //teacher.AboutMe = Aboutinfo.AboutMe;
-                teacher.AccountNote=Aboutinfo.AccountNote;
+                teacher.AccountNote = Aboutinfo.AccountNote;
                 _context.SaveChanges();
             }
         }
@@ -171,13 +180,13 @@ namespace EduNexBL.Repository
             var teacher = await _context.Teachers.FindAsync(id);
             if (teacher != null)
             {
-                teacher.PhoneNumber=teacherDto.PhoneNumber;
+                teacher.PhoneNumber = teacherDto.PhoneNumber;
                 teacher.subject = teacherDto.subject;
                 teacher.Address = teacherDto.Address;
                 _context.SaveChanges();
             }
         }
-       public async Task AddedTeachersPhoto(string id, string path)
+        public async Task AddedTeachersPhoto(string id, string path)
         {
             var teacher = await _context.Teachers.FindAsync(id);
             if (teacher != null)
@@ -186,7 +195,7 @@ namespace EduNexBL.Repository
 
                 _context.SaveChanges();
             }
-            
+
 
         }
 
@@ -199,8 +208,8 @@ namespace EduNexBL.Repository
                 teacher.subject = teachDto.subject;
                 teacher.Address = teachDto.Address;
                 teacher.AboutMe = teachDto.AboutMe;
-                teacher.AccountNote= teachDto.AccountNote;
-                teacher.FirstName= teachDto.FirstName;
+                teacher.AccountNote = teachDto.AccountNote;
+                teacher.FirstName = teachDto.FirstName;
                 teacher.gender = teacher.gender;
                 teacher.Email = teachDto.Email;
                 teacher.Address = teacher.Address;
@@ -213,6 +222,9 @@ namespace EduNexBL.Repository
             }
 
         }
+
+
+
 
         public async Task DeleteTeacherAsync(string id)
         {

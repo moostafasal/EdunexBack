@@ -21,6 +21,7 @@ namespace EduNexBL.IRepository
         Task<DateTime?> GetExamSubmissionStartTime(string studentId, int examId);
         Task<DateTime?> GetExamSubmissionEndTime(string studentId, int examId);
         Task<StudentExam> GetStudentExamInfo(string studentId, int examId);
+        Task<int> GetCourseIdOfExam(int examId);
 
 
     }

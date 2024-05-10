@@ -4,6 +4,7 @@ using EduNexDB.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduNexDB.Migrations
 {
     [DbContext(typeof(EduNexContext))]
-    partial class EduNexContextModelSnapshot : ModelSnapshot
+    [Migration("20240508191846_EditCourse")]
+    partial class EditCourse
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -189,35 +192,6 @@ namespace EduNexDB.Migrations
                     b.ToTable("AttachmentFile");
                 });
 
-            modelBuilder.Entity("EduNexDB.Entites.Coupon", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CouponCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpirationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("NumberOfUses")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Coupon");
-                });
-
             modelBuilder.Entity("EduNexDB.Entites.Course", b =>
                 {
                     b.Property<int>("Id")
@@ -384,7 +358,7 @@ namespace EduNexDB.Migrations
                             Id = 1,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
-                            LevelName = "الصف الأول الثانوي",
+                            LevelName = "Level one",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -392,7 +366,7 @@ namespace EduNexDB.Migrations
                             Id = 2,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
-                            LevelName = "الصف الثاني الثانوي",
+                            LevelName = "Level two",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -400,7 +374,7 @@ namespace EduNexDB.Migrations
                             Id = 3,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
-                            LevelName = "الصف الثالث الثانوي",
+                            LevelName = "Level three",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -600,7 +574,7 @@ namespace EduNexDB.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("WalletId")
+                    b.Property<int>("WalletId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -661,16 +635,13 @@ namespace EduNexDB.Migrations
 
                     b.Property<string>("OwnerId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OwnerType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("WalletId");
-
-                    b.HasIndex("OwnerId")
-                        .IsUnique();
 
                     b.ToTable("Wallets");
                 });
@@ -853,7 +824,8 @@ namespace EduNexDB.Migrations
                     b.HasBaseType("EduNexDB.Entites.ApplicationUser");
 
                     b.Property<string>("AboutMe")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("AboutMe");
 
                     b.Property<string>("AccountNote")
                         .HasColumnType("nvarchar(max)");
@@ -1037,7 +1009,9 @@ namespace EduNexDB.Migrations
                 {
                     b.HasOne("EduNexDB.Entites.Wallet", "Wallet")
                         .WithMany()
-                        .HasForeignKey("WalletId");
+                        .HasForeignKey("WalletId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Wallet");
                 });
@@ -1051,17 +1025,6 @@ namespace EduNexDB.Migrations
                         .IsRequired();
 
                     b.Navigation("Lecture");
-                });
-
-            modelBuilder.Entity("EduNexDB.Entites.Wallet", b =>
-                {
-                    b.HasOne("EduNexDB.Entites.ApplicationUser", "User")
-                        .WithOne()
-                        .HasForeignKey("EduNexDB.Entites.Wallet", "OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

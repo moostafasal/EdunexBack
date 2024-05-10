@@ -20,6 +20,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="VimeoDotNet" Version="3.2.4" />
   </ItemGroup>
 
   <ItemGroup>

@@ -12,17 +12,19 @@ namespace EduNexBL.IRepository
     public interface IAdminRepository
     {
         Task<IEnumerable<TeacherDto>> GetTeachersAsync();
-        Task<IEnumerable<TeacherDto>> GetTeachersPendingAsync();   
+        Task<IEnumerable<TeacherDto>> GetApprovedTeachers();
+
+        Task<IEnumerable<TeacherDto>> GetTeachersPendingAsync();
         Task<bool> ApproveTeacherAsync(string id);
         Task<bool> RejectTeacherAsync(string id);
         Task<TeacherDto> GetTeacherByIdAsync(string id);
         Task<StudentDto> GetStudentByIdAsync(string id);
         Task<IEnumerable<UserDto>> SearchUsersAsync(SearchQuery query);
         Task<IEnumerable<StudentDto>> GetStudentsAsync();
-        Task UpdateTeachersAboutMe(string id ,AboutinfoDto Aboutinfo);
+        Task UpdateTeachersAboutMe(string id, AboutinfoDto Aboutinfo);
         Task UpdateTeachersAccountNote(string id, AccountNoteDto Aboutinfo);
-        Task UpdateTeacher(string id, UpdateTeacherDto teacherDto); 
-        Task UpdateAllTeacherData(string id, TeacherDto teachDto); 
+        Task UpdateTeacher(string id, UpdateTeacherDto teacherDto);
+        Task UpdateAllTeacherData(string id, TeacherDto teachDto);
 
         Task AddedTeachersPhoto(string id, string path);
 

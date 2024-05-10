@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using EduNexBL.Base;
+using EduNexBL.DTOs;
 using EduNexBL.DTOs.CourseDTOs;
 using EduNexBL.ENums;
 using EduNexBL.IRepository;
 using EduNexDB.Context;
 using EduNexDB.Entites;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +36,14 @@ namespace EduNexBL.Repository
             return _mapper.Map<List<CourseMainData>>(courses);
         }
 
+        public async Task<ICollection<SubjectRDTO>> Getsubject()
+        {
+            var subjects = await _context.Subjects
+               .Select(s => new SubjectRDTO { Id = s.Id, SubjectName = s.SubjectName })
+               .ToListAsync();
+            return (subjects);
+
+        }
         public async Task<CourseDTO?> GetCourseById(int courseId)
         {
             var course = await _context.Courses
@@ -61,13 +71,15 @@ namespace EduNexBL.Repository
                 Id = course.Id,
                 CourseName = course.CourseName,
                 Thumbnail = course.Thumbnail,
-                CourseType = course.CourseType.ToString(), // Convert enum to string
                 Price = course.Price,
                 SubjectName = course.Subject?.SubjectName ?? "", // Assuming Subject has a Name property
                 TeacherName = $"{course.Teacher?.FirstName} {course.Teacher?.LastName}", // Assuming Teacher has a Name property
                 ProfilePhoto = course.Teacher?.ProfilePhoto ?? "", // Assuming Teacher has a ProfilePhoto property
                 LevelName = course.Subject?.Level?.LevelName ?? "", // Assuming Subject has a Level property and Level has a Name property
-                LectureList = course.Lectures.Select(MapLectureToLectureDTO).ToList()
+                LectureList = course.Lectures.Select(MapLectureToLectureDTO).ToList(),
+                teacherId = course.TeacherId,
+                AboutTeacher = course.Teacher.AboutMe
+
             };
         }
 
@@ -106,13 +118,41 @@ namespace EduNexBL.Repository
             };
         }
 
-        public async Task<EnrollmentResult> EnrollStudentInCourse(string studentId, int courseId)
+        public async Task<decimal> GetCouponsValues(string[] couponCodes)
+        {
+            decimal discountValue = 0;
+            foreach (var coupon in couponCodes)
+            {
+                var revievedCoupon = await _context.Coupon.FirstOrDefaultAsync(c => c.CouponCode == coupon && c.NumberOfUses > 0 && c.ExpirationDate > DateTime.Now);
+                if (revievedCoupon != null)
+                {
+                    discountValue += revievedCoupon.Value;
+                }
+            }
+            return discountValue;
+        }
+
+        public async Task UpdateCouponUsageNumber(string[] couponCodes)
+        {
+            foreach (var coupon in couponCodes)
+            {
+                var revievedCoupon = await _context.Coupon.FirstOrDefaultAsync(c => c.CouponCode == coupon && c.NumberOfUses > 0 && c.ExpirationDate > DateTime.Now);
+                if (revievedCoupon != null)
+                {
+                    revievedCoupon.NumberOfUses--;
+                    _context.Coupon.Update(revievedCoupon);
+                    await _context.SaveChangesAsync();
+                }
+            }
+        }
+
+        public async Task<EnrollmentResult> EnrollStudentInCourse(string studentId, int courseId,string[]? couponCodes)
         {
             try
             {
                 var student = await _context.Students.SingleOrDefaultAsync(s => s.Id == studentId);
                 var course = await _context.Courses.SingleOrDefaultAsync(c => c.Id == courseId);
-                //var studentWallet = await _context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == studentId);
+                var studentWallet = await _context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == studentId);
 
                 if (student == null)
                 {
@@ -124,40 +164,88 @@ namespace EduNexBL.Repository
                     return EnrollmentResult.CourseNotFound;
                 }
 
-                //if (studentWallet == null)
-                //{
-                //    return EnrollmentResult.Error;
-                //}
-
-                // Check if the student is already enrolled in the course (if needed)
+                //Check if the student is already enrolled in the course(if needed)
                 if (await IsStudentEnrolledInCourse(studentId, courseId))
                 {
                     return EnrollmentResult.AlreadyEnrolled;
                 }
 
-                ////Checks student balance in the wallet
-                //if (studentWallet.Balance < course.Price)
-                //{
-                //    return EnrollmentResult.Error;
-                //}
+                if (couponCodes == null)
+                {
+                    //Checks student balance in the wallet
+                    if (studentWallet.Balance < course.Price)
+                    {
+                        return EnrollmentResult.InsufficientBalance;
+                    }
+                    else
+                    {
+                        ////Update student balance in his wallet
+                        studentWallet.Balance -= course.Price;
+                        _context.Wallets.Update(studentWallet);
+                        await _context.SaveChangesAsync();
 
-                ////Update student balance in his wallet
-                //studentWallet.Balance -= course.Price;
-                //await _WalletRepo.Update(studentWallet);
+                        // Create a new enrollment
+                        var Enrollment = new StudentCourse
+                        {
+                            StudentId = studentId,
+                            CourseId = courseId,
+                            Enrolled = DateTime.Now // or any appropriate timestamp
+                        };
+
+                        // Add the enrollment to the database
+                        _context.StudentCourse.Add(Enrollment);
+                        _context.SaveChanges();
+
+                        return EnrollmentResult.Success;
+                    }
+                }
+                else
+                {
+                    var discountValue = await GetCouponsValues(couponCodes);
+                    if (discountValue > 0)
+                    {
+                        if (studentWallet.Balance < (course.Price - discountValue))
+                        {
+                            return EnrollmentResult.InsufficientBalance;
+                        }
+                        else
+                        {
+                            //Update student balance in his wallet
+                            studentWallet.Balance -= (course.Price - discountValue);
+                            _context.Wallets.Update(studentWallet);
+                            await _context.SaveChangesAsync();
+                            await UpdateCouponUsageNumber(couponCodes);
+
+                            // Create a new enrollment
+                            var Enrollment = new StudentCourse
+                            {
+                                StudentId = studentId,
+                                CourseId = courseId,
+                                Enrolled = DateTime.Now // or any appropriate timestamp
+                            };
+                            
+                            // Add the enrollment to the database
+                            _context.StudentCourse.Add(Enrollment);
+                            _context.SaveChanges();
+
+                            return EnrollmentResult.Success;
+                        }
+                    }
+                    else
+                    {
+                        return EnrollmentResult.InvalidCoupon;
+                    }
+                }
 
                 // Create a new enrollment
-                var enrollment = new StudentCourse
-                {
-                    StudentId = studentId,
-                    CourseId = courseId,
-                    Enrolled = DateTime.Now // or any appropriate timestamp
-                };
-
-                // Add the enrollment to the database
-                _context.StudentCourse.Add(enrollment);
-                _context.SaveChanges();
-
-                return EnrollmentResult.Success;
+                //var enrollment = new StudentCourse
+                //{
+                //    StudentId = studentId,
+                //    CourseId = courseId,
+                //    Enrolled = DateTime.Now // or any appropriate timestamp
+                //};
+                
+                //return EnrollmentResult.Success;
             }
             catch (Exception ex)
             {
@@ -184,11 +272,40 @@ namespace EduNexBL.Repository
             return course != null;
         }
 
+        public async Task<List<StudentCoursesDTO?>> CoursesEnrolledByStudent(string studentId)
+        {
+            var student = await _context.Students
+                .Include(s => s.StudentCourses)
+                .ThenInclude(sc => sc.Course)
+                .FirstOrDefaultAsync(s => s.Id == studentId);
 
+            if (student == null)
+            {
+                return null;
+            }
 
+            var studentCoursesDTOs = student.StudentCourses
+                .Select(sc => new StudentCoursesDTO
+                {
+                    CourseId = sc.CourseId,
+                    CourseName = sc.Course.CourseName,
+                    CourseThumbnail = sc.Course.Thumbnail
+                })
+                .ToList();
 
+            return studentCoursesDTOs;
+        }
 
-
-
+        public async Task<int> CountEnrolledStudentsInCourse(int courseId)
+        {
+            int count = await _context.StudentCourse.CountAsync(sc => sc.CourseId == courseId);
+            return count; 
+        }
+        public async Task<int> CountCourseLectures(int courseId)
+        {
+            int count = await _context.Lectures.CountAsync(l => l.CourseId == courseId);
+            return count;
+        }
     }
 }
+
