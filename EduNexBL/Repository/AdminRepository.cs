@@ -225,5 +225,40 @@ namespace EduNexBL.Repository
 
 
 
+
+        public async Task DeleteTeacherAsync(string id)
+        {
+
+            var teacher = await _context.Teachers.FindAsync(id);
+
+            if (teacher != null) {
+                 _context.Teachers.Remove(teacher);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new KeyNotFoundException($"Teacher with ID {id} not found.");
+            }
+        }
+
+        public async Task DeleteStudentAsync(string id)
+        {
+            //if (id <= 0)
+            //{
+            //    throw new ArgumentException("Invalid student ID. ID must be greater than zero.", nameof(id));
+            //}
+
+            var student = await _context.Students.FindAsync(id);
+
+            if (student != null)
+            {
+                _context.Students.Remove(student);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new KeyNotFoundException($"Student with ID {id} not found.");
+            }
+        }
     }
 }

@@ -28,6 +28,8 @@ namespace EduNexBL.IRepository
 
         Task AddedTeachersPhoto(string id, string path);
 
+        Task DeleteTeacherAsync(string id);
+        Task DeleteStudentAsync(string id);
 
 
 
