@@ -186,7 +186,7 @@ namespace EduNexAPI.Controllers
             var roles = await _userManager.GetRolesAsync(teacher);
             if (!roles.Contains("Teacher")) return NotFound();
 
-            var courses = _unitOfWork.CourseRepo.GetTeacherCourses(teacherId);
+            var courses = await _unitOfWork.CourseRepo.GetTeacherCourses(teacherId);
             return Ok(courses); 
         }
         

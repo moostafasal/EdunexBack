@@ -319,8 +319,8 @@ namespace EduNexBL.Repository
                     Thumbnail = course.Thumbnail,
                     Price = course.Price,
                     SubjectName = course.Subject.SubjectName,
-                    CreatedAt = course.CreatedAt,
-                    UpdatedAt = course.UpdatedAt
+                    CreatedAt = course.CreatedAt.ToString(),
+                    UpdatedAt = course.UpdatedAt.ToString()
                 })
                 .ToListAsync();
 
