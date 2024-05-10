@@ -98,4 +98,86 @@ public class AdminController : ControllerBase
         var students = await _adminRepository.GetStudentsAsync();
         return Ok(students);
     }
+
+    [HttpGet("teachers/count")]
+    public async Task<ActionResult> GetTeachersCount()
+    {
+        try
+        {
+            var teachers = await _adminRepository.GetTeachersAsync();
+            var count = teachers.Count();
+            return Ok(new { count });
+
+        }
+        catch(Exception ex) 
+        {
+
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new { error = "An unexpected error occurred while processing your request." });
+        
+        }
+ 
+    }
+
+    [HttpGet("students/count")]
+    public async Task<ActionResult> GetStudentsCount()
+    {
+        try
+        {
+            var std = await _adminRepository.GetStudentsAsync();
+            var count = std.Count();
+            return Ok(new { count });
+
+        }
+        catch (Exception ex)
+        {
+
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new { error = "An unexpected error occurred while processing your request." });
+
+        }
+
+    }
+
+    [HttpDelete("Student/{id}")]
+    public async Task<IActionResult> DeleteStudent (string id)
+    {
+        try
+        {
+            //if (id <= 0)
+            //{
+            //    return BadRequest("Invalid student ID. ID must be greater than zero.");
+            //}
+
+            await _adminRepository.DeleteStudentAsync(id);
+            return Ok("Student Deleted Sucessfully");
+
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, "An unexpected error occurred. Please try again later.");
+
+        }
+    }
+
+    [HttpDelete("Teacher/{id}")]
+    public async Task<IActionResult> DeleteTeacher(string id)
+    {
+        try
+        {
+            //if (id <= 0)
+            //{
+            //    return BadRequest("Invalid Teacher ID. ID must be greater than zero.");
+            //}
+
+            await _adminRepository.DeleteTeacherAsync(id);
+            return Ok("Teacher Deleted Sucessfully");
+
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, "An unexpected error occurred. Please try again later.");
+
+        }
+    }
 }
