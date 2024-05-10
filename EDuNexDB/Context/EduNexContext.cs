@@ -29,6 +29,8 @@ namespace EduNexDB.Context
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<StudentCourse> StudentCourse { get; set; }
 
+        public DbSet<Coupon> Coupon { get; set; }
+
 
         //public DbSet<City> cities { get; set; }
 
@@ -69,9 +71,9 @@ namespace EduNexDB.Context
 
           );
             modelBuilder.Entity<Level>().HasData(
-                   new Level { Id = 1, LevelName = "Level one" },
-                   new Level { Id = 2, LevelName = "Level two" },
-                    new Level { Id = 3, LevelName = "Level three" }
+                   new Level { Id = 1, LevelName = "الصف الأول الثانوي" },
+                   new Level { Id = 2, LevelName = "الصف الثاني الثانوي" },
+                    new Level { Id = 3, LevelName = "الصف الثالث الثانوي" }
 
                );
 
@@ -90,7 +92,12 @@ namespace EduNexDB.Context
                 .HasForeignKey(sc => sc.CourseId)
                 .OnDelete(DeleteBehavior.NoAction); // Specify delete behavior
 
-
+            modelBuilder.Entity<Wallet>()
+              .HasOne(w => w.User)
+              .WithOne()
+              .HasForeignKey<Wallet>(w => w.OwnerId)
+              .IsRequired()
+              .OnDelete(DeleteBehavior.Cascade);
 
 
 

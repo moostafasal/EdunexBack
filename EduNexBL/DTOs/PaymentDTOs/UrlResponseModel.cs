@@ -8,6 +8,6 @@ namespace EduNexBL.DTOs.PaymentDTOs
 {
     public class UrlResponseModel
     {
-        public string redirect_url { get; set; }
+        public string data { get; set; }
     }
 }

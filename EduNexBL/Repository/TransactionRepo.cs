@@ -1,4 +1,5 @@
-﻿using EduNexBL.Base;
+﻿using AutoMapper;
+using EduNexBL.Base;
 using EduNexBL.IRepository;
 using EduNexDB.Context;
 using EduNexDB.Entites;
@@ -31,7 +32,7 @@ namespace EduNexBL.Repository
             return await _Context.Transactions.SingleOrDefaultAsync(t => t.Id == id);
         }
 
-        public async Task<IEnumerable<Transaction>> GetTransactionByStudentId(string StudId)
+        public async Task<IEnumerable<Transaction>> GetTransactionsByStudentId(string StudId)
         {
             Wallet targetWallet = await _Context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == StudId);
             if (targetWallet != null)
@@ -39,6 +40,10 @@ namespace EduNexBL.Repository
                 return await _Context.Transactions.Where(t => t.WalletId == targetWallet.WalletId).ToListAsync();
             }
             return Enumerable.Empty<Transaction>();
+        }
+        public async Task<IEnumerable<Transaction>> GetAllTransactions()
+        {
+            return await _Context.Transactions.ToListAsync();   
         }
     }
 }

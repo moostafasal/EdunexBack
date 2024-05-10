@@ -11,6 +11,7 @@ using EduNexBL.DTOs.ExamintionDtos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace EduNexAPI.Controllers
 {
@@ -20,11 +21,13 @@ namespace EduNexAPI.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ExamsController(IUnitOfWork unitOfWork, IMapper mapper)
+        public ExamsController(IUnitOfWork unitOfWork, IMapper mapper,UserManager<ApplicationUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         // GET: api/<ExamsController>
@@ -106,8 +109,11 @@ namespace EduNexAPI.Controllers
 
 
         [HttpPost("{id}/start")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Student")]
+
         public async Task<IActionResult> StartExam(int id, [FromBody] StartExamRequestDto request)
         {
+
             // Validate the request model
             if (!ModelState.IsValid)
             {
@@ -121,6 +127,13 @@ namespace EduNexAPI.Controllers
                 return NotFound();
             }
 
+            var courseID = await _unitOfWork.ExamRepo.GetCourseIdOfExam(id);
+
+            var isEnrolled = await _unitOfWork.CourseRepo.IsStudentEnrolledInCourse(request.StudentId, courseID);
+            if (!isEnrolled)
+            {
+                return StatusCode(403, "Student is not enrolled in the course"); // Return 403 Forbidden with error message
+            }
             // Call the service method to start the exam
             var result = await _unitOfWork.ExamRepo.StartExam(request.StudentId, id);
             ////////////attention  

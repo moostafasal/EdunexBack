@@ -1,4 +1,5 @@
-﻿using EduNexBL.DTOs.CourseDTOs;
+﻿using AuthenticationMechanism.Services;
+using EduNexBL.DTOs.CourseDTOs;
 using EduNexBL.DTOs.ExamintionDtos;
 using EduNexBL.ENums;
 using EduNexBL.UnitOfWork;
@@ -14,9 +15,12 @@ namespace EduNexAPI.Controllers
     public class CoursesController : ControllerBase
     {
         public IUnitOfWork _unitOfWork { get; set; }
-        public CoursesController(IUnitOfWork unitOfWork)
+        public IFiles _files { get; }
+
+        public CoursesController(IUnitOfWork unitOfWork, IFiles files)
         {
-            _unitOfWork = unitOfWork; 
+            _unitOfWork = unitOfWork;
+            _files = files;
         }
 
         // GET: api/<CoursesController>
@@ -41,15 +45,23 @@ namespace EduNexAPI.Controllers
 
         // POST api/<CoursesController>
         [HttpPost]
-        public async Task<ActionResult<Course>> Post(Course course)
+        public async Task<ActionResult> Post([FromForm] AddUpdateCourseDTO course)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            await _unitOfWork.CourseRepo.Add(course);
-            return CreatedAtAction(nameof(Get), new { id = course.Id }, course);
+            var filePath = await _files.UploadVideoAsync(course.Thumbnail);
+            var createdCourse = new Course
+            {
+                CourseName = course.CourseName,
+                Thumbnail = filePath,
+                Price = course.Price,
+                SubjectId = course.SubjectId,
+                TeacherId = course.TeacherId,
+            };
+            await _unitOfWork.CourseRepo.Add(createdCourse);
+            return Ok();
 
         }
 
@@ -57,11 +69,11 @@ namespace EduNexAPI.Controllers
 
         // PUT api/<ExamsController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] Course course)
+        public async Task<IActionResult> Put(int id, [FromForm] AddUpdateCourseDTO course)
         {
-            if (id != course.Id)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var existingCourse = await _unitOfWork.CourseRepo.GetById(id);
@@ -69,11 +81,21 @@ namespace EduNexAPI.Controllers
             {
                 return NotFound();
             }
+            var filePath = await _files.UploadVideoAsync(course.Thumbnail);
 
-            
-            await _unitOfWork.CourseRepo.Update(course);
+            var updatedCourse = new Course
+            {
+                Id = id,
+                CourseName = course.CourseName,
+                Thumbnail = filePath,
+                Price = course.Price,
+                SubjectId = course.SubjectId,
+                TeacherId = course.TeacherId,
+            };
 
-            return NoContent();
+            await _unitOfWork.CourseRepo.Update(updatedCourse);
+
+            return Ok();
         }
 
         // DELETE api/<CoursesController>/5
@@ -92,15 +114,16 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("enroll")]
-        public async Task<IActionResult> EnrollStudentInCourse(EnrollmentRequestDto enrollmentRequestDto)
+        public async Task<IActionResult> EnrollStudentInCourse(EnrollmentRequestDto enrollmentRequestDto,[FromQuery] string[] couponcodes)
         {
-            var result = await _unitOfWork.CourseRepo.EnrollStudentInCourse(enrollmentRequestDto.StudentId, enrollmentRequestDto.CourseId);
+            var result = await _unitOfWork.CourseRepo.EnrollStudentInCourse(enrollmentRequestDto.StudentId, enrollmentRequestDto.CourseId, couponcodes);
             return result switch
             {
                 EnrollmentResult.Success => Ok(),
                 EnrollmentResult.StudentNotFound => NotFound("Student not found."),
                 EnrollmentResult.CourseNotFound => NotFound("Course not found."),
                 EnrollmentResult.AlreadyEnrolled => BadRequest("Student is already enrolled in the course."),
+                EnrollmentResult.InvalidCoupon => BadRequest("Attempting to use an invalid coupon."),
                 _ => StatusCode(500, "An error occurred while processing the enrollment.")
             };
         }
@@ -111,5 +134,36 @@ namespace EduNexAPI.Controllers
             var isEnrolled = await _unitOfWork.CourseRepo.IsStudentEnrolledInCourse(enrollmentDto.StudentId, enrollmentDto.CourseId);
             return Ok(isEnrolled);
         }
+        [HttpGet("GetCoursesEnrolledByStudent")]
+        public async Task<IActionResult> GetCoursesByStudent(string studentId)
+        {
+
+            var student = await _unitOfWork.StudentRepo.GetById(studentId);
+            if (student == null)
+            {
+                return NotFound("student not found");
+            }
+            return Ok( await _unitOfWork.CourseRepo.CoursesEnrolledByStudent(studentId));
+        }
+
+
+        [HttpGet("CountStudents")]
+        public async Task<IActionResult> CountEnrolledStudentsInCourse([FromQuery]int courseId)
+        {
+            var course = await _unitOfWork.CourseRepo.GetById(courseId);
+            if (course == null) return NotFound();
+            int count = await _unitOfWork.CourseRepo.CountEnrolledStudentsInCourse(courseId);
+            return Ok(count);
+        }
+
+        [HttpGet("CountLectures")]
+        public async Task<IActionResult> CountLecturesInCourse([FromQuery] int courseId)
+        {
+            var course = await _unitOfWork.CourseRepo.GetById(courseId);
+            if (course == null) return NotFound();
+            int count = await _unitOfWork.CourseRepo.CountCourseLectures(courseId);
+            return Ok(count);
+        }
+
     }
 }

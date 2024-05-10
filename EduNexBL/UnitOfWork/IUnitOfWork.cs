@@ -17,6 +17,7 @@ namespace EduNexBL.UnitOfWork
         public IVideo VideoRepo {get; }
         public IAttachment AttachmentRepo { get; }
         public IWallet WalletRepo { get; }
+        public ITransaction TransactionRepo { get; }
 
         void Commit();
     }

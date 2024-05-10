@@ -79,14 +79,9 @@ namespace EduNexAPI
             builder.Services.AddScoped<IFiles, CloudinaryService>();
             builder.Services.AddScoped<IWallet, WalletRepo>();
             builder.Services.AddScoped<ITransaction, TransactionRepo>();
-            builder.Services.AddScoped<ICourse, CourseRepo>();
-            builder.Services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary"));
-            builder.Services.AddSingleton(x =>
-            {
-                var settings = x.GetRequiredService<IOptions<CloudinarySettings>>().Value;
-                var account = new Account(settings.CloudName, settings.ApiKey, settings.ApiSecret);
-                return new Cloudinary(account);
-            });
+            builder.Services.AddScoped<CouponService>();
+
+
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
