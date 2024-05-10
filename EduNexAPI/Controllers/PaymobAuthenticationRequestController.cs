@@ -578,11 +578,11 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("PurchaseCourse")]
-        public async Task<IActionResult> PurchaseCourse(string studentId, int courseId, string couponCode)
+        public async Task<IActionResult> PurchaseCourse(string studentId, int courseId,[FromQuery] string[] couponCodes)
         {
             try
             {
-                var enrollmentResult = await _unitOfWork.CourseRepo.EnrollStudentInCourse(studentId, courseId, couponCode);
+                var enrollmentResult = await _unitOfWork.CourseRepo.EnrollStudentInCourse(studentId, courseId, couponCodes);
 
                 switch (enrollmentResult)
                 {

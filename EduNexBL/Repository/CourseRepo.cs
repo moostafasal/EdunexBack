@@ -118,7 +118,35 @@ namespace EduNexBL.Repository
             };
         }
 
-        public async Task<EnrollmentResult> EnrollStudentInCourse(string studentId, int courseId,string? couponCode)
+        public async Task<decimal> GetCouponsValues(string[] couponCodes)
+        {
+            decimal discountValue = 0;
+            foreach (var coupon in couponCodes)
+            {
+                var revievedCoupon = await _context.Coupon.FirstOrDefaultAsync(c => c.CouponCode == coupon && c.NumberOfUses > 0 && c.ExpirationDate > DateTime.Now);
+                if (revievedCoupon != null)
+                {
+                    discountValue += revievedCoupon.Value;
+                }
+            }
+            return discountValue;
+        }
+
+        public async Task UpdateCouponUsageNumber(string[] couponCodes)
+        {
+            foreach (var coupon in couponCodes)
+            {
+                var revievedCoupon = await _context.Coupon.FirstOrDefaultAsync(c => c.CouponCode == coupon && c.NumberOfUses > 0 && c.ExpirationDate > DateTime.Now);
+                if (revievedCoupon != null)
+                {
+                    revievedCoupon.NumberOfUses--;
+                    _context.Coupon.Update(revievedCoupon);
+                    await _context.SaveChangesAsync();
+                }
+            }
+        }
+
+        public async Task<EnrollmentResult> EnrollStudentInCourse(string studentId, int courseId,string[]? couponCodes)
         {
             try
             {
@@ -142,7 +170,7 @@ namespace EduNexBL.Repository
                     return EnrollmentResult.AlreadyEnrolled;
                 }
 
-                if (couponCode == null || couponCode == String.Empty)
+                if (couponCodes == null)
                 {
                     //Checks student balance in the wallet
                     if (studentWallet.Balance < course.Price)
@@ -173,21 +201,20 @@ namespace EduNexBL.Repository
                 }
                 else
                 {
-                    var recievedCoupon = await _context.Coupon.FirstOrDefaultAsync(c => c.CouponCode == couponCode && c.NumberOfUses > 0 && c.ExpirationDate > DateTime.Now);
-                    if (recievedCoupon != null)
+                    var discountValue = await GetCouponsValues(couponCodes);
+                    if (discountValue > 0)
                     {
-                        if (studentWallet.Balance + recievedCoupon.Value < course.Price)
+                        if (studentWallet.Balance < (course.Price - discountValue))
                         {
                             return EnrollmentResult.InsufficientBalance;
                         }
                         else
                         {
                             //Update student balance in his wallet
-                            studentWallet.Balance -= (course.Price - recievedCoupon.Value);
+                            studentWallet.Balance -= (course.Price - discountValue);
                             _context.Wallets.Update(studentWallet);
-                            recievedCoupon.NumberOfUses--;
-                            _context.Coupon.Update(recievedCoupon);
                             await _context.SaveChangesAsync();
+                            await UpdateCouponUsageNumber(couponCodes);
 
                             // Create a new enrollment
                             var Enrollment = new StudentCourse
@@ -226,7 +253,6 @@ namespace EduNexBL.Repository
                 return EnrollmentResult.Error;
             }
         }
-
 
         public async Task<bool> IsStudentEnrolledInCourse(string studentId, int courseId)
         {
