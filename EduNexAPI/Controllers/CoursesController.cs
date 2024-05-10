@@ -127,15 +127,16 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("enroll")]
-        public async Task<IActionResult> EnrollStudentInCourse(EnrollmentRequestDto enrollmentRequestDto)
+        public async Task<IActionResult> EnrollStudentInCourse(EnrollmentRequestDto enrollmentRequestDto,[FromQuery] string[] couponcodes)
         {
-            var result = await _unitOfWork.CourseRepo.EnrollStudentInCourse(enrollmentRequestDto.StudentId, enrollmentRequestDto.CourseId);
+            var result = await _unitOfWork.CourseRepo.EnrollStudentInCourse(enrollmentRequestDto.StudentId, enrollmentRequestDto.CourseId, couponcodes);
             return result switch
             {
                 EnrollmentResult.Success => Ok(),
                 EnrollmentResult.StudentNotFound => NotFound("Student not found."),
                 EnrollmentResult.CourseNotFound => NotFound("Course not found."),
                 EnrollmentResult.AlreadyEnrolled => BadRequest("Student is already enrolled in the course."),
+                EnrollmentResult.InvalidCoupon => BadRequest("Attempting to use an invalid coupon."),
                 _ => StatusCode(500, "An error occurred while processing the enrollment.")
             };
         }

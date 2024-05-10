@@ -13,6 +13,7 @@ namespace EduNexBL.ENums
         CourseNotFound,
         AlreadyEnrolled,
         InsufficientBalance,
-        Error
+        Error,
+        InvalidCoupon
     }
 }

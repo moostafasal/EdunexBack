@@ -517,15 +517,15 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                Wallet displayedWallet = await _unitOfWork.WalletRepo.GetByIdAndOwnerType(ownerId, ownerType);
+                Wallet displayedWallet = await _unitOfWork.WalletRepo.GetById(ownerId);
 
                 if (displayedWallet != null)
                 {
-                    return Ok(new { Balance = displayedWallet.Balance });
+                    return Ok(displayedWallet.Balance);
                 }
                 else
                 {
-                    return NotFound($"Wallet not found for the provided owner with data: id = {ownerId} & OwnerType: {ownerType}");
+                    return NotFound($"Wallet not found for the provided owner with data: id = {ownerId}");
                 }
 
             }
@@ -578,11 +578,11 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("PurchaseCourse")]
-        public async Task<IActionResult> PurchaseCourse(string studentId, int courseId)
+        public async Task<IActionResult> PurchaseCourse(string studentId, int courseId,[FromQuery] string[] couponCodes)
         {
             try
             {
-                var enrollmentResult = await _unitOfWork.CourseRepo.EnrollStudentInCourse(studentId, courseId);
+                var enrollmentResult = await _unitOfWork.CourseRepo.EnrollStudentInCourse(studentId, courseId, couponCodes);
 
                 switch (enrollmentResult)
                 {
@@ -592,6 +592,8 @@ namespace EduNexAPI.Controllers
                         return Conflict("Student is already enrolled in the course.");
                     case EnrollmentResult.InsufficientBalance:
                         return BadRequest("Insufficient balance to purchase the course.");
+                    case EnrollmentResult.InvalidCoupon:
+                        return BadRequest("Attempting to use an invalid coupon.");
                     case EnrollmentResult.StudentNotFound:
                         return NotFound("Student not found.");
                     case EnrollmentResult.CourseNotFound:

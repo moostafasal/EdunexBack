@@ -20,9 +20,9 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("generate")]
-        public ActionResult<Coupon> GenerateCoupon(decimal value, int numberOfUses)
+        public ActionResult<Coupon> GenerateCoupon(decimal value, int numberOfUses, int dayValid)
         {
-            var coupon = _couponService.GenerateCoupon(value, numberOfUses);
+            var coupon = _couponService.GenerateCoupon(value, numberOfUses, dayValid);
             return Ok(coupon);
         }
 
@@ -37,6 +37,27 @@ namespace EduNexAPI.Controllers
             else
             {
                 return NotFound("Coupon not found or all uses have been exhausted. ask help !");
+            }
+        }
+
+        [HttpGet("GetValidationPeriod")]
+        public async Task<IActionResult> GetTimeLeft(string couponCode)
+        {
+            try
+            {
+                var timeLeft = await _couponService.GetTimeLeftBeforeExpiration(couponCode);
+                if (timeLeft.HasValue)
+                {
+                    return Ok(timeLeft.Value);
+                }
+                else
+                {
+                    return NotFound("Coupon not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }
