@@ -48,7 +48,7 @@ namespace EduNexDB.Context
 
             foreach (var entityEntry in entities)
             {
-                var now = DateTime.UtcNow;
+                var now = DateTime.Now;
 
                 if (entityEntry.State == EntityState.Added)
                 {

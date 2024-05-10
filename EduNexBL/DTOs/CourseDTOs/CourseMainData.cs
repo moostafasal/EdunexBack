@@ -21,7 +21,7 @@ namespace EduNexBL.DTOs.CourseDTOs
         public decimal Price { get; set; }
 
         public string SubjectName { get; set; } = null!; 
-
+        public string TeacherId { get; set; }
         public string TeacherName { get; set; } = null!;
         public string ProfilePhoto { get; set; } = null!;
         public string LevelName { get; set; } = null!;
