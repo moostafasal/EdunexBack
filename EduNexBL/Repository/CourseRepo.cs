@@ -153,7 +153,7 @@ namespace EduNexBL.Repository
                 var student = await _context.Students.SingleOrDefaultAsync(s => s.Id == studentId);
                 var course = await _context.Courses.SingleOrDefaultAsync(c => c.Id == courseId);
                 var studentWallet = await _context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == studentId);
-
+              
                 if (student == null)
                 {
                     return EnrollmentResult.StudentNotFound;
