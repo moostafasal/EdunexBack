@@ -578,11 +578,11 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("PurchaseCourse")]
-        public async Task<IActionResult> PurchaseCourse(string studentId, int courseId)
+        public async Task<IActionResult> PurchaseCourse(string studentId, int courseId, string couponCode)
         {
             try
             {
-                var enrollmentResult = await _unitOfWork.CourseRepo.EnrollStudentInCourse(studentId, courseId);
+                var enrollmentResult = await _unitOfWork.CourseRepo.EnrollStudentInCourse(studentId, courseId, couponCode);
 
                 switch (enrollmentResult)
                 {
@@ -592,6 +592,8 @@ namespace EduNexAPI.Controllers
                         return Conflict("Student is already enrolled in the course.");
                     case EnrollmentResult.InsufficientBalance:
                         return BadRequest("Insufficient balance to purchase the course.");
+                    case EnrollmentResult.InvalidCoupon:
+                        return BadRequest("Attempting to use an invalid coupon.");
                     case EnrollmentResult.StudentNotFound:
                         return NotFound("Student not found.");
                     case EnrollmentResult.CourseNotFound:

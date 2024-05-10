@@ -118,13 +118,13 @@ namespace EduNexBL.Repository
             };
         }
 
-        public async Task<EnrollmentResult> EnrollStudentInCourse(string studentId, int courseId)
+        public async Task<EnrollmentResult> EnrollStudentInCourse(string studentId, int courseId,string? couponCode)
         {
             try
             {
                 var student = await _context.Students.SingleOrDefaultAsync(s => s.Id == studentId);
                 var course = await _context.Courses.SingleOrDefaultAsync(c => c.Id == courseId);
-                //var studentWallet = await _context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == studentId);
+                var studentWallet = await _context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == studentId);
 
                 if (student == null)
                 {
@@ -136,40 +136,89 @@ namespace EduNexBL.Repository
                     return EnrollmentResult.CourseNotFound;
                 }
 
-                //if (studentWallet == null)
-                //{
-                //    return EnrollmentResult.Error;
-                //}
-
-                // Check if the student is already enrolled in the course (if needed)
+                //Check if the student is already enrolled in the course(if needed)
                 if (await IsStudentEnrolledInCourse(studentId, courseId))
                 {
                     return EnrollmentResult.AlreadyEnrolled;
                 }
 
-                ////Checks student balance in the wallet
-                //if (studentWallet.Balance < course.Price)
-                //{
-                //    return EnrollmentResult.Error;
-                //}
+                if (couponCode == null || couponCode == String.Empty)
+                {
+                    //Checks student balance in the wallet
+                    if (studentWallet.Balance < course.Price)
+                    {
+                        return EnrollmentResult.InsufficientBalance;
+                    }
+                    else
+                    {
+                        ////Update student balance in his wallet
+                        studentWallet.Balance -= course.Price;
+                        _context.Wallets.Update(studentWallet);
+                        await _context.SaveChangesAsync();
 
-                ////Update student balance in his wallet
-                //studentWallet.Balance -= course.Price;
-                //await _WalletRepo.Update(studentWallet);
+                        // Create a new enrollment
+                        var Enrollment = new StudentCourse
+                        {
+                            StudentId = studentId,
+                            CourseId = courseId,
+                            Enrolled = DateTime.Now // or any appropriate timestamp
+                        };
+
+                        // Add the enrollment to the database
+                        _context.StudentCourse.Add(Enrollment);
+                        _context.SaveChanges();
+
+                        return EnrollmentResult.Success;
+                    }
+                }
+                else
+                {
+                    var recievedCoupon = await _context.Coupon.FirstOrDefaultAsync(c => c.CouponCode == couponCode && c.NumberOfUses > 0 && c.ExpirationDate > DateTime.Now);
+                    if (recievedCoupon != null)
+                    {
+                        if (studentWallet.Balance + recievedCoupon.Value < course.Price)
+                        {
+                            return EnrollmentResult.InsufficientBalance;
+                        }
+                        else
+                        {
+                            //Update student balance in his wallet
+                            studentWallet.Balance -= (course.Price - recievedCoupon.Value);
+                            _context.Wallets.Update(studentWallet);
+                            recievedCoupon.NumberOfUses--;
+                            _context.Coupon.Update(recievedCoupon);
+                            await _context.SaveChangesAsync();
+
+                            // Create a new enrollment
+                            var Enrollment = new StudentCourse
+                            {
+                                StudentId = studentId,
+                                CourseId = courseId,
+                                Enrolled = DateTime.Now // or any appropriate timestamp
+                            };
+                            
+                            // Add the enrollment to the database
+                            _context.StudentCourse.Add(Enrollment);
+                            _context.SaveChanges();
+
+                            return EnrollmentResult.Success;
+                        }
+                    }
+                    else
+                    {
+                        return EnrollmentResult.InvalidCoupon;
+                    }
+                }
 
                 // Create a new enrollment
-                var enrollment = new StudentCourse
-                {
-                    StudentId = studentId,
-                    CourseId = courseId,
-                    Enrolled = DateTime.Now // or any appropriate timestamp
-                };
-
-                // Add the enrollment to the database
-                _context.StudentCourse.Add(enrollment);
-                _context.SaveChanges();
-
-                return EnrollmentResult.Success;
+                //var enrollment = new StudentCourse
+                //{
+                //    StudentId = studentId,
+                //    CourseId = courseId,
+                //    Enrolled = DateTime.Now // or any appropriate timestamp
+                //};
+                
+                //return EnrollmentResult.Success;
             }
             catch (Exception ex)
             {
