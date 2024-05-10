@@ -231,6 +231,27 @@ namespace EduNexBL.Repository
             int count = await _context.Lectures.CountAsync(l => l.CourseId == courseId);
             return count;
         }
+
+        public async Task<List<TeacherCoursesViewDTO>> GetTeacherCourses(string teacherId)
+        {
+            var courses = await _context.Courses
+                .Where(c => c.TeacherId == teacherId)
+                .Include(c => c.Subject)
+                .Select(course => new TeacherCoursesViewDTO
+                {
+                    Id = course.Id,
+                    CourseName = course.CourseName,
+                    Thumbnail = course.Thumbnail,
+                    Price = course.Price,
+                    SubjectName = course.Subject.SubjectName,
+                    CreatedAt = course.CreatedAt,
+                    UpdatedAt = course.UpdatedAt
+                })
+                .ToListAsync();
+
+            return courses;
+        }
+
     }
 }
 

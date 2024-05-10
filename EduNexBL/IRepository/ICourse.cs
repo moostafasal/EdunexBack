@@ -24,6 +24,9 @@ namespace EduNexBL.IRepository
         public Task<bool> IsTeacherRelatedToCourse(string teacherId, int courseId);
         public Task<int> CountEnrolledStudentsInCourse(int courseId);
         public Task<int> CountCourseLectures(int courseId);
+        public Task<List<TeacherCoursesViewDTO>> GetTeacherCourses(string teacherId);
+
+
 
 
 

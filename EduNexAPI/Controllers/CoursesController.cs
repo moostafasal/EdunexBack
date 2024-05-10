@@ -6,6 +6,7 @@ using EduNexBL.DTOs.SubjectDTOs;
 using EduNexBL.ENums;
 using EduNexBL.UnitOfWork;
 using EduNexDB.Entites;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -18,11 +19,13 @@ namespace EduNexAPI.Controllers
     {
         public IUnitOfWork _unitOfWork { get; set; }
         public IFiles _files { get; }
+        public UserManager<ApplicationUser> _userManager { get; }
 
-        public CoursesController(IUnitOfWork unitOfWork, IFiles files)
+        public CoursesController(IUnitOfWork unitOfWork, IFiles files,UserManager<ApplicationUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _files = files;
+            _userManager = userManager;
         }
 
         // GET: api/<CoursesController>
@@ -173,6 +176,19 @@ namespace EduNexAPI.Controllers
             int count = await _unitOfWork.CourseRepo.CountCourseLectures(courseId);
             return Ok(count);
         }
+
+        [HttpGet("GetTeacherCourses")]
+        public async Task<IActionResult> GetTeacherCourses([FromQuery]string teacherId)
+        {
+            var teacher = await _userManager.FindByIdAsync(teacherId);
+            if (teacher == null ) return NotFound();
+            var roles = await _userManager.GetRolesAsync(teacher);
+            if (!roles.Contains("Teacher")) return NotFound();
+
+            var courses = _unitOfWork.CourseRepo.GetTeacherCourses(teacherId);
+            return Ok(courses); 
+        }
+        
 
     }
 }
