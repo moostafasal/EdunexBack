@@ -20,9 +20,9 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("generate")]
-        public ActionResult<Coupon> GenerateCoupon(decimal value, int numberOfUses, int dayValid)
+        public ActionResult<Coupon> GenerateCoupon(decimal value, int numberOfUses, int dayValid, CouponType couponType)
         {
-            var coupon = _couponService.GenerateCoupon(value, numberOfUses, dayValid);
+            var coupon = _couponService.GenerateCoupon(value, numberOfUses, dayValid, couponType);
             return Ok(coupon);
         }
 
@@ -48,11 +48,32 @@ namespace EduNexAPI.Controllers
                 var timeLeft = await _couponService.GetTimeLeftBeforeExpiration(couponCode);
                 if (timeLeft.HasValue)
                 {
-                    return Ok(timeLeft.Value);
+                    return Ok(timeLeft.Value.ToString(@"d\d\ hh\h\ mm\m\ ss\s"));
                 }
                 else
                 {
                     return NotFound("Coupon not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetUsageNumberLeft")]
+        public async Task<IActionResult> GetUsageNumberLeft(string couponCode)
+        {
+            try
+            {
+                var usageNumberLeft = await _couponService.GetUsageNumberLeft(couponCode);
+                if (usageNumberLeft > 0)
+                {
+                    return Ok(usageNumberLeft);
+                }
+                else
+                {
+                    return Ok("This Coupon can't be used anymore.");
                 }
             }
             catch (Exception ex)

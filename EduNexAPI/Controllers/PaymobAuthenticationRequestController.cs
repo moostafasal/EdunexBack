@@ -69,12 +69,12 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                TransactionDTO transactionDTO = new TransactionDTO();
+                Transaction transactionDTO = new Transaction();
                 var wallet = await _unitOfWork.WalletRepo.GetById(userId); 
                 if (wallet != null) 
                 {
                     // Create a new transaction WalletId
-                    transactionDTO = new TransactionDTO()
+                    transactionDTO = new Transaction()
                     {
                         WalletId = wallet.WalletId,
                         TransactionType = transactionType,
@@ -83,10 +83,10 @@ namespace EduNexAPI.Controllers
                     };
 
                     // Map the DTO to the entity
-                    var transactionEntity = _mapper.Map<Transaction>(transactionDTO);
+                    //var transactionEntity = _mapper.Map<Transaction>(transactionDTO);
 
                     // Add the transaction to the repository
-                    await _unitOfWork.TransactionRepo.Add(transactionEntity);
+                    await _unitOfWork.TransactionRepo.Add(transactionDTO);
 
                     //Read the transaction
                     Console.WriteLine($"{transactionDTO.WalletId},{transactionDTO.TransactionType},{transactionDTO.TransactionDate},{transactionDTO.Amount}");
@@ -513,7 +513,7 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpGet("GetWalletBalance")]
-        public async Task<IActionResult> GetWalletBalance(string ownerId, string ownerType)
+        public async Task<IActionResult> GetWalletBalance(string ownerId)
         {
             try
             {
@@ -572,6 +572,27 @@ namespace EduNexAPI.Controllers
                 }
             }
             catch(Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("GetALLTransactions")]
+        public async Task<IActionResult> GetALLTransactions()
+        {
+            try
+            {
+                var transactions = await _unitOfWork.TransactionRepo.GetAllTransactions();
+                if (transactions != null)
+                {
+                    return Ok(transactions);
+                }
+                else
+                {
+                    return NotFound("Transactions not found");
+                }
+            }
+            catch (Exception ex)
             {
                 return NotFound(ex.Message);
             }

@@ -72,6 +72,13 @@ namespace EduNexAPI.Controllers
                 Religion = model.Religion,
                 DateOfBirth = model.DateOfBirth,
                 City = model.City,
+<<<<<<< HEAD
+=======
+
+                NationalId = model.NationalId,
+
+
+>>>>>>> 2c3693e679df8097a0aecc5a21fbc8efb4ce7ade
                 Email = model.Email,
                 UserName = model.Email,
                 LevelId = model.LevelId,
@@ -194,12 +201,14 @@ namespace EduNexAPI.Controllers
             {
                 existingStudent.FirstName = customStudentDto.FirstName;
                 existingStudent.LastName = customStudentDto.LastName;
-                existingStudent.Email = customStudentDto.Email;
                 existingStudent.ParentPhoneNumber = customStudentDto.ParentPhoneNumber;
                 existingStudent.Religion = customStudentDto.Religion;
                 existingStudent.LevelId = customStudentDto.LevelId;
                 existingStudent.gender = (Gender)Enum.Parse(typeof(Gender), customStudentDto.Gender);
-
+                existingStudent.Address = customStudentDto.address;
+                existingStudent.DateOfBirth = customStudentDto.birthDate;
+                existingStudent.City= customStudentDto.city;
+                existingStudent.PhoneNumber = customStudentDto.PhoneNumber;
                 try
                 {
                     _context.Students.Update(existingStudent); // Mark the entity as modified
@@ -214,7 +223,7 @@ namespace EduNexAPI.Controllers
             }
             else
             {
-                return BadRequest(ModelState);
+                return BadRequest(ModelState.Values.SelectMany(i=>i.Errors).Select(s=>s.ErrorMessage).ToList());
             }
         }
 

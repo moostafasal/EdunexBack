@@ -1,4 +1,5 @@
-﻿using EduNexDB.Entites;
+﻿using EduNexBL.Validations;
+using EduNexDB.Entites;
 using System.ComponentModel.DataAnnotations;
 
 namespace EduNexBL.DTOs.AuthDtos
@@ -74,8 +75,10 @@ namespace EduNexBL.DTOs.AuthDtos
 
         //[Required]
 
-
-
+        [Required(ErrorMessage = "National ID is required")]
+        [RegularExpression(@"^\d{14}$", ErrorMessage = "National ID must be 14 digits")]
+        [UniqueNationalId(ErrorMessage = "National ID must be unique")]
+        public string NationalId { get; set; }
         //public int CityId { get; set; }
         public int LevelId { get; set; }
     }

@@ -123,7 +123,8 @@ namespace EduNexBL.Repository
             decimal discountValue = 0;
             foreach (var coupon in couponCodes)
             {
-                var revievedCoupon = await _context.Coupon.FirstOrDefaultAsync(c => c.CouponCode == coupon && c.NumberOfUses > 0 && c.ExpirationDate > DateTime.Now);
+                var revievedCoupon = await _context.Coupon.FirstOrDefaultAsync(c => c.CouponCode == coupon && c.NumberOfUses > 0 
+                                    && c.ExpirationDate > DateTime.Now && c.CouponType == CouponType.Discount_Coupon);
                 if (revievedCoupon != null)
                 {
                     discountValue += revievedCoupon.Value;
@@ -221,7 +222,7 @@ namespace EduNexBL.Repository
                             {
                                 StudentId = studentId,
                                 CourseId = courseId,
-                                Enrolled = DateTime.Now // or any appropriate timestamp
+                                Enrolled = DateTime.Now 
                             };
 
                             // Add the enrollment to the database
@@ -318,6 +319,7 @@ namespace EduNexBL.Repository
                     CourseName = course.CourseName,
                     Thumbnail = course.Thumbnail,
                     Price = course.Price,
+                    SubjectId = course.SubjectId,
                     SubjectName = course.Subject.SubjectName,
                     CreatedAt = course.CreatedAt.ToString(),
                     UpdatedAt = course.UpdatedAt.ToString()

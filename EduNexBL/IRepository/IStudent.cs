@@ -1,4 +1,5 @@
 ﻿using EduNexBL.Base;
+using EduNexBL.DTOs.ExamintionDtos;
 using EduNexDB.Entites;
 using System;
 using System.Collections.Generic;
@@ -11,5 +12,7 @@ namespace EduNexBL.IRepository
     public interface IStudent : IRepository<ApplicationUser>
     {
         Task<Student?> GetById(string id);
+        Task<string?> GetStudentIdByNationalId(string nationalId);
+        Task<List<StudentExamDTO>> GetExamsSubmissions(string studentId);
     }
 }

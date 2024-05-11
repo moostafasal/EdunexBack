@@ -15,8 +15,7 @@ namespace EduNexBL.DTOs.CourseDTOs
         [Required]
         public string CourseName { get; set; } = null!;
 
-        [Required]
-        public IFormFile Thumbnail { get; set; } = null!;
+        public IFormFile? Thumbnail { get; set; } = null!;
 
         [Required]
         public decimal Price { get; set; }
