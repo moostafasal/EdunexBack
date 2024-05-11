@@ -319,6 +319,7 @@ namespace EduNexBL.Repository
                     CourseName = course.CourseName,
                     Thumbnail = course.Thumbnail,
                     Price = course.Price,
+                    SubjectId = course.SubjectId,
                     SubjectName = course.Subject.SubjectName,
                     CreatedAt = course.CreatedAt.ToString(),
                     UpdatedAt = course.UpdatedAt.ToString()
