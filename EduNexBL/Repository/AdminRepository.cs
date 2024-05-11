@@ -183,6 +183,7 @@ namespace EduNexBL.Repository
                 teacher.PhoneNumber = teacherDto.PhoneNumber;
                 teacher.subject = teacherDto.subject;
                 teacher.Address = teacherDto.Address;
+                
                 _context.SaveChanges();
             }
         }
@@ -199,25 +200,21 @@ namespace EduNexBL.Repository
 
         }
 
-        public async Task UpdateAllTeacherData(string id, TeacherDto teachDto)
+        public async Task UpdateAllTeacherData(string id, UpdateAllTeacherDto teachDto)
         {
             var teacher = await _context.Teachers.FindAsync(id);
             if (teacher != null)
             {
                 teacher.PhoneNumber = teachDto.PhoneNumber;
-                teacher.subject = teachDto.subject;
                 teacher.Address = teachDto.Address;
-                teacher.AboutMe = teachDto.AboutMe;
-                teacher.AccountNote = teachDto.AccountNote;
                 teacher.FirstName = teachDto.FirstName;
-                teacher.gender = teacher.gender;
-                teacher.Email = teachDto.Email;
-                teacher.Address = teacher.Address;
-                teacher.City = teacher.City;
-                teacher.Status = teacher.Status;
-                teacher.Description = teacher.Description;
-                teacher.NationalId = teacher.NationalId;
-                teacher.subject = teacher.subject;
+                teacher.Address = teachDto.Address;
+                teacher.City = teachDto.City;
+                teacher.LastName = teachDto.LastName;
+                teacher.FacebookAccount = teachDto.FacebookAccount;
+                teacher.gender = teachDto.gender;
+                teacher.DateOfBirth = teachDto.DateOfBirth;
+
                 _context.SaveChanges();
             }
 

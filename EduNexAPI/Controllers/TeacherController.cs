@@ -355,7 +355,7 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPut("AllTeacherData/{id}")]
-        public async Task<IActionResult> UpdateAllTeacherData(string id, TeacherDto updateTeachDto)
+        public async Task<IActionResult> UpdateAllTeacherData(string id, UpdateAllTeacherDto updateTeachDto)
         {
             try
             {

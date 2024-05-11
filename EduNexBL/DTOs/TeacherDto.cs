@@ -31,6 +31,20 @@ namespace EduNexBL.DTOs
 
 
     }
+    public class UpdateAllTeacherDto
+    {
+
+        public string? PhoneNumber { get; set; }
+        public string? Address { get; set; }//2
+                                           
+        public DateTime DateOfBirth { get; set; }//3
+        public string? FacebookAccount { get; set; }//1
+        public string? City { get; set; }//7
+        public Gender gender { get; set; }
+
+        public string FirstName { get; set; }//5
+        public string LastName { get; set; }//6
+    }
 
     public class UpdateTeacherDto
     {

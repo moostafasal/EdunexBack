@@ -9,13 +9,16 @@ namespace EduNexBL.DTOs
 {
     public class CustomStudentDto
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string ParentPhoneNumber { get; set; }
-        public string Religion { get; set; }
-        public int? LevelId { get; set; }
-        public string? Gender { get; set; }
+        public string address { get; set; }//1
+        public DateTime birthDate { get; set; }//2
+        public string? city { get; set; }//6
+        public string FirstName { get; set; }//5
+
+        public string LastName { get; set; }//7
+        public string ParentPhoneNumber { get; set; }//4
+        public string Religion { get; set; }//8
+        public int? LevelId { get; set; }//3
+        public string? Gender { get; set; }//9
 
     }
 }
