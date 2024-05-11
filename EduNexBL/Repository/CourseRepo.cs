@@ -141,7 +141,7 @@ namespace EduNexBL.Repository
                 {
                     revievedCoupon.NumberOfUses--;
                     _context.Coupon.Update(revievedCoupon);
-                    await _context.SaveChangesAsync();
+                    _context.SaveChanges();
                 }
             }
         }
@@ -153,7 +153,7 @@ namespace EduNexBL.Repository
                 var student = await _context.Students.SingleOrDefaultAsync(s => s.Id == studentId);
                 var course = await _context.Courses.SingleOrDefaultAsync(c => c.Id == courseId);
                 var studentWallet = await _context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == studentId);
-
+              
                 if (student == null)
                 {
                     return EnrollmentResult.StudentNotFound;
@@ -170,7 +170,7 @@ namespace EduNexBL.Repository
                     return EnrollmentResult.AlreadyEnrolled;
                 }
 
-                if (couponCodes == null)
+                if (couponCodes == null || couponCodes.Length == 0)
                 {
                     //Checks student balance in the wallet
                     if (studentWallet.Balance < course.Price)
@@ -182,7 +182,7 @@ namespace EduNexBL.Repository
                         ////Update student balance in his wallet
                         studentWallet.Balance -= course.Price;
                         _context.Wallets.Update(studentWallet);
-                        await _context.SaveChangesAsync();
+                        _context.SaveChanges();
 
                         // Create a new enrollment
                         var Enrollment = new StudentCourse
@@ -306,6 +306,27 @@ namespace EduNexBL.Repository
             int count = await _context.Lectures.CountAsync(l => l.CourseId == courseId);
             return count;
         }
+
+        public async Task<List<TeacherCoursesViewDTO>> GetTeacherCourses(string teacherId)
+        {
+            var courses = await _context.Courses
+                .Where(c => c.TeacherId == teacherId)
+                .Include(c => c.Subject)
+                .Select(course => new TeacherCoursesViewDTO
+                {
+                    Id = course.Id,
+                    CourseName = course.CourseName,
+                    Thumbnail = course.Thumbnail,
+                    Price = course.Price,
+                    SubjectName = course.Subject.SubjectName,
+                    CreatedAt = course.CreatedAt.ToString(),
+                    UpdatedAt = course.UpdatedAt.ToString()
+                })
+                .ToListAsync();
+
+            return courses;
+        }
+
     }
 }
 
