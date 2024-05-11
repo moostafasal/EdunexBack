@@ -222,6 +222,7 @@ namespace EduNexAPI.Controllers
                 existingStudent.Address = customStudentDto.address;
                 existingStudent.DateOfBirth = customStudentDto.birthDate;
                 existingStudent.City= customStudentDto.city;
+                existingStudent.PhoneNumber = customStudentDto.PhoneNumber;
                 try
                 {
                     _context.Students.Update(existingStudent); // Mark the entity as modified

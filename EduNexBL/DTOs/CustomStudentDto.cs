@@ -13,6 +13,7 @@ namespace EduNexBL.DTOs
         public DateTime birthDate { get; set; }//2
         public string? city { get; set; }//6
         public string FirstName { get; set; }//5
+        public string PhoneNumber { get; set; }//9
 
         public string LastName { get; set; }//7
         public string ParentPhoneNumber { get; set; }//4
