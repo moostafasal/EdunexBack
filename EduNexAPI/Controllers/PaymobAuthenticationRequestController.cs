@@ -513,7 +513,7 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpGet("GetWalletBalance")]
-        public async Task<IActionResult> GetWalletBalance(string ownerId, string ownerType)
+        public async Task<IActionResult> GetWalletBalance(string ownerId)
         {
             try
             {

@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace EduNexDB.Entites
 {
+    public enum CouponType
+    {
+        Charge_Coupon,
+        Discount_Coupon
+    }
     public class Coupon
     {
         [Key]
@@ -27,5 +32,8 @@ namespace EduNexDB.Entites
 
         [Required]
         public DateTime ExpirationDate { get; set; }
+
+        [Required]
+        public CouponType CouponType { get; set; }
     }
 }

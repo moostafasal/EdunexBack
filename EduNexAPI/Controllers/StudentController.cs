@@ -215,12 +215,14 @@ namespace EduNexAPI.Controllers
             {
                 existingStudent.FirstName = customStudentDto.FirstName;
                 existingStudent.LastName = customStudentDto.LastName;
-                existingStudent.Email = customStudentDto.Email;
                 existingStudent.ParentPhoneNumber = customStudentDto.ParentPhoneNumber;
                 existingStudent.Religion = customStudentDto.Religion;
                 existingStudent.LevelId = customStudentDto.LevelId;
                 existingStudent.gender = (Gender)Enum.Parse(typeof(Gender), customStudentDto.Gender);
-
+                existingStudent.Address = customStudentDto.address;
+                existingStudent.DateOfBirth = customStudentDto.birthDate;
+                existingStudent.City= customStudentDto.city;
+                existingStudent.PhoneNumber = customStudentDto.PhoneNumber;
                 try
                 {
                     _context.Students.Update(existingStudent); // Mark the entity as modified
@@ -235,7 +237,7 @@ namespace EduNexAPI.Controllers
             }
             else
             {
-                return BadRequest(ModelState);
+                return BadRequest(ModelState.Values.SelectMany(i=>i.Errors).Select(s=>s.ErrorMessage).ToList());
             }
         }
 
