@@ -93,7 +93,7 @@ namespace EduNexAPI.Controllers
 
                 City = model.City,
 
-                //NationalId = model.NationalId,
+                NationalId = model.NationalId,
 
 
                 Email = model.Email,
