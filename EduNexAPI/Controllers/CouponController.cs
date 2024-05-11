@@ -20,9 +20,9 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("generate")]
-        public ActionResult<Coupon> GenerateCoupon(decimal value, int numberOfUses, int dayValid)
+        public ActionResult<Coupon> GenerateCoupon(decimal value, int numberOfUses, int dayValid, CouponType couponType)
         {
-            var coupon = _couponService.GenerateCoupon(value, numberOfUses, dayValid);
+            var coupon = _couponService.GenerateCoupon(value, numberOfUses, dayValid, couponType);
             return Ok(coupon);
         }
 

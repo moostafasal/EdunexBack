@@ -123,7 +123,8 @@ namespace EduNexBL.Repository
             decimal discountValue = 0;
             foreach (var coupon in couponCodes)
             {
-                var revievedCoupon = await _context.Coupon.FirstOrDefaultAsync(c => c.CouponCode == coupon && c.NumberOfUses > 0 && c.ExpirationDate > DateTime.Now);
+                var revievedCoupon = await _context.Coupon.FirstOrDefaultAsync(c => c.CouponCode == coupon && c.NumberOfUses > 0 
+                                    && c.ExpirationDate > DateTime.Now && c.CouponType == CouponType.Discount_Coupon);
                 if (revievedCoupon != null)
                 {
                     discountValue += revievedCoupon.Value;
