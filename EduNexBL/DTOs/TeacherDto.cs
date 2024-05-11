@@ -40,7 +40,7 @@ namespace EduNexBL.DTOs
         public DateTime DateOfBirth { get; set; }//3
         public string? FacebookAccount { get; set; }//1
         public string? City { get; set; }//7
-        public Gender gender { get; set; }
+        public string gender { get; set; }
 
         public string FirstName { get; set; }//5
         public string LastName { get; set; }//6

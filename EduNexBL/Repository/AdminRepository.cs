@@ -212,7 +212,7 @@ namespace EduNexBL.Repository
                 teacher.City = teachDto.City;
                 teacher.LastName = teachDto.LastName;
                 teacher.FacebookAccount = teachDto.FacebookAccount;
-                teacher.gender = teachDto.gender;
+                teacher.gender = (Gender)Enum.Parse(typeof (Gender),teachDto.gender); 
                 teacher.DateOfBirth = teachDto.DateOfBirth;
 
                 _context.SaveChanges();
