@@ -40,6 +40,7 @@ namespace EduNexBL.Repository
                 {
                     StudentId = se.StudentId,
                     ExamId = se.ExamId,
+                    Score  = se.Score,
                     StartTime = DateTime.Now,
                     EndTime = DateTime.Now
                 }).ToListAsync();

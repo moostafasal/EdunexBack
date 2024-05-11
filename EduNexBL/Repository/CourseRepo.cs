@@ -222,7 +222,7 @@ namespace EduNexBL.Repository
                             {
                                 StudentId = studentId,
                                 CourseId = courseId,
-                                Enrolled = DateTime.Now // or any appropriate timestamp
+                                Enrolled = DateTime.Now 
                             };
                             
                             // Add the enrollment to the database
