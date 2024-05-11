@@ -83,11 +83,20 @@ namespace EduNexBL.Services
         public async Task<TimeSpan?> GetTimeLeftBeforeExpiration(string couponCode)
         {
             var coupon = await _context.Coupon.SingleOrDefaultAsync(c => c.CouponCode == couponCode);
-            if (coupon != null && coupon.ExpirationDate > DateTime.Now)
+            if (coupon != null && coupon.ExpirationDate > DateTime.Now && coupon.NumberOfUses > 0)
             {
                 return coupon.ExpirationDate - DateTime.Now;
             }
             return TimeSpan.Zero;
+        }
+        public async Task<int> GetUsageNumberLeft(string couponCode)
+        {
+            var coupon = await _context.Coupon.SingleOrDefaultAsync(c => c.CouponCode == couponCode);
+            if (coupon != null && coupon.ExpirationDate > DateTime.Now && coupon.NumberOfUses > 0)
+            {
+                return coupon.NumberOfUses;
+            }
+            return 0;
         }
     }
 }
