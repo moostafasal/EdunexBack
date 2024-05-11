@@ -72,13 +72,10 @@ namespace EduNexAPI.Controllers
                 Religion = model.Religion,
                 DateOfBirth = model.DateOfBirth,
                 City = model.City,
-<<<<<<< HEAD
-=======
 
                 NationalId = model.NationalId,
 
 
->>>>>>> 2c3693e679df8097a0aecc5a21fbc8efb4ce7ade
                 Email = model.Email,
                 UserName = model.Email,
                 LevelId = model.LevelId,
@@ -207,7 +204,7 @@ namespace EduNexAPI.Controllers
                 existingStudent.gender = (Gender)Enum.Parse(typeof(Gender), customStudentDto.Gender);
                 existingStudent.Address = customStudentDto.address;
                 existingStudent.DateOfBirth = customStudentDto.birthDate;
-                existingStudent.City= customStudentDto.city;
+                existingStudent.City = customStudentDto.city;
                 existingStudent.PhoneNumber = customStudentDto.PhoneNumber;
                 try
                 {
@@ -223,7 +220,7 @@ namespace EduNexAPI.Controllers
             }
             else
             {
-                return BadRequest(ModelState.Values.SelectMany(i=>i.Errors).Select(s=>s.ErrorMessage).ToList());
+                return BadRequest(ModelState.Values.SelectMany(i => i.Errors).Select(s => s.ErrorMessage).ToList());
             }
         }
 
