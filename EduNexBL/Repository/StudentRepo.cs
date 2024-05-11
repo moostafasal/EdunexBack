@@ -1,4 +1,5 @@
 ﻿using EduNexBL.Base;
+using EduNexBL.DTOs.ExamintionDtos;
 using EduNexBL.IRepository;
 using EduNexDB.Context;
 using EduNexDB.Entites;
@@ -24,5 +25,24 @@ namespace EduNexBL.Repository
             return await _Context.Students.SingleOrDefaultAsync(s => s.Id == id);
         }
 
+        public async Task<string?> GetStudentIdByNationalId(string nationalId)
+        {
+            return await _Context.Students
+                .Where(s => s.NationalId == nationalId)
+                .Select(s => s.Id)
+                .FirstOrDefaultAsync(); 
+        }
+        public async Task<List<StudentExamDTO>> GetExamsSubmissions(string studentId)
+        {
+            return await _Context.StudentExam
+                .Where(se => se.StudentId == studentId)
+                .Select(se => new StudentExamDTO
+                {
+                    StudentId = se.StudentId,
+                    ExamId = se.ExamId,
+                    StartTime = DateTime.Now,
+                    EndTime = DateTime.Now
+                }).ToListAsync();
+        }
     }
 }
