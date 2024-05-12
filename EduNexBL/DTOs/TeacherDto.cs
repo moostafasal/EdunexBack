@@ -25,6 +25,8 @@ namespace EduNexBL.DTOs
         public DateTime DateOfBirth { get; set; }
         public string? FacebookAccount { get; set; }
         public string? City { get; set; }
+        public string? experience { get; set; }
+
 
         public String? status { get; set; }
 
@@ -46,12 +48,17 @@ namespace EduNexBL.DTOs
         public string LastName { get; set; }//6
     }
 
-    public class UpdateTeacherDto
+    public class UpdatePendingTeacherDto
     {
         public string? PhoneNumber { get; set; }
         public string? Address { get; set; }
         //public string? nationalId { get; set; }
         public string? subject { get; set; }
+        public string? experience { get; set; }
+        public string? aboutMe { get; set; }
+
+        
+
 
     }
 }

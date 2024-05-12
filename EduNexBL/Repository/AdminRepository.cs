@@ -97,7 +97,9 @@ namespace EduNexBL.Repository
                 FacebookAccount = teacher.FacebookAccount,
                 City = teacher.City,
                 DateOfBirth = teacher.DateOfBirth,
-                status = teacher.Status.ToString()
+                status = teacher.Status.ToString(),
+                experience = teacher.experience
+
 
             };
 
@@ -175,7 +177,7 @@ namespace EduNexBL.Repository
             }
         }
 
-        public async Task UpdateTeacher(string id, UpdateTeacherDto teacherDto)
+        public async Task UpdatePendTeacher(string id, UpdatePendingTeacherDto teacherDto)
         {
             var teacher = await _context.Teachers.FindAsync(id);
             if (teacher != null)
@@ -183,6 +185,8 @@ namespace EduNexBL.Repository
                 teacher.PhoneNumber = teacherDto.PhoneNumber;
                 teacher.subject = teacherDto.subject;
                 teacher.Address = teacherDto.Address;
+                teacher.experience = teacherDto.experience;
+                teacher.AboutMe = teacherDto.aboutMe;
                 
                 _context.SaveChanges();
             }

@@ -334,8 +334,8 @@ namespace EduNexAPI.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTeacher(string id, UpdateTeacherDto updateTeacherDto)
+        [HttpPut("UpdatePendingTeacher/{id}")]
+        public async Task<IActionResult> UpdatePendingTeacher(string id, UpdatePendingTeacherDto updateTeacherDto)
         {
             try
             {
@@ -344,7 +344,7 @@ namespace EduNexAPI.Controllers
                     return BadRequest("Invalid id");
                 }
 
-                await _adminRepository.UpdateTeacher(id, updateTeacherDto);
+                await _adminRepository.UpdatePendTeacher(id, updateTeacherDto);
 
                 return Ok("Teacher information updated successfully");
             }
@@ -375,7 +375,7 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("AddedTeacherImage")]
-        public async Task<IActionResult> AddedTeacherImage(string id,IFormFile ProfilePicture)
+        public async Task<IActionResult> AddedTeacherImage([FromQuery] string id,IFormFile ProfilePicture)
         {
 
             var uploadResult = await _cloudinaryService.UploadImageAsync(ProfilePicture);
