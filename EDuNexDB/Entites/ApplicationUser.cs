@@ -14,26 +14,26 @@ namespace EduNexDB.Entites
     {
         Male, Female
     }
-    public class ApplicationUser:IdentityUser
+    public class ApplicationUser : IdentityUser
     {
         [Required]
         public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }
-        
+
 
         [Required]
         public string PhoneNumber { get; set; }
 
-        
+
 
         [Required]
         public DateTime DateOfBirth { get; set; }
 
         [Required]
-        public Gender gender { get; set; } 
+        public Gender gender { get; set; }
 
-        public string ?Address { get; set; }
+        public string? Address { get; set; }
 
         public string? NationalId { get; set; }
         //[ForeignKey("city")]
@@ -41,8 +41,11 @@ namespace EduNexDB.Entites
         //public City? city { get; set; }
 
         public string? City { get; set; }
-        
-       
+
+        //public int? walletId { get; set; }
+
+        //public Wallet? wallet { get; set; }
+
     }
 }
 

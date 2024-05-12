@@ -9,6 +9,7 @@ using CloudinaryDotNet.Actions;
 using EduNexBL.DTOs;
 using EduNexBL.DTOs.AuthDtos;
 using EduNexBL.DTOs.ExamintionDtos;
+using EduNexBL.ENums;
 using EduNexBL.IRepository;
 using EduNexBL.Repository;
 using EduNexDB.Context;
@@ -51,7 +52,7 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("register/teacher")]
-        public async Task<ActionResult> TeacherRegister([FromBody]RegisterTeacherDto model)
+        public async Task<ActionResult> TeacherRegister([FromBody] RegisterTeacherDto model)
 
         {
             // Validate the model
@@ -104,8 +105,8 @@ namespace EduNexAPI.Controllers
 
                 FacebookAccount = model.FacebookAccount,
 
-                City=model.City
-                
+                City = model.City
+
                 //LevelId = model.LevelId
 
             };
@@ -114,6 +115,20 @@ namespace EduNexAPI.Controllers
             var result = await _userManager.CreateAsync(newUser, model.Password);
             if (result.Succeeded)
             {
+                var wallet = new Wallet
+                {
+                    OwnerId = newUser.Id,
+                    Balance = 0,
+                    OwnerType = OwnerType.Teacher
+                };
+
+                _context.Wallets.Add(wallet);
+                await _context.SaveChangesAsync();
+
+                //newUser.walletId = wallet.WalletId;
+
+
+
                 // Add the user to the "Student" role
                 await _userManager.AddToRoleAsync(newUser, "Teacher");
 
@@ -375,7 +390,7 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("AddedTeacherImage")]
-        public async Task<IActionResult> AddedTeacherImage(string id,IFormFile ProfilePicture)
+        public async Task<IActionResult> AddedTeacherImage(string id, IFormFile ProfilePicture)
         {
 
             var uploadResult = await _cloudinaryService.UploadImageAsync(ProfilePicture);
@@ -387,7 +402,7 @@ namespace EduNexAPI.Controllers
             else
             {
                 await _adminRepository.AddedTeachersPhoto(id, uploadResult);
-                return Ok("ProfilePicture uploaded successfully"+ uploadResult);
+                return Ok("ProfilePicture uploaded successfully" + uploadResult);
             }
         }
 

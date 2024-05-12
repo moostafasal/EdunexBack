@@ -12,5 +12,8 @@ namespace EduNexBL.IRepository
     {
         Task<Wallet?> GetById(string id);
         Task UpdateWallet(Wallet wallet);
+        Task<IEnumerable<Wallet?>> GetALLWalletsByOwnerType(OwnerType ownerType);
+        Task<IEnumerable<Wallet?>> GetALLWallets();
+        Task<Wallet?> GetByOwnerIdAndOwnerType(string id, OwnerType ownerType);
     }
 }

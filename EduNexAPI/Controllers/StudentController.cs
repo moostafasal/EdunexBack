@@ -2,6 +2,7 @@
 using AuthenticationMechanism.tokenservice;
 using EduNexBL.DTOs;
 using EduNexBL.DTOs.AuthDtos;
+using EduNexBL.ENums;
 using EduNexDB.Context;
 using EduNexDB.Entites;
 using Microsoft.AspNetCore.Authorization;
@@ -47,89 +48,72 @@ namespace EduNexAPI.Controllers
 
         [HttpPost("register/student")]
         public async Task<ActionResult> StudentRegister(StudentRegisterDto model)
-
         {
             // Validate the model
-
             if (!ModelState.IsValid)
-
             {
                 return BadRequest(ModelState);
             }
+
             // Check if the email is already taken
-
             var user = await _userManager.FindByEmailAsync(model.Email);
-
             if (user != null)
-
             {
                 ModelState.AddModelError("Email", "Email is already taken.");
-
                 return BadRequest(ModelState);
-
             }
 
-
-            // Create a new user with Identity Framework
-
             var newUser = new Student
-
             {
-
                 FirstName = model.FirstName,
-
                 LastName = model.LastName,
-
                 PhoneNumber = model.PhoneNumber,
-
                 gender = (Gender)Enum.Parse(typeof(Gender), model.gender),
-
                 ParentPhoneNumber = model.ParentPhoneNumber,
-
-
                 Religion = model.Religion,
-
                 DateOfBirth = model.DateOfBirth,
-
                 City = model.City,
 
                 NationalId = model.NationalId,
 
 
                 Email = model.Email,
-
                 UserName = model.Email,
-
                 LevelId = model.LevelId,
                 Address = model.Address
-
             };
-
 
             var result = await _userManager.CreateAsync(newUser, model.Password);
             if (result.Succeeded)
             {
-                // Add the user to the "Student" role
+                var wallet = new Wallet
+                {
+                    OwnerId = newUser.Id,
+                    Balance = 0,
+                    OwnerType = OwnerType.Student
+                };
+
+                _context.Wallets.Add(wallet);
+                await _context.SaveChangesAsync();
+
+                //newUser.walletId = wallet.WalletId;
+
                 await _userManager.AddToRoleAsync(newUser, "Student");
 
-                // Generate a token for the new user
-                var token = await _tokenService.GenerateAccessToken(newUser.Id); // Ensure to await token generation
+                var token = await _tokenService.GenerateAccessToken(newUser.Id);
 
-                // Return the created user and the token as a response
                 return Ok(new
                 {
-                    User = newUser, // Optionally return user information
+                    User = newUser,
                     Token = token
                 });
             }
             else
             {
-                // If the user creation failed, return a bad request response with the errors
                 return BadRequest(result.Errors);
             }
-
-
         }
+
 
         [HttpGet("GetStudentById/{id}")]
         public async Task<ActionResult<StudentDto1>> GetStudentById(string id)
@@ -155,7 +139,7 @@ namespace EduNexAPI.Controllers
                 LevelId = student.LevelId,
                 LevelName = student.Level != null ? student.Level.LevelName : null,
                 Address = student.Address,
-                City = student.City,   
+                City = student.City,
                 DateOfBirth = student.DateOfBirth,
                 PhoneNumber = student.PhoneNumber
 
@@ -221,7 +205,7 @@ namespace EduNexAPI.Controllers
                 existingStudent.gender = (Gender)Enum.Parse(typeof(Gender), customStudentDto.Gender);
                 existingStudent.Address = customStudentDto.address;
                 existingStudent.DateOfBirth = customStudentDto.birthDate;
-                existingStudent.City= customStudentDto.city;
+                existingStudent.City = customStudentDto.city;
                 existingStudent.PhoneNumber = customStudentDto.PhoneNumber;
                 try
                 {
@@ -237,7 +221,7 @@ namespace EduNexAPI.Controllers
             }
             else
             {
-                return BadRequest(ModelState.Values.SelectMany(i=>i.Errors).Select(s=>s.ErrorMessage).ToList());
+                return BadRequest(ModelState.Values.SelectMany(i => i.Errors).Select(s => s.ErrorMessage).ToList());
             }
         }
 
