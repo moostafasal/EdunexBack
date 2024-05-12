@@ -33,7 +33,7 @@ namespace EduNexBL.Services
         }
 
         // Method to consume a coupon
-        public bool ConsumeCoupon(string couponCode, string ownerId, string ownerType)
+        public bool ConsumeCoupon(string couponCode, string ownerId, OwnerType ownerType)
         {
             var coupon = _context.Coupon.FirstOrDefault(c => c.CouponCode == couponCode && c.NumberOfUses > 0
                         && c.ExpirationDate > DateTime.Now && c.CouponType == CouponType.Charge_Coupon);

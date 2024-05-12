@@ -2,6 +2,7 @@
 using AuthenticationMechanism.tokenservice;
 using EduNexBL.DTOs;
 using EduNexBL.DTOs.AuthDtos;
+using EduNexBL.ENums;
 using EduNexDB.Context;
 using EduNexDB.Entites;
 using Microsoft.AspNetCore.Authorization;
@@ -89,7 +90,7 @@ namespace EduNexAPI.Controllers
                 {
                     OwnerId = newUser.Id,
                     Balance = 0,
-                    OwnerType = "Student"
+                    OwnerType = OwnerType.Student
                 };
 
                 _context.Wallets.Add(wallet);

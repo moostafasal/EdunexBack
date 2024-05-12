@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using EduNexBL.UnitOfWork;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.VisualBasic;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EduNexAPI.Controllers
 {
@@ -81,9 +82,6 @@ namespace EduNexAPI.Controllers
                         Amount = (decimal)amount,
                         TransactionDate = created_at
                     };
-
-                    // Map the DTO to the entity
-                    //var transactionEntity = _mapper.Map<Transaction>(transactionDTO);
 
                     // Add the transaction to the repository
                     await _unitOfWork.TransactionRepo.Add(transactionDTO);
@@ -535,13 +533,76 @@ namespace EduNexAPI.Controllers
             }
         }
 
+        [HttpGet("GetAllWalletByOwnerType")]
+        public async Task<IActionResult> GetALLWalletsByOwnerType(OwnerType ownerType)
+        {
+            try
+            {
+                var walletsOfOwnerType = await _unitOfWork.WalletRepo.GetALLWalletsByOwnerType(ownerType);
+                if (!walletsOfOwnerType.IsNullOrEmpty())
+                {
+                    return Ok(walletsOfOwnerType);
+                }
+                else
+                {
+                    return NotFound("Wallets not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("GetByOwnerIdAndOwnerType")]
+        public async Task<IActionResult>  GetByOwnerIdAndOwnerType(string id, OwnerType ownerType)
+        {
+            try
+            {
+                var ownerWallet = await _unitOfWork.WalletRepo.GetByOwnerIdAndOwnerType(id, ownerType);
+                if (ownerWallet != null)
+                {
+                    return Ok(ownerWallet);
+                }
+                else
+                {
+                    return NotFound("Wallet not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("GetALLWallets")]
+        public async Task<IActionResult> GetALLWallets()
+        {
+            try
+            {
+                var Wallets = await _unitOfWork.WalletRepo.GetALLWallets();
+                if (!Wallets.IsNullOrEmpty())
+                {
+                    return Ok(Wallets);
+                }
+                else
+                {
+                    return NotFound("Wallets not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
         [HttpGet("GetStudentTransactions")]
         public async Task<IActionResult> GetStudentTransactions(string StudId)
         {
             try
             {
                 var Transactions = await _unitOfWork.TransactionRepo.GetTransactionsByStudentId(StudId);
-                if (Transactions != null)
+                if (!Transactions.IsNullOrEmpty())
                 {
                     return Ok(Transactions);
                 }
@@ -583,7 +644,7 @@ namespace EduNexAPI.Controllers
             try
             {
                 var transactions = await _unitOfWork.TransactionRepo.GetAllTransactions();
-                if (transactions != null)
+                if (!transactions.IsNullOrEmpty())
                 {
                     return Ok(transactions);
                 }
@@ -628,6 +689,5 @@ namespace EduNexAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, $"An unexpected error occurred : {ex.Message}");
             }
         }
-
     }
 }

@@ -9,6 +9,7 @@ using CloudinaryDotNet.Actions;
 using EduNexBL.DTOs;
 using EduNexBL.DTOs.AuthDtos;
 using EduNexBL.DTOs.ExamintionDtos;
+using EduNexBL.ENums;
 using EduNexBL.IRepository;
 using EduNexBL.Repository;
 using EduNexDB.Context;
@@ -118,7 +119,7 @@ namespace EduNexAPI.Controllers
                 {
                     OwnerId = newUser.Id,
                     Balance = 0,
-                    OwnerType = "teacher"
+                    OwnerType = OwnerType.Teacher
                 };
 
                 _context.Wallets.Add(wallet);
