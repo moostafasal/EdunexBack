@@ -42,9 +42,9 @@ namespace EduNexDB.Entites
 
         public string? City { get; set; }
 
-        public int? walletId { get; set; }
+        //public int? walletId { get; set; }
 
-        public Wallet? wallet { get; set; }
+        //public Wallet? wallet { get; set; }
 
     }
 }

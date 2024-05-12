@@ -124,7 +124,7 @@ namespace EduNexAPI.Controllers
                 _context.Wallets.Add(wallet);
                 await _context.SaveChangesAsync();
 
-                newUser.walletId = wallet.WalletId;
+                //newUser.walletId = wallet.WalletId;
 
 
 
