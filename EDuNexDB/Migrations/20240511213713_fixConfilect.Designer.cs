@@ -4,6 +4,7 @@ using EduNexDB.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduNexDB.Migrations
 {
     [DbContext(typeof(EduNexContext))]
-    partial class EduNexContextModelSnapshot : ModelSnapshot
+    [Migration("20240511213713_fixConfilect")]
+    partial class fixConfilect
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -136,9 +139,6 @@ namespace EduNexDB.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("walletId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -148,10 +148,6 @@ namespace EduNexDB.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.HasIndex("walletId")
-                        .IsUnique()
-                        .HasFilter("[walletId] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
 
@@ -207,9 +203,6 @@ namespace EduNexDB.Migrations
                     b.Property<string>("CouponCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CouponType")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -895,16 +888,6 @@ namespace EduNexDB.Migrations
                         .IsRequired();
 
                     b.Navigation("Question");
-                });
-
-            modelBuilder.Entity("EduNexDB.Entites.ApplicationUser", b =>
-                {
-                    b.HasOne("EduNexDB.Entites.Wallet", "wallet")
-                        .WithOne()
-                        .HasForeignKey("EduNexDB.Entites.ApplicationUser", "walletId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("wallet");
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.AttachmentFile", b =>
