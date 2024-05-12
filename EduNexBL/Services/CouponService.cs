@@ -33,7 +33,7 @@ namespace EduNexBL.Services
         }
 
         // Method to consume a coupon
-        public bool ConsumeCoupon(string couponCode, string ownerId, string ownerType)
+        public bool ConsumeCoupon(string couponCode, string ownerId, OwnerType ownerType)
         {
             var coupon = _context.Coupon.FirstOrDefault(c => c.CouponCode == couponCode && c.NumberOfUses > 0
                         && c.ExpirationDate > DateTime.Now && c.CouponType == CouponType.Charge_Coupon);
@@ -83,11 +83,20 @@ namespace EduNexBL.Services
         public async Task<TimeSpan?> GetTimeLeftBeforeExpiration(string couponCode)
         {
             var coupon = await _context.Coupon.SingleOrDefaultAsync(c => c.CouponCode == couponCode);
-            if (coupon != null && coupon.ExpirationDate > DateTime.Now)
+            if (coupon != null && coupon.ExpirationDate > DateTime.Now && coupon.NumberOfUses > 0)
             {
                 return coupon.ExpirationDate - DateTime.Now;
             }
             return TimeSpan.Zero;
+        }
+        public async Task<int> GetUsageNumberLeft(string couponCode)
+        {
+            var coupon = await _context.Coupon.SingleOrDefaultAsync(c => c.CouponCode == couponCode);
+            if (coupon != null && coupon.ExpirationDate > DateTime.Now && coupon.NumberOfUses > 0)
+            {
+                return coupon.NumberOfUses;
+            }
+            return 0;
         }
     }
 }

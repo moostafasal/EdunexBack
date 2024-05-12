@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using EduNexBL.UnitOfWork;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.VisualBasic;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EduNexAPI.Controllers
 {
@@ -69,12 +70,12 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                TransactionDTO transactionDTO = new TransactionDTO();
+                Transaction transactionDTO = new Transaction();
                 var wallet = await _unitOfWork.WalletRepo.GetById(userId); 
                 if (wallet != null) 
                 {
                     // Create a new transaction WalletId
-                    transactionDTO = new TransactionDTO()
+                    transactionDTO = new Transaction()
                     {
                         WalletId = wallet.WalletId,
                         TransactionType = transactionType,
@@ -82,11 +83,8 @@ namespace EduNexAPI.Controllers
                         TransactionDate = created_at
                     };
 
-                    // Map the DTO to the entity
-                    var transactionEntity = _mapper.Map<Transaction>(transactionDTO);
-
                     // Add the transaction to the repository
-                    await _unitOfWork.TransactionRepo.Add(transactionEntity);
+                    await _unitOfWork.TransactionRepo.Add(transactionDTO);
 
                     //Read the transaction
                     Console.WriteLine($"{transactionDTO.WalletId},{transactionDTO.TransactionType},{transactionDTO.TransactionDate},{transactionDTO.Amount}");
@@ -513,7 +511,7 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpGet("GetWalletBalance")]
-        public async Task<IActionResult> GetWalletBalance(string ownerId, string ownerType)
+        public async Task<IActionResult> GetWalletBalance(string ownerId)
         {
             try
             {
@@ -535,13 +533,76 @@ namespace EduNexAPI.Controllers
             }
         }
 
+        [HttpGet("GetAllWalletByOwnerType")]
+        public async Task<IActionResult> GetALLWalletsByOwnerType(OwnerType ownerType)
+        {
+            try
+            {
+                var walletsOfOwnerType = await _unitOfWork.WalletRepo.GetALLWalletsByOwnerType(ownerType);
+                if (!walletsOfOwnerType.IsNullOrEmpty())
+                {
+                    return Ok(walletsOfOwnerType);
+                }
+                else
+                {
+                    return NotFound("Wallets not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("GetByOwnerIdAndOwnerType")]
+        public async Task<IActionResult>  GetByOwnerIdAndOwnerType(string id, OwnerType ownerType)
+        {
+            try
+            {
+                var ownerWallet = await _unitOfWork.WalletRepo.GetByOwnerIdAndOwnerType(id, ownerType);
+                if (ownerWallet != null)
+                {
+                    return Ok(ownerWallet);
+                }
+                else
+                {
+                    return NotFound("Wallet not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("GetALLWallets")]
+        public async Task<IActionResult> GetALLWallets()
+        {
+            try
+            {
+                var Wallets = await _unitOfWork.WalletRepo.GetALLWallets();
+                if (!Wallets.IsNullOrEmpty())
+                {
+                    return Ok(Wallets);
+                }
+                else
+                {
+                    return NotFound("Wallets not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
         [HttpGet("GetStudentTransactions")]
         public async Task<IActionResult> GetStudentTransactions(string StudId)
         {
             try
             {
                 var Transactions = await _unitOfWork.TransactionRepo.GetTransactionsByStudentId(StudId);
-                if (Transactions != null)
+                if (!Transactions.IsNullOrEmpty())
                 {
                     return Ok(Transactions);
                 }
@@ -577,6 +638,27 @@ namespace EduNexAPI.Controllers
             }
         }
 
+        [HttpGet("GetALLTransactions")]
+        public async Task<IActionResult> GetALLTransactions()
+        {
+            try
+            {
+                var transactions = await _unitOfWork.TransactionRepo.GetAllTransactions();
+                if (!transactions.IsNullOrEmpty())
+                {
+                    return Ok(transactions);
+                }
+                else
+                {
+                    return NotFound("Transactions not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
         [HttpPost("PurchaseCourse")]
         public async Task<IActionResult> PurchaseCourse(string studentId, int courseId,[FromQuery] string[]? couponCodes)
         {
@@ -607,6 +689,5 @@ namespace EduNexAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, $"An unexpected error occurred : {ex.Message}");
             }
         }
-
     }
 }

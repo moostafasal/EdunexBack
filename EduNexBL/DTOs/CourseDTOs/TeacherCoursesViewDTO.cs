@@ -14,7 +14,7 @@ namespace EduNexBL.DTOs.CourseDTOs
         public string Thumbnail { get; set; } = null!;
 
         public decimal Price { get; set; }
-
+        public int SubjectId { get; set; }
         public string SubjectName { get; set; } = null!;
         public string CreatedAt { get; set; }
         public string UpdatedAt { get; set; }

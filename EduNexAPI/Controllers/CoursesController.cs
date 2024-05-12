@@ -94,19 +94,20 @@ namespace EduNexAPI.Controllers
             {
                 return NotFound();
             }
-            var filePath = await _files.UploadVideoAsync(course.Thumbnail);
 
-            var updatedCourse = new Course
+            string filePath = existingCourse.Thumbnail;
+            if (course.Thumbnail != null)
             {
-                Id = id,
-                CourseName = course.CourseName,
-                Thumbnail = filePath,
-                Price = course.Price,
-                SubjectId = course.SubjectId,
-                TeacherId = course.TeacherId,
-            };
+                filePath = await _files.UploadVideoAsync(course.Thumbnail);
+            }
 
-            await _unitOfWork.CourseRepo.Update(updatedCourse);
+            existingCourse.CourseName = course.CourseName;
+            existingCourse.Thumbnail = filePath;
+            existingCourse.Price = course.Price;
+            existingCourse.SubjectId = course.SubjectId;
+            existingCourse.TeacherId = course.TeacherId;
+
+            await _unitOfWork.CourseRepo.Update(existingCourse);
 
             return Ok();
         }

@@ -147,14 +147,14 @@ namespace EduNexBL.Repository
             }
         }
 
-        public async Task<EnrollmentResult> EnrollStudentInCourse(string studentId, int courseId,string[]? couponCodes)
+        public async Task<EnrollmentResult> EnrollStudentInCourse(string studentId, int courseId, string[]? couponCodes)
         {
             try
             {
                 var student = await _context.Students.SingleOrDefaultAsync(s => s.Id == studentId);
                 var course = await _context.Courses.SingleOrDefaultAsync(c => c.Id == courseId);
                 var studentWallet = await _context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == studentId);
-              
+
                 if (student == null)
                 {
                     return EnrollmentResult.StudentNotFound;
@@ -222,9 +222,9 @@ namespace EduNexBL.Repository
                             {
                                 StudentId = studentId,
                                 CourseId = courseId,
-                                Enrolled = DateTime.Now // or any appropriate timestamp
+                                Enrolled = DateTime.Now 
                             };
-                            
+
                             // Add the enrollment to the database
                             _context.StudentCourse.Add(Enrollment);
                             _context.SaveChanges();
@@ -245,7 +245,7 @@ namespace EduNexBL.Repository
                 //    CourseId = courseId,
                 //    Enrolled = DateTime.Now // or any appropriate timestamp
                 //};
-                
+
                 //return EnrollmentResult.Success;
             }
             catch (Exception ex)
@@ -300,7 +300,7 @@ namespace EduNexBL.Repository
         public async Task<int> CountEnrolledStudentsInCourse(int courseId)
         {
             int count = await _context.StudentCourse.CountAsync(sc => sc.CourseId == courseId);
-            return count; 
+            return count;
         }
         public async Task<int> CountCourseLectures(int courseId)
         {
@@ -319,6 +319,7 @@ namespace EduNexBL.Repository
                     CourseName = course.CourseName,
                     Thumbnail = course.Thumbnail,
                     Price = course.Price,
+                    SubjectId = course.SubjectId,
                     SubjectName = course.Subject.SubjectName,
                     CreatedAt = course.CreatedAt.ToString(),
                     UpdatedAt = course.UpdatedAt.ToString()

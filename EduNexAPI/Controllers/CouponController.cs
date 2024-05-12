@@ -27,7 +27,7 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("consume")]
-        public ActionResult<bool> ConsumeCoupon(string couponCode, string ownerId, string ownerType)
+        public ActionResult<bool> ConsumeCoupon(string couponCode, string ownerId, OwnerType ownerType)
         {
             var isConsumed = _couponService.ConsumeCoupon(couponCode, ownerId, ownerType);
             if (isConsumed)
@@ -48,11 +48,32 @@ namespace EduNexAPI.Controllers
                 var timeLeft = await _couponService.GetTimeLeftBeforeExpiration(couponCode);
                 if (timeLeft.HasValue)
                 {
-                    return Ok(timeLeft.Value);
+                    return Ok(timeLeft.Value.ToString(@"d\d\ hh\h\ mm\m\ ss\s"));
                 }
                 else
                 {
                     return NotFound("Coupon not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetUsageNumberLeft")]
+        public async Task<IActionResult> GetUsageNumberLeft(string couponCode)
+        {
+            try
+            {
+                var usageNumberLeft = await _couponService.GetUsageNumberLeft(couponCode);
+                if (usageNumberLeft > 0)
+                {
+                    return Ok(usageNumberLeft);
+                }
+                else
+                {
+                    return Ok("This Coupon can't be used anymore.");
                 }
             }
             catch (Exception ex)

@@ -31,5 +31,19 @@ namespace EduNexBL.Repository
             await _Context.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<Wallet?>> GetALLWalletsByOwnerType(OwnerType ownerType)
+        {
+            return await _Context.Wallets.Where(w => w.OwnerType == ownerType).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Wallet?>> GetALLWallets()
+        {
+            return await _Context.Wallets.ToListAsync();
+        }
+
+        public async Task<Wallet?> GetByOwnerIdAndOwnerType(string id, OwnerType ownerType)
+        {
+            return await _Context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == id && w.OwnerType == ownerType);
+        }
     }
 }

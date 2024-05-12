@@ -18,10 +18,14 @@ namespace EduNexAPI.Controllers
         {
             var studnetId = await _unitOfWork.StudentRepo.GetStudentIdByNationalId(nationalId);
             if (studnetId == null) return NotFound();
+            var student = await _unitOfWork.StudentRepo.GetById(studnetId);
+            var studnetName= $"{student.FirstName} {student.LastName}";
+
             var studentCourses = await _unitOfWork.CourseRepo.CoursesEnrolledByStudent(studnetId);
             var studentExams = await _unitOfWork.StudentRepo.GetExamsSubmissions(studnetId);
             var summary = new
             {
+                studnetName,
                 studentCourses,
                 studentExams
             };
