@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using EduNexBL.UnitOfWork;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.VisualBasic;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EduNexAPI.Controllers
 {
@@ -538,7 +539,7 @@ namespace EduNexAPI.Controllers
             try
             {
                 var walletsOfOwnerType = await _unitOfWork.WalletRepo.GetALLWalletsByOwnerType(ownerType);
-                if (walletsOfOwnerType != null)
+                if (!walletsOfOwnerType.IsNullOrEmpty())
                 {
                     return Ok(walletsOfOwnerType);
                 }
@@ -580,7 +581,7 @@ namespace EduNexAPI.Controllers
             try
             {
                 var Wallets = await _unitOfWork.WalletRepo.GetALLWallets();
-                if (Wallets != null)
+                if (!Wallets.IsNullOrEmpty())
                 {
                     return Ok(Wallets);
                 }
@@ -601,7 +602,7 @@ namespace EduNexAPI.Controllers
             try
             {
                 var Transactions = await _unitOfWork.TransactionRepo.GetTransactionsByStudentId(StudId);
-                if (Transactions != null)
+                if (!Transactions.IsNullOrEmpty())
                 {
                     return Ok(Transactions);
                 }
@@ -643,7 +644,7 @@ namespace EduNexAPI.Controllers
             try
             {
                 var transactions = await _unitOfWork.TransactionRepo.GetAllTransactions();
-                if (transactions != null)
+                if (!transactions.IsNullOrEmpty())
                 {
                     return Ok(transactions);
                 }
