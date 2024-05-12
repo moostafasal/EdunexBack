@@ -104,7 +104,10 @@ namespace EduNexDB.Context
             //.HasForeignKey<ApplicationUser>(w => w.walletId)
             //.IsRequired(false)
             //.OnDelete(DeleteBehavior.NoAction);
-
+            modelBuilder.Entity<Wallet>()
+                .Property(e => e.OwnerType)
+                .HasConversion<string>()
+                .IsRequired();
 
 
 
