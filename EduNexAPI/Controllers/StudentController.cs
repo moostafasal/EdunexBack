@@ -204,7 +204,7 @@ namespace EduNexAPI.Controllers
                 existingStudent.gender = (Gender)Enum.Parse(typeof(Gender), customStudentDto.Gender);
                 existingStudent.Address = customStudentDto.address;
                 existingStudent.DateOfBirth = customStudentDto.birthDate;
-                existingStudent.City = customStudentDto.city;
+                existingStudent.City= customStudentDto.city;
                 existingStudent.PhoneNumber = customStudentDto.PhoneNumber;
                 try
                 {
@@ -220,7 +220,7 @@ namespace EduNexAPI.Controllers
             }
             else
             {
-                return BadRequest(ModelState.Values.SelectMany(i => i.Errors).Select(s => s.ErrorMessage).ToList());
+                return BadRequest(ModelState.Values.SelectMany(i=>i.Errors).Select(s=>s.ErrorMessage).ToList());
             }
         }
 
