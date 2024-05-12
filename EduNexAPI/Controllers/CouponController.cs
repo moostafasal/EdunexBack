@@ -27,7 +27,7 @@ namespace EduNexAPI.Controllers
         }
 
         [HttpPost("consume")]
-        public ActionResult<bool> ConsumeCoupon(string couponCode, string ownerId, string ownerType)
+        public ActionResult<bool> ConsumeCoupon(string couponCode, string ownerId, OwnerType ownerType)
         {
             var isConsumed = _couponService.ConsumeCoupon(couponCode, ownerId, ownerType);
             if (isConsumed)
