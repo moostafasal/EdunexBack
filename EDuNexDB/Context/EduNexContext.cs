@@ -31,6 +31,7 @@ namespace EduNexDB.Context
 
         public DbSet<Coupon> Coupon { get; set; }
 
+        public DbSet<EduNexPurchaseLogs> EduNexPurchaseLogs { get; set; }
 
         //public DbSet<City> cities { get; set; }
 
@@ -109,12 +110,16 @@ namespace EduNexDB.Context
                 .HasConversion<string>()
                 .IsRequired();
 
+            modelBuilder.Entity<EduNexPurchaseLogs>()
+                .Property(e => e.Id)
+                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("NEWID()");
 
-
-
-
-
-
+            modelBuilder.Entity<EduNexPurchaseLogs>()
+                .HasOne(e => e.Teacher)
+                .WithMany(t => t.EduNexPurchaseLogs)
+                .HasForeignKey(e => e.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
 
 
 

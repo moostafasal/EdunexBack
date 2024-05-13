@@ -28,7 +28,7 @@ namespace EduNexDB.Entites
 
         public TeacherStatus Status { get; set; } = TeacherStatus.Pending;
 
-
+        public virtual ICollection<EduNexPurchaseLogs?> EduNexPurchaseLogs { get; set; }
 
     }
 }
