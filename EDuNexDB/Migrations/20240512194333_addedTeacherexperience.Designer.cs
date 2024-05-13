@@ -4,6 +4,7 @@ using EduNexDB.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduNexDB.Migrations
 {
     [DbContext(typeof(EduNexContext))]
-    partial class EduNexContextModelSnapshot : ModelSnapshot
+    [Migration("20240512194333_addedTeacherexperience")]
+    partial class addedTeacherexperience
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -267,46 +270,6 @@ namespace EduNexDB.Migrations
                     b.HasIndex("TeacherId");
 
                     b.ToTable("Courses");
-                });
-
-            modelBuilder.Entity("EduNexDB.Entites.EduNexPurchaseLogs", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(450)")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<decimal>("AmountReceived")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<decimal?>("CouponsValue")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateAdded")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsCouponUsed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ReceiverId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("SenderId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.ToTable("EduNexPurchaseLogs");
                 });
 
             modelBuilder.Entity("EduNexDB.Entites.Exam", b =>
@@ -963,17 +926,6 @@ namespace EduNexDB.Migrations
                     b.Navigation("Teacher");
                 });
 
-            modelBuilder.Entity("EduNexDB.Entites.EduNexPurchaseLogs", b =>
-                {
-                    b.HasOne("EduNexDB.Entites.Teacher", "Teacher")
-                        .WithMany("EduNexPurchaseLogs")
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Teacher");
-                });
-
             modelBuilder.Entity("EduNexDB.Entites.Exam", b =>
                 {
                     b.HasOne("EduNexDB.Entites.Lecture", "Lecture")
@@ -1239,8 +1191,6 @@ namespace EduNexDB.Migrations
             modelBuilder.Entity("EduNexDB.Entites.Teacher", b =>
                 {
                     b.Navigation("Courses");
-
-                    b.Navigation("EduNexPurchaseLogs");
                 });
 #pragma warning restore 612, 618
         }
