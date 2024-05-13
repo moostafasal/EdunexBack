@@ -16,6 +16,7 @@ using EduNexBL.UnitOfWork;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.VisualBasic;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace EduNexAPI.Controllers
 {
@@ -656,6 +657,24 @@ namespace EduNexAPI.Controllers
             catch (Exception ex)
             {
                 return NotFound(ex.Message);
+            }
+        }
+
+        [HttpPost("GeneratNewWallet")]
+        public async Task<IActionResult> GeneratNewWallet(string id)
+        {
+            try
+            {
+                var newWallet = _unitOfWork.WalletRepo.GenerateWallet(id);
+                if (newWallet != null)
+                {
+                    return Ok(newWallet);
+                }
+                return NotFound("User Not Found");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 

@@ -29,7 +29,7 @@ namespace EduNexBL.IRepository
 
 
 
-
+        Task<bool> DistributePayment(string studentId, int courseId, decimal paidAmount);
         public Task<decimal> GetCouponsValues(string[] couponCodes);
         public Task UpdateCouponUsageNumber(string[] couponCodes);
     }

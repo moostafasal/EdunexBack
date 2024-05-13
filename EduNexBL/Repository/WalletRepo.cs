@@ -3,6 +3,7 @@ using EduNexBL.IRepository;
 using EduNexDB.Context;
 using EduNexDB.Entites;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,6 +45,20 @@ namespace EduNexBL.Repository
         public async Task<Wallet?> GetByOwnerIdAndOwnerType(string id, OwnerType ownerType)
         {
             return await _Context.Wallets.SingleOrDefaultAsync(w => w.OwnerId == id && w.OwnerType == ownerType);
+        }
+
+        public Wallet GenerateWallet(string ownerId)
+        {
+            var student = _Context.Students.Find(ownerId);
+            var wallet = new Wallet()
+            {
+                Balance = 0,
+                OwnerId = ownerId,
+                OwnerType = student != null ? OwnerType.Student : OwnerType.Teacher
+            };
+            _Context.Wallets.Add(wallet);
+            _Context.SaveChanges();
+            return wallet;
         }
     }
 }

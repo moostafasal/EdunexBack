@@ -3,6 +3,7 @@ using EduNexBL.IRepository;
 using EduNexBL.Repository;
 using EduNexDB.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace EduNexBL.UnitOfWork
     {
         private readonly EduNexContext _context;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
         private Lazy<IExam> _examRepo;
         private Lazy<IStudent> _studentRepo;
         private Lazy<IStudentExam> _studentExamRepo;
@@ -34,15 +36,15 @@ namespace EduNexBL.UnitOfWork
         public IAttachment AttachmentRepo => _attachmentRepo.Value;
         public IWallet WalletRepo => _walletRepo.Value;
         public ITransaction TransactionRepo => _transactionrepo.Value;
-        public UnitOfWork(EduNexContext context, IMapper mapper)
+        public UnitOfWork(EduNexContext context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
-
+            _configuration = configuration;
             _examRepo = new Lazy<IExam>(() => new ExamRepo(_context));
             _studentRepo = new Lazy<IStudent>(() => new StudentRepo(_context));
             _studentExamRepo = new Lazy<IStudentExam>(() => new StudentExamRepo(_context));
-            _courseRepo = new Lazy<ICourse>(() => new CourseRepo(_context, _mapper));
+            _courseRepo = new Lazy<ICourse>(() => new CourseRepo(_context, _mapper, _configuration));
             _lectureRepo = new Lazy<ILecture>(() => new LectureRepo(_context));
             _videoRepo = new Lazy<IVideo>(() => new VideoRepo(_context));
             _attachmentRepo = new Lazy<IAttachment>(() => new AttachmentRepo(_context));
