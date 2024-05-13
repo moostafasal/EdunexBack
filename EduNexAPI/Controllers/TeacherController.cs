@@ -369,6 +369,7 @@ namespace EduNexAPI.Controllers
             }
         }
 
+
         [HttpPut("AllTeacherData/{id}")]
         public async Task<IActionResult> UpdateAllTeacherData(string id, UpdateAllTeacherDto updateTeachDto)
         {

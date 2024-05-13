@@ -57,8 +57,5 @@ namespace EduNexBL.DTOs
         public string? experience { get; set; }
         public string? aboutMe { get; set; }
 
-        
-
-
     }
 }
