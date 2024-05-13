@@ -31,6 +31,7 @@ namespace EduNexDB.Context
 
         public DbSet<Coupon> Coupon { get; set; }
 
+        public DbSet<EduNexPurchaseLogs> EduNexPurchaseLogs { get; set; }
 
         //public DbSet<City> cities { get; set; }
 
@@ -98,23 +99,23 @@ namespace EduNexDB.Context
               .HasForeignKey<Wallet>(w => w.OwnerId)
               .IsRequired()
               .OnDelete(DeleteBehavior.Cascade);
-            //     modelBuilder.Entity<ApplicationUser>()
-            //.HasOne(w => w.wallet)
-            //.WithOne()
-            //.HasForeignKey<ApplicationUser>(w => w.walletId)
-            //.IsRequired(false)
-            //.OnDelete(DeleteBehavior.NoAction);
+
             modelBuilder.Entity<Wallet>()
-                .Property(e => e.OwnerType)
-                .HasConversion<string>()
-                .IsRequired();
+              .Property(e => e.OwnerType)
+              .HasConversion<string>()
+              .IsRequired();
 
 
+            modelBuilder.Entity<EduNexPurchaseLogs>()
+                .Property(e => e.Id)
+                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("NEWID()");
 
-
-
-
-
+            modelBuilder.Entity<EduNexPurchaseLogs>()
+                .HasOne(e => e.Teacher)
+                .WithMany(t => t.EduNexPurchaseLogs)
+                .HasForeignKey(e => e.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
 
 
 

@@ -85,7 +85,7 @@ namespace EduNexBL.Services
             var coupon = await _context.Coupon.SingleOrDefaultAsync(c => c.CouponCode == couponCode);
             if (coupon != null && coupon.ExpirationDate > DateTime.Now && coupon.NumberOfUses > 0)
             {
-                return coupon.ExpirationDate - DateTime.Now;
+                return coupon.ExpirationDate - DateTime.UtcNow;
             }
             return TimeSpan.Zero;
         }

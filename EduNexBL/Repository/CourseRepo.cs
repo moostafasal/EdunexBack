@@ -8,6 +8,7 @@ using EduNexDB.Context;
 using EduNexDB.Entites;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,11 +19,13 @@ namespace EduNexBL.Repository
     {
         private readonly IMapper _mapper;
         private readonly EduNexContext _context;
+        private readonly IConfiguration _configuration;
 
-        public CourseRepo(EduNexContext dbContext, IMapper mapper) : base(dbContext)
+        public CourseRepo(EduNexContext dbContext, IMapper mapper, IConfiguration configuration) : base(dbContext)
         {
             _mapper = mapper;
             _context = dbContext;
+            _configuration = configuration;
         }
 
         public async Task<ICollection<CourseMainData>> GetAllCoursesMainData()
@@ -185,12 +188,15 @@ namespace EduNexBL.Repository
                         _context.Wallets.Update(studentWallet);
                         _context.SaveChanges();
 
+                        //log the purchased course
+                        if (!await DistributePayment(studentId, courseId, ((decimal)course.Price))) return EnrollmentResult.Error;
+
                         // Create a new enrollment
                         var Enrollment = new StudentCourse
                         {
                             StudentId = studentId,
                             CourseId = courseId,
-                            Enrolled = DateTime.Now // or any appropriate timestamp
+                            Enrolled = DateTime.UtcNow // or any appropriate timestamp
                         };
 
                         // Add the enrollment to the database
@@ -212,10 +218,13 @@ namespace EduNexBL.Repository
                         else
                         {
                             //Update student balance in his wallet
-                            studentWallet.Balance -= (course.Price - discountValue);
+                            studentWallet.Balance -= discountValue > course.Price? 0 : (course.Price - discountValue);
                             _context.Wallets.Update(studentWallet);
-                            await _context.SaveChangesAsync();
+                            _context.SaveChanges();
                             await UpdateCouponUsageNumber(couponCodes);
+
+                            //log the purchased course
+                            if (!await DistributePayment(studentId, courseId, ((decimal)course.Price - discountValue))) return EnrollmentResult.Error;
 
                             // Create a new enrollment
                             var Enrollment = new StudentCourse
@@ -237,21 +246,62 @@ namespace EduNexBL.Repository
                         return EnrollmentResult.InvalidCoupon;
                     }
                 }
-
-                // Create a new enrollment
-                //var enrollment = new StudentCourse
-                //{
-                //    StudentId = studentId,
-                //    CourseId = courseId,
-                //    Enrolled = DateTime.Now // or any appropriate timestamp
-                //};
-
-                //return EnrollmentResult.Success;
             }
             catch (Exception ex)
             {
                 // Log the exception
                 return EnrollmentResult.Error;
+            }
+        }
+
+        public async Task<bool> DistributePayment(string studentId, int courseId, decimal paidAmount)
+        {
+            decimal eduNexShare = decimal.Parse(_configuration["EduNexShare:SharePercentage"]);
+            try
+            {
+                //Get the course being purchased
+                var coursePurchased = await _context.Courses.FindAsync(courseId);
+                if (coursePurchased == null) return false;
+
+                //Get Teacher's Id
+                var teacherId = await _context.Courses.Where(c => c.Id == courseId).Select(c => c.TeacherId).FirstOrDefaultAsync();
+                if (teacherId == null || teacherId == String.Empty) return false;
+
+                decimal eduNexAmount = paidAmount * eduNexShare;
+                decimal teacherAmount = paidAmount * (1 - eduNexShare);
+
+                //Get Teacher's Wallet
+                var teacherWallet = await _context.Wallets.FirstOrDefaultAsync(w => w.OwnerId == teacherId);
+                if (teacherWallet == null)
+                {
+                    return false;
+                }
+
+                //Update Teacher's Wallet
+                teacherWallet.Balance += teacherAmount;
+                _context.Wallets.Update(teacherWallet);
+                _context.SaveChanges();
+
+                EduNexPurchaseLogs purchaseLog = new()
+                {
+                    CourseId = courseId,
+                    SenderId = studentId,
+                    ReceiverId = teacherId,
+                    Amount = paidAmount,
+                    AmountReceived = eduNexAmount,
+                    IsCouponUsed = coursePurchased.Price > paidAmount,
+                    CouponsValue = coursePurchased.Price > paidAmount ? coursePurchased.Price - paidAmount : null,
+                    DateAdded = DateTime.UtcNow,
+                };
+                //Add a new log
+                _context.EduNexPurchaseLogs.Add(purchaseLog);
+                _context.SaveChanges();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
             }
         }
 

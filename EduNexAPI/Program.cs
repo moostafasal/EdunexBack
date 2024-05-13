@@ -80,6 +80,7 @@ namespace EduNexAPI
             builder.Services.AddScoped<IWallet, WalletRepo>();
             builder.Services.AddScoped<ITransaction, TransactionRepo>();
             builder.Services.AddScoped<CouponService>();
+            builder.Services.AddScoped<IEduNexPurchaseLogs, EduNexPurchaseLogsRepo>();
             //builder.Services.AddControllers().AddJsonOptions(options =>
             //{
             //    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
@@ -161,11 +162,10 @@ namespace EduNexAPI
                 endpoints.MapControllers();
             });
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1"));
-            }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1"));
+
 
             app.Run();
         }
