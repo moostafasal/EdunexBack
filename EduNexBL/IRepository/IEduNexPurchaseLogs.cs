@@ -15,5 +15,6 @@ namespace EduNexBL.IRepository
         Task<IEnumerable<EduNexPurchaseLogs?>> GetAllLogsBySenderId(string studentId);
         Task<IEnumerable<EduNexPurchaseLogs?>> GetAllLogsByCourseId(int courseId);
         Task<IEnumerable<EduNexPurchaseLogs?>> GetAllLogs();
+        decimal CalculateBalance(); 
     }
 }

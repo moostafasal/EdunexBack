@@ -183,11 +183,6 @@ namespace EduNexBL.Repository
                     }
                     else
                     {
-                        ////Update student balance in his wallet
-                        studentWallet.Balance -= course.Price;
-                        _context.Wallets.Update(studentWallet);
-                        _context.SaveChanges();
-
                         //log the purchased course
                         if (!await DistributePayment(studentId, courseId, ((decimal)course.Price))) return EnrollmentResult.Error;
 
@@ -199,11 +194,26 @@ namespace EduNexBL.Repository
                             Enrolled = DateTime.UtcNow // or any appropriate timestamp
                         };
 
-                        // Add the enrollment to the database
-                        _context.StudentCourse.Add(Enrollment);
-                        _context.SaveChanges();
+                        using var Process = await _context.Database.BeginTransactionAsync();
+                        try
+                        {
+                            // Add the enrollment to the database
+                            _context.StudentCourse.Add(Enrollment);
 
-                        return EnrollmentResult.Success;
+                            ////Update student balance in his wallet
+                            studentWallet.Balance -= course.Price;
+                            _context.Wallets.Update(studentWallet);
+                            
+                            _context.SaveChanges();
+
+                            Process.Commit();
+                            return EnrollmentResult.Success;
+                        }
+                        catch (Exception ex)
+                        {
+                            Process.RollbackAsync();
+                            return EnrollmentResult.Error;
+                        }                        
                     }
                 }
                 else
@@ -217,12 +227,6 @@ namespace EduNexBL.Repository
                         }
                         else
                         {
-                            //Update student balance in his wallet
-                            studentWallet.Balance -= discountValue > course.Price? 0 : (course.Price - discountValue);
-                            _context.Wallets.Update(studentWallet);
-                            _context.SaveChanges();
-                            await UpdateCouponUsageNumber(couponCodes);
-
                             //log the purchased course
                             if (!await DistributePayment(studentId, courseId, ((decimal)course.Price - discountValue))) return EnrollmentResult.Error;
 
@@ -234,11 +238,27 @@ namespace EduNexBL.Repository
                                 Enrolled = DateTime.Now 
                             };
 
-                            // Add the enrollment to the database
-                            _context.StudentCourse.Add(Enrollment);
-                            _context.SaveChanges();
+                            using var Process = await _context.Database.BeginTransactionAsync();
+                            try
+                            {
+                                // Add the enrollment to the database
+                                _context.StudentCourse.Add(Enrollment);
 
-                            return EnrollmentResult.Success;
+                                //Update student balance in his wallet
+                                studentWallet.Balance -= discountValue > course.Price ? 0 : (course.Price - discountValue);
+                                _context.Wallets.Update(studentWallet);
+                                _context.SaveChanges();
+
+                                await UpdateCouponUsageNumber(couponCodes);
+
+                                Process.Commit();
+                                return EnrollmentResult.Success;
+                            }
+                            catch (Exception ex)
+                            {
+                                Process.Rollback();
+                                return EnrollmentResult.Error;
+                            }
                         }
                     }
                     else
