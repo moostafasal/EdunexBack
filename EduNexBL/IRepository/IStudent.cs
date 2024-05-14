@@ -1,4 +1,5 @@
 ﻿using EduNexBL.Base;
+using EduNexBL.DTOs;
 using EduNexBL.DTOs.ExamintionDtos;
 using EduNexDB.Entites;
 using System;

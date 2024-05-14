@@ -8,6 +8,7 @@ using EduNexBL.UnitOfWork;
 using EduNexDB.Entites;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -40,8 +41,6 @@ namespace EduNexAPI.Controllers
         {
             return await _unitOfWork.CourseRepo.Getsubject();
         }
-
-
 
         // GET api/<CoursesController>/5
         [HttpGet("{id}")]
@@ -190,7 +189,68 @@ namespace EduNexAPI.Controllers
             var courses = await _unitOfWork.CourseRepo.GetTeacherCourses(teacherId);
             return Ok(courses); 
         }
-        
 
+        [HttpGet("GetCoursesOrderedByEnrollment")]
+        public async Task<IActionResult> GetCoursesOrderedByEnrollment()
+        {
+            try
+            {
+                var orderedCoursesList = await _unitOfWork.CourseRepo.GetCoursesOrderedByEnrollment();
+                if (orderedCoursesList.IsNullOrEmpty())
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(orderedCoursesList);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
+        [HttpGet("GetCoursesOrderedByCreateionDateDescending")]
+        public async Task<IActionResult> GetCoursesOrderedByCreateionDateDescending()
+        {
+            try
+            {
+                var orderedCoursesList = await _unitOfWork.CourseRepo.GetCoursesOrderedByCreateionDateDescending();
+                if (orderedCoursesList.IsNullOrEmpty())
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(orderedCoursesList);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetCoursesOrderedByCreateionDateAscending")]
+        public async Task<IActionResult> GetCoursesOrderedByCreateionDateAscending()
+        {
+            try
+            {
+                var orderedCoursesList = await _unitOfWork.CourseRepo.GetCoursesOrderedByCreateionDateAscending();
+                if (orderedCoursesList.IsNullOrEmpty())
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(orderedCoursesList);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
