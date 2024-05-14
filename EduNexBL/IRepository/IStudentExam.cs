@@ -7,6 +7,6 @@ namespace EduNexBL.IRepository
     public interface IStudentExam : IRepository<StudentExam>
     {
         Task<StudentExam> GetStudentExam(string studentId, int examId);
-        Task<List<StudentScoreDTO>> GetStudentsOrderedByScore(int examId);
+        Task<List<StudentScoreDTO>> GetStudentTotalScores();
     }
 }

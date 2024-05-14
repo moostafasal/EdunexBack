@@ -8,9 +8,9 @@ namespace EduNexBL.DTOs
 {
     public class StudentScoreDTO
     {
-        public string StudentId { get; set; }
+        public string? StudentId { get; set; }
         public string StudentName { get; set; }
-        public int ExamId { get; set; }
+        public int? ExamId { get; set; }
         public int Score { get; set; }
     }
 }

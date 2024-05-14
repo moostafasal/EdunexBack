@@ -14,7 +14,7 @@ namespace EduNexBL.Repository
 {
     public class StudentExamRepo : Repository<StudentExam>, IStudentExam
     {
-        private readonly EduNexContext _context; 
+        private readonly EduNexContext _context;
         public StudentExamRepo(EduNexContext dbContext) : base(dbContext)
         {
             _context = dbContext;
@@ -32,32 +32,42 @@ namespace EduNexBL.Repository
                 .FirstOrDefaultAsync(se => se.StudentId == studentId && se.ExamId == examId);
         }
 
-        public async Task<List<StudentScoreDTO>> GetStudentsOrderedByScore(int examId)
+        public async Task<List<StudentScoreDTO>> GetStudentTotalScores()
         {
-            var studentScores = await _context.StudentExam
-                .Where(se => se.ExamId == examId && se.Score.HasValue)
-                .OrderByDescending(se => se.Score)
-                .Select(se => new
-                {
-                    se.StudentId,
-                    se.Score
-                })
-                .ToListAsync();
+            var studentScores = new List<StudentScoreDTO>();
 
-            var result = new List<StudentScoreDTO>();
+            // Retrieve students with related exams
+            var studentsWithExams = _context.Students
+                .Include(s => s.StudentExams)
+                .ToList();
 
-            foreach (var studentScore in studentScores)
+            foreach (var student in studentsWithExams)
             {
-                var studentName = await GetStudentNameById(studentScore.StudentId);
-                result.Add(new StudentScoreDTO
+                int totalScore = 0;
+
+                // Calculate total score
+                foreach (var studentExam in student.StudentExams)
                 {
-                    StudentId = studentScore.StudentId,
-                    StudentName = studentName,
-                    Score = studentScore.Score.Value
-                });
+                    if (studentExam.Score.HasValue)
+                    {
+                        totalScore += studentExam.Score.Value;
+                    }
+                }
+
+                // Create DTO object for student score
+                var studentScoreDTO = new StudentScoreDTO
+                {
+                    StudentName = student.FirstName +" "+ student.LastName, 
+                    Score = totalScore
+                };
+
+                studentScores.Add(studentScoreDTO);
             }
 
-            return result;
+            // Sort the student scores in descending order based on total score
+            studentScores = studentScores.OrderByDescending(s => s.Score).ToList();
+
+            return studentScores;
         }
     }
 }

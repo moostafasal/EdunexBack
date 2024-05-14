@@ -233,26 +233,7 @@ namespace EduNexAPI.Controllers
             else return NotFound();
         }
 
-        [HttpGet("GetStudentsOrderedByScore")]
-        public async Task<IActionResult> GetStudentsOrderedByScore(int examId)
-        {
-            try
-            {
-                var studentScoreOredered = await _unitOfWork.StudentExamRepo.GetStudentsOrderedByScore(examId);
-                if (studentScoreOredered.IsNullOrEmpty())
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    return Ok(studentScoreOredered);
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        
 
     }
 }
