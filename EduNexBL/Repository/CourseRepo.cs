@@ -8,9 +8,11 @@ using EduNexDB.Context;
 using EduNexDB.Entites;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace EduNexBL.Repository
 {
@@ -18,11 +20,13 @@ namespace EduNexBL.Repository
     {
         private readonly IMapper _mapper;
         private readonly EduNexContext _context;
+        private readonly IConfiguration _configuration;
 
-        public CourseRepo(EduNexContext dbContext, IMapper mapper) : base(dbContext)
+        public CourseRepo(EduNexContext dbContext, IMapper mapper, IConfiguration configuration) : base(dbContext)
         {
             _mapper = mapper;
             _context = dbContext;
+            _configuration = configuration;
         }
 
         public async Task<ICollection<CourseMainData>> GetAllCoursesMainData()
@@ -180,24 +184,37 @@ namespace EduNexBL.Repository
                     }
                     else
                     {
-                        ////Update student balance in his wallet
-                        studentWallet.Balance -= course.Price;
-                        _context.Wallets.Update(studentWallet);
-                        _context.SaveChanges();
+                        //log the purchased course
+                        if (!await DistributePayment(studentId, courseId, ((decimal)course.Price))) return EnrollmentResult.Error;
 
                         // Create a new enrollment
                         var Enrollment = new StudentCourse
                         {
                             StudentId = studentId,
                             CourseId = courseId,
-                            Enrolled = DateTime.Now // or any appropriate timestamp
+                            Enrolled = DateTime.UtcNow // or any appropriate timestamp
                         };
 
-                        // Add the enrollment to the database
-                        _context.StudentCourse.Add(Enrollment);
-                        _context.SaveChanges();
+                        using var Process = await _context.Database.BeginTransactionAsync();
+                        try
+                        {
+                            // Add the enrollment to the database
+                            _context.StudentCourse.Add(Enrollment);
 
-                        return EnrollmentResult.Success;
+                            ////Update student balance in his wallet
+                            studentWallet.Balance -= course.Price;
+                            _context.Wallets.Update(studentWallet);
+                            
+                            _context.SaveChanges();
+
+                            Process.Commit();
+                            return EnrollmentResult.Success;
+                        }
+                        catch (Exception ex)
+                        {
+                            Process.RollbackAsync();
+                            return EnrollmentResult.Error;
+                        }                        
                     }
                 }
                 else
@@ -211,11 +228,8 @@ namespace EduNexBL.Repository
                         }
                         else
                         {
-                            //Update student balance in his wallet
-                            studentWallet.Balance -= (course.Price - discountValue);
-                            _context.Wallets.Update(studentWallet);
-                            await _context.SaveChangesAsync();
-                            await UpdateCouponUsageNumber(couponCodes);
+                            //log the purchased course
+                            if (!await DistributePayment(studentId, courseId, ((decimal)course.Price - discountValue))) return EnrollmentResult.Error;
 
                             // Create a new enrollment
                             var Enrollment = new StudentCourse
@@ -225,11 +239,27 @@ namespace EduNexBL.Repository
                                 Enrolled = DateTime.Now 
                             };
 
-                            // Add the enrollment to the database
-                            _context.StudentCourse.Add(Enrollment);
-                            _context.SaveChanges();
+                            using var Process = await _context.Database.BeginTransactionAsync();
+                            try
+                            {
+                                // Add the enrollment to the database
+                                _context.StudentCourse.Add(Enrollment);
 
-                            return EnrollmentResult.Success;
+                                //Update student balance in his wallet
+                                studentWallet.Balance -= discountValue > course.Price ? 0 : (course.Price - discountValue);
+                                _context.Wallets.Update(studentWallet);
+                                _context.SaveChanges();
+
+                                await UpdateCouponUsageNumber(couponCodes);
+
+                                Process.Commit();
+                                return EnrollmentResult.Success;
+                            }
+                            catch (Exception ex)
+                            {
+                                Process.Rollback();
+                                return EnrollmentResult.Error;
+                            }
                         }
                     }
                     else
@@ -237,21 +267,62 @@ namespace EduNexBL.Repository
                         return EnrollmentResult.InvalidCoupon;
                     }
                 }
-
-                // Create a new enrollment
-                //var enrollment = new StudentCourse
-                //{
-                //    StudentId = studentId,
-                //    CourseId = courseId,
-                //    Enrolled = DateTime.Now // or any appropriate timestamp
-                //};
-
-                //return EnrollmentResult.Success;
             }
             catch (Exception ex)
             {
                 // Log the exception
                 return EnrollmentResult.Error;
+            }
+        }
+
+        public async Task<bool> DistributePayment(string studentId, int courseId, decimal paidAmount)
+        {
+            decimal eduNexShare = decimal.Parse(_configuration["EduNexShare:SharePercentage"]);
+            try
+            {
+                //Get the course being purchased
+                var coursePurchased = await _context.Courses.FindAsync(courseId);
+                if (coursePurchased == null) return false;
+
+                //Get Teacher's Id
+                var teacherId = await _context.Courses.Where(c => c.Id == courseId).Select(c => c.TeacherId).FirstOrDefaultAsync();
+                if (teacherId == null || teacherId == String.Empty) return false;
+
+                decimal eduNexAmount = paidAmount * eduNexShare;
+                decimal teacherAmount = paidAmount * (1 - eduNexShare);
+
+                //Get Teacher's Wallet
+                var teacherWallet = await _context.Wallets.FirstOrDefaultAsync(w => w.OwnerId == teacherId);
+                if (teacherWallet == null)
+                {
+                    return false;
+                }
+
+                //Update Teacher's Wallet
+                teacherWallet.Balance += teacherAmount;
+                _context.Wallets.Update(teacherWallet);
+                _context.SaveChanges();
+
+                EduNexPurchaseLogs purchaseLog = new()
+                {
+                    CourseId = courseId,
+                    SenderId = studentId,
+                    ReceiverId = teacherId,
+                    Amount = paidAmount,
+                    AmountReceived = eduNexAmount,
+                    IsCouponUsed = coursePurchased.Price > paidAmount,
+                    CouponsValue = coursePurchased.Price > paidAmount ? coursePurchased.Price - paidAmount : null,
+                    DateAdded = DateTime.UtcNow,
+                };
+                //Add a new log
+                _context.EduNexPurchaseLogs.Add(purchaseLog);
+                _context.SaveChanges();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
             }
         }
 
@@ -329,6 +400,91 @@ namespace EduNexBL.Repository
             return courses;
         }
 
+        public async Task<List<MostBuyedCoursesDTO>> GetCoursesOrderedByEnrollment()
+        {
+            var CoursesEnrolledIdList = await _context.StudentCourse.Select(sc => sc.CourseId).ToListAsync();
+
+            List<CourseDTO> CoursesList = new List<CourseDTO>();
+            
+            var result = new List<MostBuyedCoursesDTO>();
+
+            foreach (var CourseId in CoursesEnrolledIdList)
+            {
+                var course = await GetCourseById(CourseId);
+                CoursesList.Add(course);
+            }
+
+            foreach (var course in CoursesList)
+            {
+                var EnrolledCourse = new MostBuyedCoursesDTO()
+                {
+                    Id = course.Id,
+                    Name = course.CourseName,
+                    Thumbnail = course.Thumbnail,
+                    EnrollmentCount = await CountEnrolledStudentsInCourse(course.Id)
+                };
+                result.Add(EnrolledCourse);                
+            }
+            var OrderedResult = result.OrderByDescending(ord => ord.EnrollmentCount).ToList();
+            return OrderedResult;
+
+            //var coursesWithEnrollments = await _context.StudentCourse
+            //    .GroupBy(sc => sc.CourseId)
+            //    .Select(x => new
+            //    {
+            //        CourseId = x.Key,
+            //        EnrollmentCount = x.Count()
+            //    })
+            //    .ToListAsync();
+
+            //var result = await _context.Courses
+            //    .Join(
+            //        coursesWithEnrollments,
+            //        course => course.Id,
+            //        enrollment => enrollment.CourseId,
+            //        (course, enrollment) => new MostBuyedCoursesDTO
+            //        {
+            //            Id = course.Id,
+            //            Name = course.CourseName,
+            //            Thumbnail = course.Thumbnail, 
+            //            EnrollmentCount = enrollment.EnrollmentCount
+            //        }
+            //    )
+            //    .OrderByDescending(ord => ord.EnrollmentCount)
+            //    .ToListAsync();
+
+            //return result;
+        }
+
+        public async Task<List<MostBuyedCoursesDTO>> GetCoursesOrderedByCreateionDateDescending()
+        {
+            var courses = await _context.Courses
+            .Select(course => new MostBuyedCoursesDTO
+            {
+                Id = course.Id,
+                Name = course.CourseName,
+                CreationDate = course.CreatedAt
+            })
+            .OrderByDescending(c => c.CreationDate)
+            .ToListAsync();
+
+            return courses;
+        }
+
+        public async Task<List<MostBuyedCoursesDTO>> GetCoursesOrderedByCreateionDateAscending()
+        {
+            var courses = await _context.Courses
+            .Select(course => new MostBuyedCoursesDTO
+            {
+                Id = course.Id,
+                Name = course.CourseName,
+                CreationDate = course.CreatedAt
+            })
+            .OrderBy(c => c.CreationDate)
+            .ToListAsync();
+
+            return courses;
+        }
     }
 }
 

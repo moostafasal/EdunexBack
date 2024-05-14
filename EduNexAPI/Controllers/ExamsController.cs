@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EduNexAPI.Controllers
 {
@@ -230,6 +231,27 @@ namespace EduNexAPI.Controllers
             var info = await _unitOfWork.ExamRepo.GetStudentExamInfo(studentId, id);
             if (info != null) return Ok(info);
             else return NotFound();
+        }
+
+        [HttpGet("GetStudentsOrderedByScore")]
+        public async Task<IActionResult> GetStudentsOrderedByScore(int examId)
+        {
+            try
+            {
+                var studentScoreOredered = await _unitOfWork.StudentExamRepo.GetStudentsOrderedByScore(examId);
+                if (studentScoreOredered.IsNullOrEmpty())
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(studentScoreOredered);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }

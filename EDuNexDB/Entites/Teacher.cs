@@ -21,14 +21,13 @@ namespace EduNexDB.Entites
         public string? AccountNote { get; set; }
 
         public string? subject { get; set; }
-
+        public string? experience { get; set; }
 
         public ICollection<Course> Courses { get; set; }
 
-
         public TeacherStatus Status { get; set; } = TeacherStatus.Pending;
 
-
+        public virtual ICollection<EduNexPurchaseLogs?> EduNexPurchaseLogs { get; set; }
 
     }
 }

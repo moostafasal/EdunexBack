@@ -25,11 +25,12 @@ namespace EduNexBL.IRepository
         public Task<int> CountEnrolledStudentsInCourse(int courseId);
         public Task<int> CountCourseLectures(int courseId);
         public Task<List<TeacherCoursesViewDTO>> GetTeacherCourses(string teacherId);
+        public Task<List<MostBuyedCoursesDTO>> GetCoursesOrderedByEnrollment();
+        public Task<List<MostBuyedCoursesDTO>> GetCoursesOrderedByCreateionDateDescending();
+        public Task<List<MostBuyedCoursesDTO>> GetCoursesOrderedByCreateionDateAscending();
 
 
-
-
-
+        Task<bool> DistributePayment(string studentId, int courseId, decimal paidAmount);
         public Task<decimal> GetCouponsValues(string[] couponCodes);
         public Task UpdateCouponUsageNumber(string[] couponCodes);
     }
