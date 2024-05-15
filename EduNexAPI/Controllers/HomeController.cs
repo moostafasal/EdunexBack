@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Threading.Tasks;
 
 namespace EduNexAPI.Controllers
 {
@@ -58,9 +60,8 @@ namespace EduNexAPI.Controllers
             }
         }
 
-<<<<<<< HEAD
-        [HttpGet("GetCoursesOrderedByCreateionDateDescending")]
-        public async Task<IActionResult> GetCoursesOrderedByCreateionDateDescending()
+        [HttpGet("GetCoursesOrderedByCreationDateDescending")]
+        public async Task<IActionResult> GetCoursesOrderedByCreationDateDescending()
         {
             try
             {
@@ -72,7 +73,14 @@ namespace EduNexAPI.Controllers
                 else
                 {
                     return Ok(orderedCoursesList);
-=======
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("GetCoursesCount")]
         public async Task<IActionResult> GetCoursesCount()
         {
@@ -86,7 +94,6 @@ namespace EduNexAPI.Controllers
                 else
                 {
                     return NotFound();
->>>>>>> 4e5b094562287e295359d25445c96289cb619958
                 }
             }
             catch (Exception ex)
@@ -95,8 +102,6 @@ namespace EduNexAPI.Controllers
             }
         }
 
-<<<<<<< HEAD
-=======
         [HttpGet("GetStudentCount")]
         public async Task<IActionResult> GetStudentCount()
         {
@@ -112,12 +117,12 @@ namespace EduNexAPI.Controllers
                     return NotFound();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-        
+
         [HttpGet("GetTeachersCount")]
         public async Task<IActionResult> GetTeachersCount()
         {
@@ -133,12 +138,12 @@ namespace EduNexAPI.Controllers
                     return NotFound();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-        
+
         [HttpGet("GetLecturesCount")]
         public async Task<IActionResult> GetLecturesCount()
         {
@@ -154,11 +159,10 @@ namespace EduNexAPI.Controllers
                     return NotFound();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
->>>>>>> 4e5b094562287e295359d25445c96289cb619958
     }
 }
