@@ -7,13 +7,9 @@ using System.Threading.Tasks;
 
 namespace EduNexBL.DTOs.CourseDTOs
 {
-    public class MostBuyedCoursesDTO
+    public class MostBuyedCoursesDTO : CourseMainData
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Thumbnail { get; set; }
         public int? EnrollmentCount { get; set; }
-        public Teacher? Teacher { get; set; }
-        public DateTime? CreationDate { get; set; }
+
     }
 }
