@@ -1,4 +1,5 @@
 ﻿using EduNexBL.IRepository;
+using EduNexBL.UnitOfWork;
 using EduNexDB.Entites;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -10,11 +11,11 @@ namespace EduNexAPI.Controllers
     [ApiController]
     public class PurchaseLogsController : ControllerBase
     {
-        private readonly IEduNexPurchaseLogs _eduNexPurchaseLogsRepo;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public PurchaseLogsController(IEduNexPurchaseLogs eduNexPurchaseLogsRepo)
+        public PurchaseLogsController(IUnitOfWork unitOfWork)
         {
-            _eduNexPurchaseLogsRepo = eduNexPurchaseLogsRepo;
+            _unitOfWork = unitOfWork;
         }
 
 
@@ -23,8 +24,8 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                var logs = await _eduNexPurchaseLogsRepo.GetAllLogs();
-                if (logs == null)
+                var logs = await _unitOfWork.EduNexPurchaseLogsRepo.GetAllLogs();
+                if (logs == null || logs.Count() <= 0)
                 {
                     return NotFound();
                 }
@@ -41,7 +42,7 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                var log = await _eduNexPurchaseLogsRepo.GetById(id);
+                var log = await _unitOfWork.EduNexPurchaseLogsRepo.GetById(id);
                 if (log == null)
                 {
                     return NotFound();
@@ -59,7 +60,7 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                var logs = await _eduNexPurchaseLogsRepo.GetAllLogsByCourseId(courseId);
+                var logs = await _unitOfWork.EduNexPurchaseLogsRepo.GetAllLogsByCourseId(courseId);
                 if (logs == null)
                 {
                     return NotFound();
@@ -77,7 +78,7 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                var logs = await _eduNexPurchaseLogsRepo.GetAllLogsByReceiverId(teacherId);
+                var logs = await _unitOfWork.EduNexPurchaseLogsRepo.GetAllLogsByReceiverId(teacherId);
                 if (logs == null)
                 {
                     return NotFound();
@@ -95,12 +96,12 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                var logs = await _eduNexPurchaseLogsRepo.GetAllLogsBySenderId(studentId);
-                if (logs == null)
+                var logs = await _unitOfWork.EduNexPurchaseLogsRepo.GetAllLogsBySenderId(studentId);
+                if (logs != null)
                 {
-                    return NotFound();
+                    return Ok(logs);
                 }
-                return Ok(logs);
+                return NotFound();
             }
             catch (Exception ex)
             {
@@ -111,7 +112,7 @@ namespace EduNexAPI.Controllers
         [HttpGet("CalculateBalance")]
         public IActionResult CalculateBalance()
         {
-            var amountsum = _eduNexPurchaseLogsRepo.CalculateBalance();
+            var amountsum = _unitOfWork.EduNexPurchaseLogsRepo.CalculateBalance();
             var result = new
             {
                 resultData = amountsum

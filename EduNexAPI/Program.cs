@@ -80,7 +80,6 @@ namespace EduNexAPI
             builder.Services.AddScoped<IWallet, WalletRepo>();
             builder.Services.AddScoped<ITransaction, TransactionRepo>();
             builder.Services.AddScoped<CouponService>();
-            builder.Services.AddScoped<IEduNexPurchaseLogs, EduNexPurchaseLogsRepo>();
             //builder.Services.AddControllers().AddJsonOptions(options =>
             //{
             //    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;

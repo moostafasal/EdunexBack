@@ -21,27 +21,27 @@ namespace EduNexBL.Repository
         {
             _Context = Context;
         }
-        public async Task<IEnumerable<EduNexPurchaseLogs?>> GetAllLogs()
+        public async Task<IEnumerable<EduNexPurchaseLogs>> GetAllLogs()
         {
             return await _Context.EduNexPurchaseLogs.ToListAsync();
         }
 
-        public async Task<IEnumerable<EduNexPurchaseLogs?>> GetAllLogsByCourseId(int courseId)
+        public async Task<IEnumerable<EduNexPurchaseLogs>> GetAllLogsByCourseId(int courseId)
         {
             return await _Context.EduNexPurchaseLogs.Where(e => e.CourseId == courseId).ToListAsync();
         }
 
-        public async Task<IEnumerable<EduNexPurchaseLogs?>> GetAllLogsByReceiverId(string teacherId)
+        public async Task<IEnumerable<EduNexPurchaseLogs>> GetAllLogsByReceiverId(string teacherId)
         {
             return await _Context.EduNexPurchaseLogs.Where(e => e.ReceiverId == teacherId).ToListAsync();
         }
 
-        public async Task<IEnumerable<EduNexPurchaseLogs?>> GetAllLogsBySenderId(string studentId)
+        public async Task<IEnumerable<EduNexPurchaseLogs>> GetAllLogsBySenderId(string studentId)
         {
             return await _Context.EduNexPurchaseLogs.Where(e => e.SenderId == studentId).ToListAsync();
         }
 
-        public async Task<EduNexPurchaseLogs?> GetById(string id)
+        public async Task<EduNexPurchaseLogs> GetById(string id)
         {
             return await _Context.EduNexPurchaseLogs.FindAsync(id);
         }

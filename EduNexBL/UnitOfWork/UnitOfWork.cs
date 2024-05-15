@@ -27,6 +27,7 @@ namespace EduNexBL.UnitOfWork
         private Lazy<IAttachment> _attachmentRepo;
         private Lazy<IWallet> _walletRepo;
         private Lazy<ITransaction> _transactionrepo;
+        private Lazy<IEduNexPurchaseLogs> _eduNexPurchaseLogsRepo;
         public IExam ExamRepo => _examRepo.Value;
         public IStudent StudentRepo => _studentRepo.Value;
         public IStudentExam StudentExamRepo => _studentExamRepo.Value;
@@ -36,6 +37,7 @@ namespace EduNexBL.UnitOfWork
         public IAttachment AttachmentRepo => _attachmentRepo.Value;
         public IWallet WalletRepo => _walletRepo.Value;
         public ITransaction TransactionRepo => _transactionrepo.Value;
+        public IEduNexPurchaseLogs EduNexPurchaseLogsRepo => _eduNexPurchaseLogsRepo.Value;
         public UnitOfWork(EduNexContext context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
@@ -50,6 +52,7 @@ namespace EduNexBL.UnitOfWork
             _attachmentRepo = new Lazy<IAttachment>(() => new AttachmentRepo(_context));
             _walletRepo = new Lazy<IWallet>(() => new WalletRepo(_context));
             _transactionrepo = new Lazy<ITransaction>(() => new TransactionRepo(_context));
+            _eduNexPurchaseLogsRepo = new Lazy<IEduNexPurchaseLogs>(() => new EduNexPurchaseLogsRepo(_context));
         }
 
         public void Commit()

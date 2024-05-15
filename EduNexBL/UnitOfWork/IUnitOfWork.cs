@@ -18,7 +18,7 @@ namespace EduNexBL.UnitOfWork
         public IAttachment AttachmentRepo { get; }
         public IWallet WalletRepo { get; }
         public ITransaction TransactionRepo { get; }
-
+        public IEduNexPurchaseLogs EduNexPurchaseLogsRepo { get; }
         void Commit();
     }
 }
