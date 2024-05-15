@@ -20,7 +20,6 @@ namespace EduNexDB.Entites
 
         [DataType(DataType.DateTime)]
         public DateTime? EndTime { get; set; }
-
         public int? Score { get; set; }
     }
 }

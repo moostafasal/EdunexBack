@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EduNexAPI.Controllers
 {
@@ -231,6 +232,8 @@ namespace EduNexAPI.Controllers
             if (info != null) return Ok(info);
             else return NotFound();
         }
+
+        
 
     }
 }

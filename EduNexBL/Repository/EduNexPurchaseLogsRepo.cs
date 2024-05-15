@@ -45,5 +45,10 @@ namespace EduNexBL.Repository
         {
             return await _Context.EduNexPurchaseLogs.FindAsync(id);
         }
+
+        public decimal CalculateBalance()
+        {
+            return _Context.EduNexPurchaseLogs.Select(e => e.AmountReceived).ToArray().Sum();
+        }
     }
 }

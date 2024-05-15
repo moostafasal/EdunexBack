@@ -1,6 +1,7 @@
 ﻿using EduNexBL.IRepository;
 using EduNexDB.Entites;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduNexAPI.Controllers
@@ -105,6 +106,17 @@ namespace EduNexAPI.Controllers
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }
+
+        [HttpGet("CalculateBalance")]
+        public IActionResult CalculateBalance()
+        {
+            var amountsum = _eduNexPurchaseLogsRepo.CalculateBalance();
+            var result = new
+            {
+                resultData = amountsum
+            };
+            return Ok(result);
         }
     }
 }
