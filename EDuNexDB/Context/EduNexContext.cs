@@ -62,6 +62,26 @@ namespace EduNexDB.Context
             return base.SaveChanges();
         }
 
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entities = ChangeTracker.Entries()
+                .Where(x => x.Entity is BaseEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
+
+            var now = DateTime.Now;
+
+            foreach (var entityEntry in entities)
+            {
+                if (entityEntry.State == EntityState.Added)
+                {
+                    ((BaseEntity)entityEntry.Entity).CreatedAt = now;
+                }
+
+                ((BaseEntity)entityEntry.Entity).UpdatedAt = now;
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IdentityRole>().HasData(

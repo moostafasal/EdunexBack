@@ -436,48 +436,33 @@ namespace EduNexBL.Repository
             var OrderedResult = result.OrderByDescending(ord => ord.EnrollmentCount).ToList();
             return OrderedResult;
 
-            //var coursesWithEnrollments = await _context.StudentCourse
-            //    .GroupBy(sc => sc.CourseId)
-            //    .Select(x => new
-            //    {
-            //        CourseId = x.Key,
-            //        EnrollmentCount = x.Count()
-            //    })
-            //    .ToListAsync();
-
-            //var result = await _context.Courses
-            //    .Join(
-            //        coursesWithEnrollments,
-            //        course => course.Id,
-            //        enrollment => enrollment.CourseId,
-            //        (course, enrollment) => new MostBuyedCoursesDTO
-            //        {
-            //            Id = course.Id,
-            //            Name = course.CourseName,
-            //            Thumbnail = course.Thumbnail, 
-            //            EnrollmentCount = enrollment.EnrollmentCount
-            //        }
-            //    )
-            //    .OrderByDescending(ord => ord.EnrollmentCount)
-            //    .ToListAsync();
-
-            //return result;
         }
 
-        //public async Task<List<MostBuyedCoursesDTO>> GetCoursesOrderedByCreateionDateDescending()
-        //{
-        //    var courses = await _context.Courses
-        //    .Select(course => new MostBuyedCoursesDTO
-        //    {
-        //        Id = course.Id,
-        //        Name = course.CourseName,
-        //        CreationDate = course.CreatedAt
-        //    })
-        //    .OrderByDescending(c => c.CreationDate)
-        //    .ToListAsync();
+        public async Task<List<CourseMainData>> GetCoursesOrderedByCreationDateDescending()
+        {
+            var courses = await _context.Courses
+                .Include(c => c.Subject)
+                    .ThenInclude(s => s.Level)
+                .Include(c => c.Teacher)
+                .OrderByDescending(c => c.CreatedAt) // Assuming CreatedAt is the property for creation date
+                .ToListAsync();
 
-        //    return courses;
-        //}
+            var courseMainDataList = courses.Select(course => new CourseMainData
+            {
+                Id = course.Id,
+                CourseName = course.CourseName,
+                Thumbnail = course.Thumbnail,
+                CourseType = course.Subject.SubjectType,
+                Price = course.Price,
+                SubjectName = course.Subject.SubjectName,
+                TeacherId = course.TeacherId,
+                TeacherName = $"{course.Teacher.FirstName} {course.Teacher.LastName}",
+                ProfilePhoto = course.Teacher.ProfilePhoto,
+                LevelName = course.Subject.Level.LevelName
+            }).ToList();
+
+            return courseMainDataList;
+        }
 
         //public async Task<List<MostBuyedCoursesDTO>> GetCoursesOrderedByCreateionDateAscending()
         //{
