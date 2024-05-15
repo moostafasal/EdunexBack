@@ -3,6 +3,7 @@ using EduNexBL.UnitOfWork;
 using EduNexDB.Context;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EduNexAPI.Controllers
 {
@@ -28,6 +29,27 @@ namespace EduNexAPI.Controllers
             {
                 var studentScoreOredered = await _unitOfWork.StudentExamRepo.GetStudentTotalScores();
                 return Ok(studentScoreOredered);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetCoursesOrderedByEnrollment")]
+        public async Task<IActionResult> GetCoursesOrderedByEnrollment()
+        {
+            try
+            {
+                var orderedCoursesList = await _unitOfWork.CourseRepo.GetCoursesOrderedByEnrollment();
+                if (orderedCoursesList.IsNullOrEmpty())
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(orderedCoursesList);
+                }
             }
             catch (Exception ex)
             {

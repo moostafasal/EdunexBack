@@ -21,7 +21,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
@@ -29,26 +28,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
 
 namespace EduNexAPI
 {
-    // Omitting imports for brevity
-
-    // Omitting imports for brevity
-
     public class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             var configuration = new ConfigurationBuilder()
-
                 .AddJsonFile("appsettings.json")
-
-
                 .Build();
-
 
             builder.Services.AddControllers();
             builder.Services.AddDbContext<EduNexContext>(
@@ -58,13 +48,6 @@ namespace EduNexAPI
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IAdminRepository, AdminRepository>();
             builder.Services.AddScoped<IStorageService, StorageService>();
-
-            //builder.Services.AddSingleton<BunnyCDNStorage>();
-
-            //builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
-            //builder.Services.AddAWSService<IAmazonS3>();
-
-
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -80,12 +63,6 @@ namespace EduNexAPI
             builder.Services.AddScoped<IWallet, WalletRepo>();
             builder.Services.AddScoped<ITransaction, TransactionRepo>();
             builder.Services.AddScoped<CouponService>();
-            //builder.Services.AddControllers().AddJsonOptions(options =>
-            //{
-            //    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
-            //});
-
-
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -101,18 +78,18 @@ namespace EduNexAPI
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
                     };
                 });
+
             // Add CORS policy
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins("http://localhost:4200")
+                    builder.WithOrigins("https://edu-nex-front.vercel.app") // Add your allowed origin here
                            .AllowAnyMethod()
                            .AllowAnyHeader()
-                           .AllowCredentials(); // Allow credentials from the specified origin(s)
+                           .AllowCredentials(); // Allow credentials from the specified origin
                 });
             });
-
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -130,19 +107,19 @@ namespace EduNexAPI
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
                 {
-                    new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
+                        new OpenApiSecurityScheme
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    new string[] { }
-                }
-            });
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] { }
+                    }
+                });
             });
 
             var app = builder.Build();
@@ -151,7 +128,7 @@ namespace EduNexAPI
 
             app.UseRouting(); // Add UseRouting here
 
-            app.UseCors();
+            app.UseCors(); // Apply the CORS policy
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -161,14 +138,10 @@ namespace EduNexAPI
                 endpoints.MapControllers();
             });
 
-
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1"));
-
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "EduNex API v1"));
 
             app.Run();
         }
     }
-
-
 }
