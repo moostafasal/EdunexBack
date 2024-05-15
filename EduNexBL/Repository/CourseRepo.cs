@@ -127,7 +127,7 @@ namespace EduNexBL.Repository
             decimal discountValue = 0;
             foreach (var coupon in couponCodes)
             {
-                var revievedCoupon = await _context.Coupon.FirstOrDefaultAsync(c => c.CouponCode == coupon && c.NumberOfUses > 0 
+                var revievedCoupon = await _context.Coupon.FirstOrDefaultAsync(c => c.CouponCode == coupon && c.NumberOfUses > 0
                                     && c.ExpirationDate > DateTime.Now && c.CouponType == CouponType.Discount_Coupon);
                 if (revievedCoupon != null)
                 {
@@ -204,7 +204,7 @@ namespace EduNexBL.Repository
                             ////Update student balance in his wallet
                             studentWallet.Balance -= course.Price;
                             _context.Wallets.Update(studentWallet);
-                            
+
                             _context.SaveChanges();
 
                             Process.Commit();
@@ -214,7 +214,7 @@ namespace EduNexBL.Repository
                         {
                             Process.RollbackAsync();
                             return EnrollmentResult.Error;
-                        }                        
+                        }
                     }
                 }
                 else
@@ -236,7 +236,7 @@ namespace EduNexBL.Repository
                             {
                                 StudentId = studentId,
                                 CourseId = courseId,
-                                Enrolled = DateTime.Now 
+                                Enrolled = DateTime.Now
                             };
 
                             using var Process = await _context.Database.BeginTransactionAsync();
@@ -362,6 +362,7 @@ namespace EduNexBL.Repository
                     CourseId = sc.CourseId,
                     CourseName = sc.Course.CourseName,
                     CourseThumbnail = sc.Course.Thumbnail
+
                 })
                 .ToList();
 
@@ -405,7 +406,7 @@ namespace EduNexBL.Repository
             var CoursesEnrolledIdList = await _context.StudentCourse.Select(sc => sc.CourseId).ToListAsync();
 
             List<CourseDTO> CoursesList = new List<CourseDTO>();
-            
+
             var result = new List<MostBuyedCoursesDTO>();
 
             foreach (var CourseId in CoursesEnrolledIdList)
@@ -423,7 +424,7 @@ namespace EduNexBL.Repository
                     Thumbnail = course.Thumbnail,
                     EnrollmentCount = await CountEnrolledStudentsInCourse(course.Id)
                 };
-                result.Add(EnrolledCourse);                
+                result.Add(EnrolledCourse);
             }
             var OrderedResult = result.OrderByDescending(ord => ord.EnrollmentCount).ToList();
             return OrderedResult;
@@ -463,7 +464,10 @@ namespace EduNexBL.Repository
             {
                 Id = course.Id,
                 Name = course.CourseName,
-                CreationDate = course.CreatedAt
+                CreationDate = course.CreatedAt,
+                Thumbnail = course.Thumbnail,
+
+
             })
             .OrderByDescending(c => c.CreationDate)
             .ToListAsync();

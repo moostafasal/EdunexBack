@@ -24,7 +24,7 @@ namespace EduNexAPI.Controllers
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ExamsController(IUnitOfWork unitOfWork, IMapper mapper,UserManager<ApplicationUser> userManager)
+        public ExamsController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -34,7 +34,7 @@ namespace EduNexAPI.Controllers
         // GET: api/<ExamsController>
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Student")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Student")]
 
         public async Task<ActionResult<IEnumerable<ExamDto>>> Get()
         {
@@ -197,7 +197,7 @@ namespace EduNexAPI.Controllers
 
 
         [HttpGet("{id}/result/{studentId}")]
-        public async Task<IActionResult> GetExamResult(int id,string studentId)
+        public async Task<IActionResult> GetExamResult(int id, string studentId)
         {
             if (!ModelState.IsValid)
             {
@@ -233,7 +233,7 @@ namespace EduNexAPI.Controllers
             else return NotFound();
         }
 
-        
+
 
     }
 }

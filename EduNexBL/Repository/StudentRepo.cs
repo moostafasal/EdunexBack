@@ -30,7 +30,7 @@ namespace EduNexBL.Repository
             return await _Context.Students
                 .Where(s => s.NationalId == nationalId)
                 .Select(s => s.Id)
-                .FirstOrDefaultAsync(); 
+                .FirstOrDefaultAsync();
         }
         public async Task<List<StudentExamDTO>> GetExamsSubmissions(string studentId)
         {
@@ -40,9 +40,9 @@ namespace EduNexBL.Repository
                 {
                     StudentId = se.StudentId,
                     ExamId = se.ExamId,
-                    Score  = se.Score,
-                    StartTime = DateTime.Now,
-                    EndTime = DateTime.Now
+                    Score = se.Score,
+                    StartTime = se.StartTime,
+                    EndTime = se.EndTime
                 }).ToListAsync();
         }
     }
