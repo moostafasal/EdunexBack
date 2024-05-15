@@ -21,7 +21,7 @@ namespace EduNexBL.Repository
         {
             _Context = Context;
         }
-        public async Task<IEnumerable<EduNexPurchaseLogs>> GetAllLogs()
+        public async Task<List<EduNexPurchaseLogs>> GetAllLogs()
         {
             return await _Context.EduNexPurchaseLogs.ToListAsync();
         }

@@ -74,6 +74,8 @@ namespace EduNexAPI.Controllers
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Student,Teacher,Admin")]
 
 
+
+
         [HttpGet("{lectureId}")]
         public async Task<IActionResult> GetLecture(string userId, int lectureId)
         {
@@ -278,9 +280,6 @@ namespace EduNexAPI.Controllers
             // If the user's role is not recognized, deny access
             return Forbid("Role not recognized");
         }
-
-
-
 
 
 

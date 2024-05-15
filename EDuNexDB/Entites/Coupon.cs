@@ -35,5 +35,6 @@ namespace EduNexDB.Entites
 
         [Required]
         public CouponType CouponType { get; set; }
+
     }
 }

@@ -141,7 +141,8 @@ namespace EduNexAPI.Controllers
                 Address = student.Address,
                 City = student.City,
                 DateOfBirth = student.DateOfBirth,
-                PhoneNumber = student.PhoneNumber
+                PhoneNumber = student.PhoneNumber,
+                nationalId = student.NationalId
 
             };
 

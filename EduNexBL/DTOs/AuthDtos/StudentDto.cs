@@ -16,4 +16,6 @@ public class StudentDto1
     public DateTime DateOfBirth { get; set; }
     public string? Address { get; set; }
     public string? City { get; set; }
+    public string? nationalId { get; set; }
+
 }
