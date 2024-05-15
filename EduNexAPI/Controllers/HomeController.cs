@@ -58,7 +58,7 @@ namespace EduNexAPI.Controllers
             }
         }
 
-        [HttpPost("GetCoursesCount")]
+        [HttpGet("GetCoursesCount")]
         public async Task<IActionResult> GetCoursesCount()
         {
             try
@@ -79,7 +79,7 @@ namespace EduNexAPI.Controllers
             }
         }
 
-        [HttpPost("GetStudentCount")]
+        [HttpGet("GetStudentCount")]
         public async Task<IActionResult> GetStudentCount()
         {
             try
@@ -100,7 +100,7 @@ namespace EduNexAPI.Controllers
             }
         }
         
-        [HttpPost("GetTeachersCount")]
+        [HttpGet("GetTeachersCount")]
         public async Task<IActionResult> GetTeachersCount()
         {
             try
@@ -121,7 +121,7 @@ namespace EduNexAPI.Controllers
             }
         }
         
-        [HttpPost("GetLecturesCount")]
+        [HttpGet("GetLecturesCount")]
         public async Task<IActionResult> GetLecturesCount()
         {
             try
