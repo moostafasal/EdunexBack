@@ -3,6 +3,7 @@ using EduNexBL.UnitOfWork;
 using EduNexDB.Context;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace EduNexAPI.Controllers
@@ -62,8 +63,7 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                var Courses = await _unitOfWork.CourseRepo.GetAll();
-                int CoursesCount = Courses.Count();
+                int CoursesCount = await _Context.Courses.CountAsync();
                 if (CoursesCount > 0)
                 {
                     return Ok(CoursesCount);
@@ -84,8 +84,7 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                var Students = await _unitOfWork.StudentRepo.GetAll();
-                int StudentsCount = Students.Count();
+                int StudentsCount = await _Context.Students.CountAsync();
                 if (StudentsCount > 0)
                 {
                     return Ok(StudentsCount);
@@ -106,8 +105,7 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                var Teachers = await _adminRepository.GetTeachersAsync();
-                int TeachersCount = Teachers.Count();
+                int TeachersCount = await _Context.Teachers.CountAsync();
                 if (TeachersCount > 0)
                 {
                     return Ok(TeachersCount);
@@ -128,8 +126,7 @@ namespace EduNexAPI.Controllers
         {
             try
             {
-                var Lectures = await _unitOfWork.LectureRepo.GetAll();
-                int LecturesCount = Lectures.Count();
+                int LecturesCount = await _Context.Lectures.CountAsync();
                 if (LecturesCount > 0)
                 {
                     return Ok(LecturesCount);
