@@ -190,67 +190,48 @@ namespace EduNexAPI.Controllers
             return Ok(courses); 
         }
 
-        [HttpGet("GetCoursesOrderedByEnrollment")]
-        public async Task<IActionResult> GetCoursesOrderedByEnrollment()
-        {
-            try
-            {
-                var orderedCoursesList = await _unitOfWork.CourseRepo.GetCoursesOrderedByEnrollment();
-                if (orderedCoursesList.IsNullOrEmpty())
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    return Ok(orderedCoursesList);
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        
-        [HttpGet("GetCoursesOrderedByCreateionDateDescending")]
-        public async Task<IActionResult> GetCoursesOrderedByCreateionDateDescending()
-        {
-            try
-            {
-                var orderedCoursesList = await _unitOfWork.CourseRepo.GetCoursesOrderedByCreateionDateDescending();
-                if (orderedCoursesList.IsNullOrEmpty())
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    return Ok(orderedCoursesList);
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
 
-        [HttpGet("GetCoursesOrderedByCreateionDateAscending")]
-        public async Task<IActionResult> GetCoursesOrderedByCreateionDateAscending()
-        {
-            try
-            {
-                var orderedCoursesList = await _unitOfWork.CourseRepo.GetCoursesOrderedByCreateionDateAscending();
-                if (orderedCoursesList.IsNullOrEmpty())
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    return Ok(orderedCoursesList);
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        
+        //[HttpGet("GetCoursesOrderedByCreateionDateDescending")]
+        //public async Task<IActionResult> GetCoursesOrderedByCreateionDateDescending()
+        //{
+        //    try
+        //    {
+        //        var orderedCoursesList = await _unitOfWork.CourseRepo.GetCoursesOrderedByCreateionDateDescending();
+        //        if (orderedCoursesList.IsNullOrEmpty())
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            return Ok(orderedCoursesList);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
+
+        //[HttpGet("GetCoursesOrderedByCreateionDateAscending")]
+        //public async Task<IActionResult> GetCoursesOrderedByCreateionDateAscending()
+        //{
+        //    try
+        //    {
+        //        var orderedCoursesList = await _unitOfWork.CourseRepo.GetCoursesOrderedByCreateionDateAscending();
+        //        if (orderedCoursesList.IsNullOrEmpty())
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            return Ok(orderedCoursesList);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
     }
 }

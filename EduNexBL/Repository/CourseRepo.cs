@@ -405,8 +405,13 @@ namespace EduNexBL.Repository
         {
             var CoursesEnrolledIdList = await _context.StudentCourse.Select(sc => sc.CourseId).ToListAsync();
 
+<<<<<<< HEAD
             List<CourseDTO> CoursesList = new List<CourseDTO>();
 
+=======
+            var CoursesList = new List<CourseDTO>();
+            
+>>>>>>> 2bb13c0067534c5cf7f45dd484168f7c83343ad6
             var result = new List<MostBuyedCoursesDTO>();
 
             foreach (var CourseId in CoursesEnrolledIdList)
@@ -417,12 +422,20 @@ namespace EduNexBL.Repository
 
             foreach (var course in CoursesList)
             {
-                var EnrolledCourse = new MostBuyedCoursesDTO()
+                MostBuyedCoursesDTO EnrolledCourse = new MostBuyedCoursesDTO();
+
+                EnrolledCourse = new MostBuyedCoursesDTO
                 {
                     Id = course.Id,
-                    Name = course.CourseName,
+                    CourseName = course.CourseName,
                     Thumbnail = course.Thumbnail,
-                    EnrollmentCount = await CountEnrolledStudentsInCourse(course.Id)
+                    Price = course.Price,
+                    SubjectName = course.SubjectName,
+                    TeacherId = course.teacherId,
+                    TeacherName = course.TeacherName, // Assuming you have a method to get the teacher's name
+                    ProfilePhoto = course.ProfilePhoto, // Assuming you have a method to get the teacher's profile photo
+                    LevelName = course.LevelName,
+                    EnrollmentCount = await CountEnrolledStudentsInCourse(course.Id) // Assuming you have a method to get the enrollment count
                 };
                 result.Add(EnrolledCourse);
             }
@@ -457,6 +470,7 @@ namespace EduNexBL.Repository
             //return result;
         }
 
+<<<<<<< HEAD
         public async Task<List<MostBuyedCoursesDTO>> GetCoursesOrderedByCreateionDateDescending()
         {
             var courses = await _context.Courses
@@ -471,24 +485,37 @@ namespace EduNexBL.Repository
             })
             .OrderByDescending(c => c.CreationDate)
             .ToListAsync();
+=======
+        //public async Task<List<MostBuyedCoursesDTO>> GetCoursesOrderedByCreateionDateDescending()
+        //{
+        //    var courses = await _context.Courses
+        //    .Select(course => new MostBuyedCoursesDTO
+        //    {
+        //        Id = course.Id,
+        //        Name = course.CourseName,
+        //        CreationDate = course.CreatedAt
+        //    })
+        //    .OrderByDescending(c => c.CreationDate)
+        //    .ToListAsync();
+>>>>>>> 2bb13c0067534c5cf7f45dd484168f7c83343ad6
 
-            return courses;
-        }
+        //    return courses;
+        //}
 
-        public async Task<List<MostBuyedCoursesDTO>> GetCoursesOrderedByCreateionDateAscending()
-        {
-            var courses = await _context.Courses
-            .Select(course => new MostBuyedCoursesDTO
-            {
-                Id = course.Id,
-                Name = course.CourseName,
-                CreationDate = course.CreatedAt
-            })
-            .OrderBy(c => c.CreationDate)
-            .ToListAsync();
+        //public async Task<List<MostBuyedCoursesDTO>> GetCoursesOrderedByCreateionDateAscending()
+        //{
+        //    var courses = await _context.Courses
+        //    .Select(course => new MostBuyedCoursesDTO
+        //    {
+        //        Id = course.Id,
+        //        Name = course.CourseName,
+        //        CreationDate = course.CreatedAt
+        //    })
+        //    .OrderBy(c => c.CreationDate)
+        //    .ToListAsync();
 
-            return courses;
-        }
+        //    return courses;
+        //}
     }
 }
 
