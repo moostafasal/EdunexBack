@@ -67,7 +67,7 @@ namespace EduNexDB.Context
             var entities = ChangeTracker.Entries()
                 .Where(x => x.Entity is BaseEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
 
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow.AddHours(3);
 
             foreach (var entityEntry in entities)
             {
