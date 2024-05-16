@@ -336,8 +336,9 @@ namespace EduNexBL.Repository
 
         private bool IsExamAvailable(Exam exam)
         {
-            var currentTime = DateTime.Now;
-            return currentTime >= exam.StartDateTime && currentTime <= exam.EndDateTime;
+            var currentTimeCairo = DateTime.UtcNow.AddHours(3);
+
+            return currentTimeCairo >= exam.StartDateTime && currentTimeCairo <= exam.EndDateTime;
         }
 
         // Method to get the start time of the exam submission for a student
