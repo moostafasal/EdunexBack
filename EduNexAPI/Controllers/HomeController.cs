@@ -3,7 +3,10 @@ using EduNexBL.UnitOfWork;
 using EduNexDB.Context;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Threading.Tasks;
 
 namespace EduNexAPI.Controllers
 {
@@ -57,13 +60,33 @@ namespace EduNexAPI.Controllers
             }
         }
 
-        [HttpPost("GetCoursesCount")]
+        [HttpGet("GetCoursesOrderedByCreationDateDescending")]
+        public async Task<IActionResult> GetCoursesOrderedByCreationDateDescending()
+        {
+            try
+            {
+                var orderedCoursesList = await _unitOfWork.CourseRepo.GetCoursesOrderedByCreationDateDescending();
+                if (orderedCoursesList.IsNullOrEmpty())
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(orderedCoursesList);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetCoursesCount")]
         public async Task<IActionResult> GetCoursesCount()
         {
             try
             {
-                var Courses = await _unitOfWork.CourseRepo.GetAll();
-                int CoursesCount = Courses.Count();
+                int CoursesCount = await _Context.Courses.CountAsync();
                 if (CoursesCount > 0)
                 {
                     return Ok(CoursesCount);
@@ -79,13 +102,12 @@ namespace EduNexAPI.Controllers
             }
         }
 
-        [HttpPost("GetStudentCount")]
+        [HttpGet("GetStudentCount")]
         public async Task<IActionResult> GetStudentCount()
         {
             try
             {
-                var Students = await _unitOfWork.StudentRepo.GetAll();
-                int StudentsCount = Students.Count();
+                int StudentsCount = await _Context.Students.CountAsync();
                 if (StudentsCount > 0)
                 {
                     return Ok(StudentsCount);
@@ -95,19 +117,18 @@ namespace EduNexAPI.Controllers
                     return NotFound();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-        
-        [HttpPost("GetTeachersCount")]
+
+        [HttpGet("GetTeachersCount")]
         public async Task<IActionResult> GetTeachersCount()
         {
             try
             {
-                var Teachers = await _adminRepository.GetTeachersAsync();
-                int TeachersCount = Teachers.Count();
+                int TeachersCount = await _Context.Teachers.CountAsync();
                 if (TeachersCount > 0)
                 {
                     return Ok(TeachersCount);
@@ -117,19 +138,18 @@ namespace EduNexAPI.Controllers
                     return NotFound();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-        
-        [HttpPost("GetLecturesCount")]
+
+        [HttpGet("GetLecturesCount")]
         public async Task<IActionResult> GetLecturesCount()
         {
             try
             {
-                var Lectures = await _unitOfWork.LectureRepo.GetAll();
-                int LecturesCount = Lectures.Count();
+                int LecturesCount = await _Context.Lectures.CountAsync();
                 if (LecturesCount > 0)
                 {
                     return Ok(LecturesCount);
@@ -139,7 +159,7 @@ namespace EduNexAPI.Controllers
                     return NotFound();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

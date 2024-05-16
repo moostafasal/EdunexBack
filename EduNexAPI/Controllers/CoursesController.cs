@@ -191,27 +191,8 @@ namespace EduNexAPI.Controllers
         }
 
 
-        
-        //[HttpGet("GetCoursesOrderedByCreateionDateDescending")]
-        //public async Task<IActionResult> GetCoursesOrderedByCreateionDateDescending()
-        //{
-        //    try
-        //    {
-        //        var orderedCoursesList = await _unitOfWork.CourseRepo.GetCoursesOrderedByCreateionDateDescending();
-        //        if (orderedCoursesList.IsNullOrEmpty())
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            return Ok(orderedCoursesList);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
+
+       
 
         //[HttpGet("GetCoursesOrderedByCreateionDateAscending")]
         //public async Task<IActionResult> GetCoursesOrderedByCreateionDateAscending()
