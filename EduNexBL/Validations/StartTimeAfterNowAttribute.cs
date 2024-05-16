@@ -16,7 +16,7 @@ namespace EduNexBL.Validations
             {
                 var startDateTime = (DateTime)value;
 
-                if (startDateTime <= DateTime.Now)
+                if (startDateTime <= DateTime.UtcNow.AddHours(3))
                 {
                     return new ValidationResult(ErrorMessage);
                 }

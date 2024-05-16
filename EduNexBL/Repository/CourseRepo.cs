@@ -128,7 +128,7 @@ namespace EduNexBL.Repository
             foreach (var coupon in couponCodes)
             {
                 var revievedCoupon = await _context.Coupon.FirstOrDefaultAsync(c => c.CouponCode == coupon && c.NumberOfUses > 0
-                                    && c.ExpirationDate > DateTime.Now && c.CouponType == CouponType.Discount_Coupon);
+                                    && c.ExpirationDate > DateTime.UtcNow.AddHours(3) && c.CouponType == CouponType.Discount_Coupon);
                 if (revievedCoupon != null)
                 {
                     discountValue += revievedCoupon.Value;
@@ -141,7 +141,7 @@ namespace EduNexBL.Repository
         {
             foreach (var coupon in couponCodes)
             {
-                var revievedCoupon = await _context.Coupon.FirstOrDefaultAsync(c => c.CouponCode == coupon && c.NumberOfUses > 0 && c.ExpirationDate > DateTime.Now);
+                var revievedCoupon = await _context.Coupon.FirstOrDefaultAsync(c => c.CouponCode == coupon && c.NumberOfUses > 0 && c.ExpirationDate > DateTime.UtcNow.AddHours(3));
                 if (revievedCoupon != null)
                 {
                     revievedCoupon.NumberOfUses--;

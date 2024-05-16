@@ -24,7 +24,7 @@ namespace EduNexBL.Services
                 CouponCode = Guid.NewGuid().ToString().Substring(0, 8), // Generate a unique coupon code
                 Value = value,
                 NumberOfUses = numberOfUses,
-                ExpirationDate = DateTime.Now.AddDays(daysValid), //Add days to currents date represents expiration date
+                ExpirationDate = DateTime.UtcNow.AddHours(3).AddDays(daysValid), //Add days to currents date represents expiration date
                 CouponType = couponType // 0 represents Charge_Coupon & 1 represents Discount_Coupon
             };
             _context.Coupon.Add(coupon);
@@ -36,7 +36,7 @@ namespace EduNexBL.Services
         public bool ConsumeCoupon(string couponCode, string ownerId, OwnerType ownerType)
         {
             var coupon = _context.Coupon.FirstOrDefault(c => c.CouponCode == couponCode && c.NumberOfUses > 0
-                        && c.ExpirationDate > DateTime.Now && c.CouponType == CouponType.Charge_Coupon);
+                        && c.ExpirationDate > DateTime.UtcNow.AddHours(3) && c.CouponType == CouponType.Charge_Coupon);
 
             if (coupon == null)
             {
@@ -66,7 +66,7 @@ namespace EduNexBL.Services
             {
                 TransactionType = IntegrationType.coupon.ToString(),
                 Amount = coupon.Value,
-                TransactionDate = DateTime.Now.ToString(),
+                TransactionDate = DateTime.UtcNow.AddHours(3).ToString(),
                 WalletId = wallet.WalletId // Set the wallet ID for the transaction
             };
 
@@ -83,7 +83,7 @@ namespace EduNexBL.Services
         public async Task<TimeSpan?> GetTimeLeftBeforeExpiration(string couponCode)
         {
             var coupon = await _context.Coupon.SingleOrDefaultAsync(c => c.CouponCode == couponCode);
-            if (coupon != null && coupon.ExpirationDate > DateTime.Now && coupon.NumberOfUses > 0)
+            if (coupon != null && coupon.ExpirationDate > DateTime.UtcNow.AddHours(3) && coupon.NumberOfUses > 0)
             {
                 return coupon.ExpirationDate - DateTime.UtcNow;
             }
@@ -92,7 +92,7 @@ namespace EduNexBL.Services
         public async Task<int> GetUsageNumberLeft(string couponCode)
         {
             var coupon = await _context.Coupon.SingleOrDefaultAsync(c => c.CouponCode == couponCode);
-            if (coupon != null && coupon.ExpirationDate > DateTime.Now && coupon.NumberOfUses > 0)
+            if (coupon != null && coupon.ExpirationDate > DateTime.UtcNow.AddHours(3) && coupon.NumberOfUses > 0)
             {
                 return coupon.NumberOfUses;
             }

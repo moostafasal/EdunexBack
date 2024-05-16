@@ -28,7 +28,7 @@ namespace EduNexDB.Entites
         public int NumberOfUses { get; set; }
 
         [Required]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(3);
 
         [Required]
         public DateTime ExpirationDate { get; set; }
