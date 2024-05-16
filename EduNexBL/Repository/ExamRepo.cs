@@ -47,7 +47,7 @@ namespace EduNexBL.Repository
             {
                 StudentId = studentId,
                 ExamId = examId,
-                StartTime = DateTime.Now
+                StartTime = DateTime.UtcNow.AddHours(3),
             };
 
             _context.StudentExam.Add(studentExam);
@@ -214,7 +214,7 @@ namespace EduNexBL.Repository
             var studentExam = _context.StudentExam.FirstOrDefault(se => se.StudentId == studentId && se.ExamId == examId);
             if (studentExam != null)
             {
-                studentExam.EndTime = DateTime.Now;
+                studentExam.EndTime = DateTime.UtcNow.AddHours(3);
                 _context.SaveChanges();
             }
         }

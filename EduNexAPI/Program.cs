@@ -84,10 +84,10 @@ namespace EduNexAPI
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins("https://edu-nex-front.vercel.app") // Add your allowed origin here
+                    builder.WithOrigins("https://edu-nex-front.vercel.app", "https://edu-nex-dashboard.vercel.app") // Add your allowed origin here
                            .AllowAnyMethod()
                            .AllowAnyHeader()
-                           .AllowCredentials(); // Allow credentials from the specified origin
+                           .AllowCredentials();
                 });
             });
 
