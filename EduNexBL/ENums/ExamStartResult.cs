@@ -6,7 +6,8 @@
         NotFound,
         NotAvailable,
         InvalidDuration,
-        AlreadyStarted
+        AlreadyStarted,
+        ExamEnded
     }
     public enum ExamSubmitResult
     {

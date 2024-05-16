@@ -40,6 +40,9 @@ namespace EduNexBL.Repository
             if (!IsExamAvailable(exam))
                 return ExamStartResult.NotAvailable;
 
+            if (!IsExamEnded(studentId, examId))
+                return ExamStartResult.ExamEnded;
+
             if (IsStudentStartedExam(studentId, examId))
                 return ExamStartResult.AlreadyStarted;
 

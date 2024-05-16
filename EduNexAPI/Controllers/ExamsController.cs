@@ -147,6 +147,7 @@ namespace EduNexAPI.Controllers
                 ExamStartResult.NotAvailable => BadRequest("Exam is not available."),
                 ExamStartResult.InvalidDuration => BadRequest("Invalid exam duration."),
                 ExamStartResult.AlreadyStarted => Ok(),
+                ExamStartResult.ExamEnded => StatusCode(423,"Exam Ended"),
                 _ => BadRequest("Unknown error occurred."),// This may not happen in practice, but it's good to have a default case for completeness.
             };
         }
