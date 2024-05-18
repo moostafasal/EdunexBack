@@ -4,6 +4,7 @@ Welcome to EduNex, an innovative education platform designed to streamline the l
 
 ## Table of Contents
 - [Features](#features)
+- [Live Demo](#live-demo)
 - [Technologies Used](#technologies-used)
 - [Architecture](#architecture)
 - [Usage](#usage)
@@ -26,6 +27,9 @@ Welcome to EduNex, an innovative education platform designed to streamline the l
 - **Admin Functionality**:
   - Dashboard to monitor system entities and transactions.
   - Approve new teacher registrations.
+
+## Live Demo
+Check out the live demo of EduNex [here](https://edu-nex-front.vercel.app/).
 
 ## Technologies Used
 - **Backend**:
