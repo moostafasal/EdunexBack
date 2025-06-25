@@ -31,19 +31,28 @@ Welcome to EduNex, an innovative education platform designed to streamline the l
 ## Live Demo
 Check out the live demo of EduNex [here](https://edu-nex-front.vercel.app/).
 
-## Technologies Used
-- **Backend**:
+## 🚀 Technologies Used
+
+- **🖥️ Backend**:
   - ASP.NET Core API
   - SQL Server
   - JWT for authentication
-- **Cloud Services**:
+
+- **☁️ Cloud Services**:
   - Cloudinary for media management
   - PayMob for payment processing
-- **Design Patterns**:
+
+- **🧠 Design Patterns**:
   - 3-Tier Architecture
   - Generic Repository Design Pattern
   - Unit of Work
   - AutoMapper for object-object mapping
+
+- **📦 Deployment**:
+  - Docker (Prebuilt image available at: `mostafasalem2/edunex-api`)
+
+
+
 
 ## Architecture
 The project is structured following the 3-tier architecture pattern, comprising:
