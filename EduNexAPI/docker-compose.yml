@@ -1,15 +1,15 @@
 version: '3.8'
 services:
   edunex-api:
-    image: edunex-api
+    image: mostafasalem2/edunex-api
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8080:5293"
     environment:
-      MYSQL_HOST: 
-      MYSQL_DB: 
-      MYSQL_USER: 
-      MYSQL_PASSWORD: 
-    restart: always
+      DB_HOST: 
+      DB_NAME: 
+      DB_USER: 
+      DB_PASSWORD: 
+    restart: 
