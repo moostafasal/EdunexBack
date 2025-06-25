@@ -41,8 +41,13 @@ namespace EduNexAPI
                 .Build();
 
             builder.Services.AddControllers();
+                string connectionStringTemplate = configuration.GetConnectionString("DefaultConnection")!;
+       string connectionString = connectionStringTemplate
+      .Replace("$MYSQL_HOST", Environment.GetEnvironmentVariable("MYSQL_HOST"))
+      .Replace("$MYSQL_PASSWORD", Environment.GetEnvironmentVariable("MYSQL_PASSWORD"));
+
             builder.Services.AddDbContext<EduNexContext>(
-                options => options.UseSqlServer(configuration.GetConnectionString("SqlServer"))
+                options => options.UseSqlServer(configuration.GetConnectionString("connectionString"))
             );
             builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
