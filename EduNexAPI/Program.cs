@@ -41,14 +41,18 @@ namespace EduNexAPI
                 .Build();
 
             builder.Services.AddControllers();
-                string connectionStringTemplate = configuration.GetConnectionString("DefaultConnection")!;
-       string connectionString = connectionStringTemplate
-      .Replace("$MYSQL_HOST", Environment.GetEnvironmentVariable("MYSQL_HOST"))
-      .Replace("$MYSQL_PASSWORD", Environment.GetEnvironmentVariable("MYSQL_PASSWORD"));
+var connectionStringTemplate = configuration.GetConnectionString("DefaultConnection")!;
+
+            var connectionString = connectionStringTemplate
+                .Replace("$MYSQL_HOST", Environment.GetEnvironmentVariable("MYSQL_HOST")!)
+                .Replace("$MYSQL_DB", Environment.GetEnvironmentVariable("MYSQL_DB")!)
+                .Replace("$MYSQL_USER", Environment.GetEnvironmentVariable("MYSQL_USER")!)
+                .Replace("$MYSQL_PASSWORD", Environment.GetEnvironmentVariable("MYSQL_PASSWORD")!);
 
             builder.Services.AddDbContext<EduNexContext>(
-                options => options.UseSqlServer(configuration.GetConnectionString("connectionString"))
+                options => options.UseSqlServer(connectionString)
             );
+
             builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IAdminRepository, AdminRepository>();
@@ -85,16 +89,16 @@ namespace EduNexAPI
                 });
 
             // Add CORS policy
-            builder.Services.AddCors(options =>
+                builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(builder =>
             {
-                options.AddDefaultPolicy(builder =>
-                {
-                    builder.WithOrigins("https://edu-nex-front.vercel.app", "https://edu-nex-dashboard.vercel.app") // Add your allowed origin here
-                           .AllowAnyMethod()
-                           .AllowAnyHeader()
-                           .AllowCredentials();
-                });
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
             });
+        });
+
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -130,6 +134,7 @@ namespace EduNexAPI
             var app = builder.Build();
 
             app.UseHttpsRedirection();
+           app.Urls.Add("http://0.0.0.0:5293");
 
             app.UseRouting(); // Add UseRouting here
 
