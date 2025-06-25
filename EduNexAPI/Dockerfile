@@ -23,9 +23,9 @@ EXPOSE 80
 EXPOSE 443
 
 # Environment variables for DB connection (set these in your docker-compose or deployment environment)
-ENV MYSQL_HOST=""
-ENV MYSQL_DB=""
-ENV MYSQL_USER=""
-ENV MYSQL_PASSWORD=""
+ENV DB_HOST=""
+ENV DB_NAME=""
+ENV DB_USER=""
+ENV DB_PASSWORD=""
 
 ENTRYPOINT ["dotnet", "EduNexAPI.dll"]
