@@ -8,8 +8,8 @@ services:
     ports:
       - "8080:5293"
     environment:
-      DB_HOST: 
-      DB_NAME: 
-      DB_USER: 
-      DB_PASSWORD: 
-    restart: 
+      DB_HOST: db18803.public.databaseasp.net
+      DB_NAME: db18803
+      DB_USER: db18803
+      DB_PASSWORD: Ne3+-2Jx9i=C
+    restart: unless-stopped
