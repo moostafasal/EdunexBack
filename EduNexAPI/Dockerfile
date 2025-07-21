@@ -8,6 +8,7 @@ COPY ["EduNexBL/EduNexBL.csproj", "EduNexBL/"]
 COPY ["EDuNexDB/EduNexDB.csproj", "EDuNexDB/"]
 RUN dotnet restore "EduNexAPI/EduNexAPI.csproj"
 
+
 # Copy everything else and build
 COPY . .
 WORKDIR "/src/EduNexAPI"
