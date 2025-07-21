@@ -25,6 +25,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        context: ./EduNexAPI
+        context: .
+        file: ./EduNexAPI/Dockerfile
         push: true
         tags: mostafasalem2/edunex-api:latest
