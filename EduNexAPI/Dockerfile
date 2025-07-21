@@ -22,10 +22,10 @@ COPY --from=build /app/publish .
 EXPOSE 80
 EXPOSE 443
 
-# Environment variables for DB connection (set these in your docker-compose or deployment environment)
-ENV DB_HOST=""
-ENV DB_NAME=""
-ENV DB_USER=""
-ENV DB_PASSWORD=""
+# Default environment variables for DB connection
+ENV DB_HOST=db18803.public.databaseasp.net \
+    DB_NAME=db18803 \
+    DB_USER=db18803 \
+    DB_PASSWORD=Ne3+-2Jx9i=C
 
 ENTRYPOINT ["dotnet", "EduNexAPI.dll"]
