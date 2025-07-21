@@ -41,6 +41,7 @@ namespace EduNexAPI
                 .Build();
 
 
+
             builder.Services.AddControllers();
 var connectionStringTemplate = configuration.GetConnectionString("DefaultConnection")!;
 
