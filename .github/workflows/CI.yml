@@ -20,7 +20,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build Docker image
-      run: docker build -t mostafasalem2/edunex-api:latest .
+      run: docker build -t mostafasalem2/edunex-api:latest ./EduNexAPI
 
     - name: Push Docker image
       run: docker push mostafasalem2/edunex-api:latest
