@@ -15,3 +15,4 @@ jobs:
         run: sudo docker rm -f edunex-api-container || true
       - name: Run Docker container
         run: sudo docker run -d -p 8080:8080 --name edunex-api-container mostafasalem2/edunex-api:latest
+
