@@ -14,7 +14,7 @@ public class AdminController : ControllerBase
     }
 
 
-    [HttpGet("teachers")]
+    [HttpGet("WE-NEED-TO")]
     public async Task<ActionResult<IEnumerable<TeacherDto>>> GetTeachers()
     {
         var teachers = await _adminRepository.GetTeachersAsync();
