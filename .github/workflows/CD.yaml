@@ -5,21 +5,13 @@ on:
     workflows: ["CI - Build & Push Docker Image"]
     types:
       - completed
-
 jobs:
-  deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  build:
     runs-on: self-hosted
-
     steps:
       - name: Pull Docker image from Docker Hub
         run: sudo docker pull mostafasalem2/edunex-api:latest
-
       - name: Stop and remove old container if it exists
-        run: |
-          if [ "$(sudo docker ps -aq -f name=edunex-api-container)" ]; then
-            sudo docker rm -f edunex-api-container
-          fi
-
+        run: sudo docker rm -f edunex-api-container || true
       - name: Run Docker container
         run: sudo docker run -d -p 8080:8080 --name edunex-api-container mostafasalem2/edunex-api:latest
