@@ -1,8 +1,9 @@
-using Amazon.S3;
+﻿using Amazon.S3;
 using AuthenticationMechanism.Services;
 using AuthenticationMechanism.tokenservice;
 using BunnyCDN.Net.Storage;
 using CloudinaryDotNet;
+using EduNexAPI.Helpers;
 using EduNexBL;
 using EduNexBL.AutoMapper;
 using EduNexBL.Base;
@@ -15,7 +16,6 @@ using EduNexDB.Entites;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -23,11 +23,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace EduNexAPI
 {
@@ -36,26 +32,21 @@ namespace EduNexAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
+            var configuration = builder.Configuration;
 
+                    builder.Services.Configure<DatabaseSettings>(
+             builder.Configuration.GetSection("Database")
+         );
 
+            builder.Services.AddSingleton<IConnectionStringProvider, ConnectionStringProvider>();
+            builder.Services.AddDbContext<EduNexContext>((serviceProvider, options) =>
+            {
+                var provider = serviceProvider.GetRequiredService<IConnectionStringProvider>();
+                var connectionString = provider.GetConnectionString();
+                options.UseSqlServer(connectionString);
+            });
 
             builder.Services.AddControllers();
-var connectionStringTemplate = configuration.GetConnectionString("DefaultConnection")!;
-
-            var connectionString = connectionStringTemplate
-                .Replace("$DB_HOST", Environment.GetEnvironmentVariable("DB_HOST")!)
-                .Replace("$DB_NAME", Environment.GetEnvironmentVariable("DB_NAME")!)
-                .Replace("$DB_USER", Environment.GetEnvironmentVariable("DB_USER")!)
-                .Replace("$DB_PASSWORD", Environment.GetEnvironmentVariable("DB_PASSWORD")!);
-
-            builder.Services.AddDbContext<EduNexContext>(
-                options => options.UseSqlServer(connectionString)
-            );
-
-
             builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IAdminRepository, AdminRepository>();
@@ -87,21 +78,21 @@ var connectionStringTemplate = configuration.GetConnectionString("DefaultConnect
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = "http://localhost:5293/",
                         ValidAudience = "http://localhost:4200/",
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? "DefaultJWTKeyMustBeChanged")
+                        )
                     };
                 });
 
-            // Add CORS policy
-                builder.Services.AddCors(options =>
-        {
-            options.AddDefaultPolicy(builder =>
+            builder.Services.AddCors(options =>
             {
-                builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
             });
-        });
-
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -129,7 +120,7 @@ var connectionStringTemplate = configuration.GetConnectionString("DefaultConnect
                                 Id = "Bearer"
                             }
                         },
-                        new string[] { }
+                        Array.Empty<string>()
                     }
                 });
             });
@@ -137,12 +128,10 @@ var connectionStringTemplate = configuration.GetConnectionString("DefaultConnect
             var app = builder.Build();
 
             app.UseHttpsRedirection();
-           app.Urls.Add("http://0.0.0.0:5293");
+            app.Urls.Add("http://0.0.0.0:5293");
 
-            app.UseRouting(); // Add UseRouting here
-
-            app.UseCors(); // Apply the CORS policy
-
+            app.UseRouting();
+            app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
 
